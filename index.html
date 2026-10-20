@@ -1363,43 +1363,70 @@ const Secrets={K:'cuzdan_gemini_key',   // anahtar state'in DIŞINDA tutulur →
 class AIError extends Error{constructor(code,msg,status){super(msg||code);this.code=code;this.status=status}}
 
 const AI={
-  ENDPOINT:'https://generativelanguage.googleapis.com/v1beta/interactions',
-  MODELS:[['gemini-3.8-flash','Gemini 3.8 Flash · önerilen'],['gemini-3.6-flash','Gemini 3.6 Flash'],['gemini-3.5-flash-lite','Gemini 3.5 Flash-Lite · ekonomik'],['gemini-3-flash-preview','Gemini 3 Flash · preview']],
-  async call({system,input,schema,thinking='low',maxTokens=2048,timeout=90000}){
-    const key=Secrets.get();if(!key)throw new AIError('NO_KEY');
-    const body={model:Store.get().settings.aiModel||'gemini-3.8-flash',input,generation_config:{thinking_level:thinking,max_output_tokens:maxTokens}};
-    if(system)body.system_instruction=system;
-    if(schema)body.response_format={type:'text',mime_type:'application/json',schema};
-    let res,lastErr;
-    for(let attempt=0;attempt<3;attempt++){         // 429 / 5xx → üstel geri çekilme ile yeniden dene
-      const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),timeout);
-      try{res=await fetch(this.ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(body),signal:ctl.signal})}
+  BASE:'https://generativelanguage.googleapis.com/v1beta',
+  /* yedek liste: model listesi alınamazsa gösterilir; "Bağlantıyı test et" anahtarın gerçek modellerini getirir */
+  MODELS:[['gemini-3.8-flash','Gemini 3.8 Flash'],['gemini-3.6-flash','Gemini 3.6 Flash'],['gemini-3.5-flash-lite','Gemini 3.5 Flash-Lite'],['gemini-flash-latest','Gemini Flash (en güncel)'],['gemini-3-flash-preview','Gemini 3 Flash · preview']],
+  models(){const l=Store.get().settings.aiModels;return l&&l.length?l.map(m=>[m,m]):this.MODELS},
+  model(){return String(Store.get().settings.aiModel||'gemini-3.8-flash').replace(/^models\//,'')},
+  /* Ortak HTTP katmanı: zaman aşımı + 429/5xx için üstel geri çekilme */
+  async request(url,body,timeout=90000){const key=Secrets.get();if(!key)throw new AIError('NO_KEY');let res,lastErr;
+    for(let attempt=0;attempt<3;attempt++){const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),timeout);
+      try{res=await fetch(url,{method:body?'POST':'GET',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:body?JSON.stringify(body):undefined,signal:ctl.signal})}
       catch(e){clearTimeout(tm);lastErr=new AIError(e.name==='AbortError'?'TIMEOUT':'NETWORK',e.message);if(e.name==='AbortError')throw lastErr;res=null;await this.wait(attempt);continue}
       clearTimeout(tm);
       if(res.status===429||res.status>=500){lastErr=await this.toError(res);if(attempt<2){await this.wait(attempt);continue}throw lastErr}
       break}
-    if(!res)throw lastErr||new AIError('NETWORK');
-    if(!res.ok)throw await this.toError(res);
-    const data=await res.json();
+    if(!res)throw lastErr||new AIError('NETWORK');if(!res.ok)throw await this.toError(res);return res.json()},
+  /* Ana giriş: önce yeni Interactions API, desteklenmiyorsa generateContent'e otomatik geçer ve bunu hatırlar */
+  async call(opts){const api=Store.get().settings.aiApi||'interactions';
+    if(api==='generate')return this.callGenerate(opts);
+    try{return await this.callInteractions(opts)}
+    catch(e){if(['MODEL','BAD_REQUEST','EMPTY','FAILED'].includes(e.code)){const r=await this.callGenerate(opts);Store.dispatch({type:'settings/update',payload:{aiApi:'generate'}});return r}throw e}},
+  async callInteractions({system,input,schema,thinking='low',maxTokens=2048,timeout=90000}){
+    const body={model:this.model(),input,generation_config:{thinking_level:thinking,max_output_tokens:maxTokens}};
+    if(system)body.system_instruction=system;
+    if(schema)body.response_format={type:'text',mime_type:'application/json',schema};
+    const data=await this.request(this.BASE+'/interactions',body,timeout);
     if(data.status&&!['completed','incomplete'].includes(data.status))throw new AIError('FAILED',data.errors?.[0]?.message||data.status);
-    const text=this.extractText(data);
-    if(!text)throw new AIError('EMPTY');
-    return schema?this.parseJSON(text):text},
+    const text=this.extractText(data);if(!text)throw new AIError('EMPTY');return schema?this.parseJSON(text):text},
+  async callGenerate({system,input,schema,maxTokens=2048,timeout=90000}){
+    const parts=typeof input==='string'?[{text:input}]:input.map(p=>p.type==='text'?{text:p.text}:{inline_data:{mime_type:p.mime_type,data:p.data}});
+    const body={contents:[{role:'user',parts}],generationConfig:{maxOutputTokens:Math.max(maxTokens,8192)}};
+    if(system)body.systemInstruction={parts:[{text:system}]};
+    if(schema){body.generationConfig.responseMimeType='application/json';body.generationConfig.responseJsonSchema=schema}
+    const url=`${this.BASE}/models/${encodeURIComponent(this.model())}:generateContent`;let data;
+    try{data=await this.request(url,body,timeout)}
+    catch(e){if(schema&&e.code==='BAD_REQUEST'){delete body.generationConfig.responseJsonSchema;   // eski modeller JSON şemasını desteklemeyebilir → şemayı talimat olarak ver
+        parts.push({text:'Yanıtı SADECE bu JSON şemasına uyan geçerli JSON olarak ver, başka metin ekleme: '+JSON.stringify(schema)});data=await this.request(url,body,timeout)}else throw e}
+    if(data.promptFeedback?.blockReason)throw new AIError('BLOCKED',data.promptFeedback.blockReason);
+    const text=this.extractText(data);if(!text)throw new AIError('EMPTY',data.candidates?.[0]?.finishReason||'');return schema?this.parseJSON(text):text},
+  /* Anahtarın erişebildiği modelleri listele ve en uygun Flash modelini sırala */
+  async listModels(){const j=await this.request(this.BASE+'/models?pageSize=500',null,20000);
+    const all=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>m.name.replace(/^models\//,''));
+    const ok=n=>/gemini/.test(n)&&/flash/.test(n)&&!/(image|tts|audio|live|embedding|computer|robotics|native)/.test(n);
+    const score=n=>{const v=parseFloat((n.match(/gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);return v*100-(n.includes('lite')?40:0)-(/preview|exp/.test(n)?20:0)-(/latest/.test(n)?4:0)-(/-\d{3}$|\d{2}-\d{4}/.test(n)?6:0)};
+    const flash=all.filter(ok).sort((a,b)=>score(b)-score(a));return{all,flash}},
   wait:a=>new Promise(r=>setTimeout(r,[800,2500,5000][a]||5000)),
   async toError(res){let msg='';try{const j=await res.json();msg=j.error?.message||j.errors?.[0]?.message||''}catch(e){}
     const st=res.status,low=msg.toLowerCase();
-    const code=st===429?'RATE':st===401||st===403||(st===400&&low.includes('api key'))?'INVALID_KEY':st===404?'MODEL':st>=500?'SERVER':'BAD_REQUEST';
+    const code=st===429?'RATE':low.includes('referer')||low.includes('referrer')?'REFERRER':st===401||st===403||(st===400&&(low.includes('api key')||low.includes('api_key')))?'INVALID_KEY':
+      st===404?'MODEL':st>=500?'SERVER':'BAD_REQUEST';
     return new AIError(code,msg,st)},
   extractText(d){
     const steps=(d.steps||[]).filter(x=>x.type==='model_output').flatMap(x=>x.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
     if(steps)return steps;
-    if(typeof d.output_text==='string')return d.output_text;
-    return (d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('')},   // eski generateContent biçimine de dayanıklı
+    if(typeof d.output_text==='string'&&d.output_text)return d.output_text;
+    return (d.candidates?.[0]?.content?.parts||[]).filter(p=>!p.thought).map(p=>p.text||'').join('')},
   parseJSON(t){try{return JSON.parse(t)}catch(e){const m=t.replace(/```json|```/g,'').match(/[\[{][\s\S]*[\]}]/);if(m){try{return JSON.parse(m[0])}catch(e2){}}throw new AIError('BAD_JSON')}},
-  human(e){const m={NO_KEY:'Gemini API anahtarı eklenmemiş. Ayarlar → Yapay zekâ bölümünden ekle.',INVALID_KEY:'API anahtarı geçersiz ya da yetkisiz.',
-    RATE:'İstek sınırına takıldın. Biraz bekleyip tekrar dene.',TIMEOUT:'Gemini zamanında yanıt vermedi. Tekrar dene.',NETWORK:'Bağlantı kurulamadı. İnternetini kontrol et.',
-    MODEL:'Seçili model bulunamadı. Ayarlar\'dan başka bir model seç.',SERVER:'Gemini şu an yanıt veremiyor. Biraz sonra tekrar dene.',
-    BAD_JSON:'Yapay zekâ yanıtı okunamadı. Tekrar dene.',EMPTY:'Yapay zekâ boş yanıt döndü.',FILE_BIG:'Dosya çok büyük (en fazla 15 MB).',FILE_TYPE:'Bu dosya türü desteklenmiyor.'};
+  human(e){const det=e?.message&&e.message!==e.code?` (Google: ${e.message.slice(0,160)})`:'';
+    const m={NO_KEY:'Gemini API anahtarı eklenmemiş. Ayarlar → Yapay zekâ bölümünden ekle.',
+      INVALID_KEY:'API anahtarı geçersiz ya da bu API için yetkisiz. Anahtarı Google AI Studio\'dan kopyaladığından emin ol.'+det,
+      REFERRER:'Anahtarın web sitesi kısıtlaması bu sayfayı engelliyor. Google Cloud\'da anahtar kısıtlamasına sitenin adresini ekle ya da kısıtlamayı kaldır.'+det,
+      RATE:'İstek sınırına takıldın. Biraz bekleyip tekrar dene.'+det,TIMEOUT:'Gemini zamanında yanıt vermedi. Tekrar dene.',
+      NETWORK:'Google\'a bağlanılamadı. İnternetini kontrol et; dosyayı telefonda doğrudan açıyorsan GitHub Pages adresinden açmayı dene.',
+      MODEL:'Seçili model bu anahtarla kullanılamıyor. "Bağlantıyı test et" ile uygun modeli otomatik seç.'+det,SERVER:'Gemini şu an yanıt veremiyor. Biraz sonra tekrar dene.'+det,
+      BAD_REQUEST:'Google isteği kabul etmedi.'+det,FAILED:'İşlem tamamlanamadı.'+det,BLOCKED:'Gemini bu içeriği işlemeyi reddetti.'+det,
+      BAD_JSON:'Yapay zekâ yanıtı okunamadı. Tekrar dene.',EMPTY:'Yapay zekâ boş yanıt döndü.'+det,FILE_BIG:'Dosya çok büyük (en fazla 15 MB).',FILE_TYPE:'Bu dosya türü desteklenmiyor.'};
     return m[e?.code]||(e?.message?'Hata: '+e.message:'Beklenmeyen bir hata oluştu.')}
 };
 
@@ -1559,8 +1586,19 @@ const AIActions={
     const r=await this.run('scan',()=>AI.call(Prompts.receipt(media)));return{...Receipt.normalize(r,Store.get()),media}},
   async statement(file,accId){const media=await Media.prepare(file,2400);ImportSheet.loading(media);
     const r=await this.run('statement',()=>AI.call(Prompts.statement(media)));return StatementImport.normalize(r,Store.get(),accId)},
-  async test(){SettingsSheet.persist();Toast.show('⏳ Gemini\'ye bağlanılıyor…',1500);
-    try{await this.run('ping',()=>AI.call(Prompts.ping()));Toast.show('✓ Gemini bağlantısı çalışıyor')}catch(e){Toast.show('⚠️ '+AI.human(e),4000)}}
+  /* Bağlantı testi: anahtar → model listesi → en uygun model → deneme isteği (API otomatik seçilir) */
+  async test(){SettingsSheet.persist();const set=p=>Store.dispatch({type:'settings/update',payload:p});
+    if(!Secrets.get()){Toast.show('Önce API anahtarını yapıştır');return}
+    Toast.show('Gemini\'ye bağlanılıyor…',1800);const log=[];
+    try{const{all,flash}=await AI.listModels();log.push(`✓ Anahtar geçerli · ${all.length} model erişilebilir`);
+      if(flash.length){const cur=AI.model(),pick=flash.includes(cur)?cur:flash[0];set({aiModels:flash.slice(0,10),aiModel:pick});if(pick!==cur)log.push(`↻ Model otomatik seçildi: ${pick}`)}
+      else log.push('⚠ Listede Flash modeli bulunamadı; seçili modelle denenecek.')}
+    catch(e){if(['INVALID_KEY','REFERRER','NETWORK'].includes(e.code)){set({aiDiag:{ok:false,text:AI.human(e),at:Date.now()}});Toast.show('⚠️ '+AI.human(e),6000);SettingsSheet.open('ai');return}
+      log.push('⚠ Model listesi alınamadı: '+AI.human(e))}
+    try{await this.run('ping',()=>AI.call(Prompts.ping()));const api=Store.get().settings.aiApi==='generate'?'generateContent':'Interactions';
+      log.push(`✓ Deneme isteği başarılı · ${AI.model()} · ${api} API`);set({aiDiag:{ok:true,text:log.join('\n'),at:Date.now()}});Toast.show('✓ Gemini bağlandı: '+AI.model(),4000)}
+    catch(e){log.push('✗ '+AI.human(e));set({aiDiag:{ok:false,text:log.join('\n'),at:Date.now()}});Toast.show('⚠️ '+AI.human(e),6000)}
+    SettingsSheet.open('ai')}
 };
 
 /* ---------- 50_components.js ---------- */
@@ -2404,8 +2442,9 @@ const SettingsSheet={
       <div class="field" id="sec-ai"><span>Yapay zekâ · Google Gemini</span></div>
       <div class="glass" style="padding:4px 14px 14px">
         <label class="field"><span>API anahtarı</span><input class="input" id="st-key" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="AIza…" value="${U.esc(Secrets.get())}"></label>
-        <label class="field"><span>Model</span><select class="input" id="st-model">${AI.MODELS.map(([k,l])=>`<option value="${k}" ${s.settings.aiModel===k?'selected':''}>${l}</option>`).join('')}</select></label>
-        <button class="btn pressable" onclick="AIActions.test()">Bağlantıyı test et</button>
+        <label class="field"><span>Model ${s.settings.aiModels?.length?'· anahtarına uygun modeller':''}</span><select class="input" id="st-model">${(AI.models().some(([k])=>k===AI.model())?AI.models():[[AI.model(),AI.model()],...AI.models()]).map(([k,l])=>`<option value="${k}" ${AI.model()===k?'selected':''}>${l}</option>`).join('')}</select></label>
+        <button class="btn primary pressable" onclick="AIActions.test()">${C.ic('sparkles')}Bağlantıyı test et ve modeli otomatik seç</button>
+        ${s.settings.aiDiag?`<div class="${s.settings.aiDiag.ok?'preview':'err-box'}" style="margin-top:12px;white-space:pre-line;font-size:12.5px">${U.esc(s.settings.aiDiag.text)}</div>`:''}
         <p class="muted xs" style="margin-top:10px;line-height:1.5">Anahtarı <a class="link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> adresinden alabilirsin. Anahtar yalnızca bu cihazda saklanır ve yedek dosyasına eklenmez. ${s.ai?.calls?'Bu cihazdan yapılan AI isteği: '+s.ai.calls:''}</p></div>
 
       <div class="field"><span>Kurlar (elle güncellenir)</span></div>
@@ -2427,7 +2466,8 @@ const SettingsSheet={
   zoom(v){this.look('zoom',+v)},density(v){this.look('density',v)},
   async motion(on){if(on&&window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){try{await DeviceOrientationEvent.requestPermission()}catch(e){}}
     this.look('motion',on);Tilt.init()},
-  persist(){const q=Sheet.el;if(!q('#st-name'))return;Secrets.set(q('#st-key').value.trim());const n=x=>{const v=U.parseNum(q(x).value);return v>0?v:null};const r=Store.get().settings.rates;
+  persist(){const q=Sheet.el;if(!q('#st-name'))return;const n=x=>{const v=U.parseNum(q(x).value);return v>0?v:null};const r=Store.get().settings.rates;
+    const prevKey=Secrets.get(),newKey=q('#st-key').value.trim();Secrets.set(newKey);if(prevKey!==newKey)Store.dispatch({type:'settings/update',payload:{aiDiag:null,aiApi:null}});
     Store.dispatch({type:'settings/update',payload:{name:q('#st-name').value.trim(),aiModel:q('#st-model').value,rates:{USD:n('#st-usd')??r.USD,EUR:n('#st-eur')??r.EUR,XAU:n('#st-xau')??r.XAU}}})},
   save(){this.persist();Sheet.close()},
   removePin(){if(!confirm('PIN kilidi kaldırılsın mı?'))return;this.persist();Store.dispatch({type:'security/update',payload:{pinHash:'',bioId:''}});this.open('security')},
