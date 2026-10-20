@@ -8,6 +8,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Cüzdan">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>Cüzdan</title>
 <style>
 /* =====================================================================
@@ -680,6 +682,30 @@ svg.i{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.85
 body.onboarding .tabbar{transform:translate(-50%,160%);transition:transform .5s var(--ease)}
 .tabbar{transition:transform .5s var(--ease)}
 .ccard-mini{background-size:cover}
+
+/* ===================== v5: sohbet, ses, borç ===================== */
+.chat{display:flex;flex-direction:column;gap:10px;padding-bottom:86px}
+.bubble{max-width:86%;padding:11px 14px;border-radius:20px;font-size:14.5px;line-height:1.45;animation:rise .35s var(--ease) both;word-wrap:break-word}
+.bubble.user{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:6px}
+.bubble.ai{align-self:flex-start;background:var(--glass-2);border:1px solid var(--glass-border);border-bottom-left-radius:6px}
+.bubble.err{color:var(--red)}
+.bubble .md-li{display:block;padding-left:14px;position:relative}
+.bubble .md-li::before{content:"•";position:absolute;left:2px;color:var(--text2)}
+.typing{display:flex;gap:5px;padding:14px 16px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--text2);animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.chat-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));width:min(calc(100% - 28px),490px);display:flex;gap:8px;padding:6px 6px 6px 16px;border-radius:26px;z-index:40;background:var(--glass-strong)}
+.chat-bar input{flex:1;min-width:0;background:none;border:0;outline:none;font-size:16px;color:var(--text)}
+.chat-bar .send{width:40px;height:40px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;flex-shrink:0}
+.chat-bar .send svg.i{width:20px;height:20px;stroke-width:2.3}
+.mic{display:grid;place-items:center;width:88px;height:88px;border-radius:50%;margin:8px auto 0;color:#fff;background:linear-gradient(135deg,var(--blue),var(--purple));box-shadow:0 10px 30px rgba(94,92,230,.45)}
+.mic svg.i{width:38px;height:38px}
+.mic.on{animation:pulse 1.2s infinite;background:linear-gradient(135deg,#ff375f,#ff9f0a)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,55,95,.5)}70%{box-shadow:0 0 0 22px rgba(255,55,95,0)}100%{box-shadow:0 0 0 0 rgba(255,55,95,0)}}
+textarea.input{font-family:inherit}
+.seg button{padding:7px 6px}
+.sheet-backdrop.swap,.sheet-backdrop.swap .sheet{animation:none}
 </style>
 </head>
 <body>
@@ -792,7 +818,7 @@ const ACCOUNT_TYPES={
   fx:{name:'Döviz / Altın',icon:'fx'},
 };
 const accIcon=a=>a.currency==='XAU'?'gold':ACCOUNT_TYPES[a.type].icon;
-const KINDS={expense:'Harcama',income:'Gelir',transfer:'Transfer',payment:'Kart borcu ödemesi',refund:'İade',goal:'Kumbara',loan:'Kredi taksiti'};
+const KINDS={expense:'Harcama',income:'Gelir',transfer:'Transfer',payment:'Kart borcu ödemesi',refund:'İade',goal:'Kumbara',loan:'Kredi taksiti',debt:'Borç / alacak'};
 const GRADIENTS=[['#0a84ff','#5e5ce6'],['#bf5af2','#ff375f'],['#30d158','#0a84ff'],['#ff9f0a','#ff375f'],['#2c2c2e','#636366'],['#64d2ff','#5e5ce6']];
 const grad=i=>{const g=GRADIENTS[(i||0)%GRADIENTS.length];return `linear-gradient(135deg,${g[0]},${g[1]})`};
 const gcol=i=>GRADIENTS[(i||0)%GRADIENTS.length][0];
@@ -880,6 +906,10 @@ const ICONS={
   arrowup:'<path d="M12 19V5M6 11l6-6 6 6"/>',arrowdown:'<path d="M12 5v14M6 13l6 6 6-6"/>',
   palette:'<path d="M12 3a9 9 0 0 0 0 18c1.3 0 2-1 1.5-2.2-.6-1.4.4-2.8 1.9-2.8H18a3 3 0 0 0 3-3c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7.5" r="1"/><circle cx="15" cy="7.5" r="1"/>',
   text:'<path d="M4 7V5h12v2M10 5v14M7 19h6M14 12h6M17 12v7M15.5 19h3"/>',
+  voice:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>',
+  chat:'<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+  people:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2a5 5 0 0 1 6 4.8"/>',
+  split:'<path d="M12 3v7M12 10l-6 6v5M12 10l6 6v5"/>',
   phonevib:'<rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M3 9v6M21 9v6"/>',
 };
 /* eski kayıtlardaki emojileri ikon setine eşle (kullanıcının seçtiği diğer emojiler olduğu gibi gösterilir) */
@@ -899,7 +929,7 @@ const APP_ICONS=[['aurora','Aurora'],['night','Gece'],['glass','Cam'],['gold','A
 const SCHEMA_VERSION=3;
 function emptyState(){return{
   version:SCHEMA_VERSION,
-  settings:{name:'Yusuf',theme:'system',rates:{USD:42,EUR:49,XAU:5500},aiModel:'gemini-3.8-flash',privacy:false},   // kurlar örnektir
+  settings:{name:'Yusuf',theme:'system',rates:{USD:49.55,EUR:55.6,XAU:6560},aiModel:'gemini-3.8-flash',privacy:false,autoRates:true,subIgnore:[],chatConsent:false},   // kurlar ilk açılışta internetten güncellenir
   security:{pinHash:'',pinLen:4,bioId:'',lockAfter:1},
   /* Hesaplar: {id,type,name,bank,color,currency,opening,overdraft?, credit?:{limit,cutDay,dueDay,sharedWith,minRate,contractRate,lateRate}} */
   accounts:[],
@@ -912,6 +942,7 @@ function emptyState(){return{
   goals:[],        // {id,name,icon,target,deadline,color}
   templates:[],    // {id,name,amount,category,accountId,merchant}
   categories:[],   // özel kategoriler {id,name,icon,color,income}
+  debts:[],        // borç/alacak {id,dir:'lent'|'owe',person,amount,date,due,note,linkTx}
   paidStatements:{},// elle "ödendi" işaretlenen ekstreler {"accId|idx":true}
   ai:{pending:{},errors:{},coach:null,calls:0}
 }}
@@ -931,6 +962,7 @@ function reducer(s,a){
       if(a.col==='transactions'){const drop=new Set([a.id,...s.transactions.filter(t=>t.refOf===a.id).map(t=>t.id)]);
         return{...s,transactions:s.transactions.filter(t=>!drop.has(t.id)),
           recurring:s.recurring.map(r=>({...r,paid:Object.fromEntries(Object.entries(r.paid||{}).filter(([,v])=>!drop.has(v)))}))}}
+      if(a.col==='debts')return{...s,debts:s.debts.filter(x=>x.id!==a.id),transactions:s.transactions.filter(t=>t.debtId!==a.id)};
       if(a.col==='loans')return{...s,loans:s.loans.filter(x=>x.id!==a.id),transactions:s.transactions.filter(t=>t.loanId!==a.id)};
       if(a.col==='goals')return{...s,goals:s.goals.filter(x=>x.id!==a.id),transactions:s.transactions.filter(t=>t.goalId!==a.id)};
       if(a.col==='categories')return{...s,categories:s.categories.filter(c=>c.id!==a.id),
@@ -971,7 +1003,7 @@ const Persist={
       settings:{...b.settings,...(s.settings||{}),rates:{...b.settings.rates,...((s.settings||{}).rates||{})}},
       security:{...b.security,...(s.security||{})},
       ai:{...b.ai,...(s.ai||{}),pending:{}}};   // yarım kalmış AI istekleri sıfırlanır
-    ['accounts','transactions','budgets','recurring','loans','goals','templates','categories'].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[]});
+    ['accounts','transactions','budgets','recurring','loans','goals','templates','categories','debts'].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[]});
     if(!o.paidStatements||typeof o.paidStatements!=='object')o.paidStatements={};
     o.transactions=o.transactions.map(t=>{const x=t.kind?{...t}:{...t,kind:t.type==='income'?'income':'expense'};delete x.type;return x});
     o.recurring=o.recurring.map(r=>({type:'expense',paid:{},...r}));
@@ -1073,6 +1105,7 @@ D.effect=(t,accId)=>{let v=0;
   if(t.accountId===accId){switch(t.kind){
     case 'income':case 'refund':v+=t.amount;break;
     case 'goal':v+=t.dir==='out'?t.amount:-t.amount;break;
+    case 'debt':v+=t.dir==='in'?t.amount:-t.amount;break;
     default:v-=t.amount}}
   if(t.toAccountId===accId&&t.kind==='transfer')v+=(t.toAmount??t.amount);
   return v};
@@ -1107,8 +1140,8 @@ D.netWorth=U.memo(s=>{let assets=0,debts=0,cards=0,loans=0,goals=0;
     else assets+=D.toTRY(s,D.balance(s,a.id),a.currency)}
   for(const g of s.goals)goals+=D.goalSaved(s,g.id);
   for(const l of s.loans)loans+=D.loan(s,l.id).remaining;
-  assets+=goals;debts=cards+loans;
-  return{assets:U.r2(assets),debts:U.r2(debts),cards:U.r2(cards),loans:U.r2(loans),goals:U.r2(goals),net:U.r2(assets-debts)}});
+  const dt=D.debtTotals(s);assets+=goals+dt.lent;debts=cards+loans+dt.owe;
+  return{assets:U.r2(assets),debts:U.r2(debts),cards:U.r2(cards),loans:U.r2(loans),goals:U.r2(goals),lent:dt.lent,owe:dt.owe,net:U.r2(assets-debts)}});
 D.netWorthAt=(s,E)=>{let assets=0,debts=0;
   for(const a of s.accounts){if(a.type==='credit')continue;let b=+a.opening||0;for(const t of s.transactions)if(t.date<=E)b+=D.effect(t,a.id);assets+=D.toTRY(s,b,a.currency)}
   for(const t of s.transactions)if(t.kind==='goal'&&t.date<=E)assets+=t.dir==='out'?-t.amount:t.amount;
@@ -1118,7 +1151,8 @@ D.netWorthAt=(s,E)=>{let assets=0,debts=0;
     const st=D.stmtAt(s,aid,+i);if(st.due<=E)debts-=Math.max(0,st.total)}
   for(const l of s.loans){if(U.addMonths(l.firstDate,-1)>E)continue;const L=D.loan(s,l.id);
     debts+=L.total-(+l.paidBefore||0)*l.monthly-L.pays.filter(t=>t.date<=E).reduce((a,t)=>a+t.amount,0)}
-  return{assets:U.r2(assets),debts:U.r2(Math.max(0,debts)),net:U.r2(assets-Math.max(0,debts))}};
+  const dd=D.debtAt(s,E);assets+=dd.lent;debts=Math.max(0,debts)+dd.owe;
+  return{assets:U.r2(assets),debts:U.r2(debts),net:U.r2(assets-debts)}};
 D.netWorthHistory=U.memo((s,n=12)=>{const t=new Date(),out=[];
   /* yalnızca ilk kayıttan bu yana: öncesinde veri olmadığı için çizmek yanıltıcı olur */
   const first=U.parse(s.transactions.reduce((m,x)=>x.date<m?x.date:m,U.today()));
@@ -1168,6 +1202,7 @@ D.upcoming=U.memo((s,horizon=35)=>{const out=[];
   for(const r of s.recurring){const c=D.recurCycle(r);out.push({kind:'rec',id:r.id,date:c.date,ym:c.ym,title:r.name,income:r.type==='income',
     sub:(r.type==='income'?'Gelir':cat(r.category).name)+' · her ayın '+U.dayOf(r.day),amount:r.amount,icon:r.icon||cat(r.category).icon,color:cat(r.category).color})}
   for(const l0 of s.loans){const l=D.loan(s,l0.id);if(l.next)out.push({kind:'loan',id:l.id,date:l.next.date,title:l.name+' taksiti',sub:`${l.paidCount+1}/${l.count}. taksit`,amount:l.monthly,icon:'🏦',color:'#8e8e93'})}
+  for(const x of (s.debts||[])){const d=D.debt(s,x.id);if(d.due&&!d.done)out.push({kind:'debt',id:d.id,person:d.person,date:d.due,title:d.dir==='lent'?d.person+' ödeyecek':d.person+' kişisine ödeme',sub:d.note||(d.dir==='lent'?'Alacak':'Borç'),amount:d.remaining,income:d.dir==='lent',icon:'people',color:d.dir==='lent'?'#30d158':'#ff453a'})}
   return out.filter(x=>U.daysUntil(x.date)<=horizon).sort((a,b)=>a.date.localeCompare(b.date))});
 
 /* ---------- Taksit yükü ve Taksit Matrix'i ---------- */
@@ -1195,6 +1230,7 @@ D.calendar=U.memo((s,y,m)=>{const days={},from=U.monthStart(y,m),to=U.monthEnd(y
       if(days[x.cut]&&i>=st.open-1)days[x.cut].events.push({type:'cut',title:a.name+' hesap kesimi',amount:x.total,color:gcol(a.color),info:true})}}
   for(const r of s.recurring){const d=U.iso(new Date(y,m,Math.min(r.day,U.dim(y,m))));if(days[d])days[d].events.push({type:'rec',id:r.id,ym,title:r.name,amount:r.amount,income:r.type==='income',done:!!r.paid?.[ym],color:cat(r.category).color})}
   for(const l0 of s.loans){const l=D.loan(s,l0.id);l.schedule.forEach(x=>{if(days[x.date])days[x.date].events.push({type:'loan',id:l.id,title:l.name+' taksiti',sub:(x.k+1)+'/'+l.count,amount:x.amount,done:x.paid,color:'#8e8e93'})})}
+  for(const x of (s.debts||[])){const d=D.debt(s,x.id);if(d.due&&!d.done&&days[d.due])days[d.due].events.push({type:'debt',title:(d.dir==='lent'?d.person+' ödeyecek':d.person+' kişisine ödeme'),amount:d.remaining,color:d.dir==='lent'?'#30d158':'#ff453a',income:d.dir==='lent',id:d.id,person:d.person})}
   for(const t of s.transactions){if(!t.warrantyMonths)continue;const e=U.addMonths(t.date,t.warrantyMonths);if(days[e])days[e].events.push({type:'warranty',title:'Garanti bitiyor: '+(t.merchant||cat(t.category).name),color:'#ffd60a',info:true,txId:t.id})}
   return days});
 
@@ -1224,12 +1260,12 @@ D.filterTx=(s,f={})=>{const q=U.lc(f.q).trim(),T=new Date();let from='',to='';
     if(f.cat&&t.category!==f.cat)return false;
     if(f.kind==='expense'&&t.kind!=='expense')return false;
     if(f.kind==='income'&&!['income','refund'].includes(t.kind))return false;
-    if(f.kind==='move'&&!['transfer','payment','goal','loan'].includes(t.kind))return false;
+    if(f.kind==='move'&&!['transfer','payment','goal','loan','debt'].includes(t.kind))return false;
     if(f.kind==='inst'&&!(t.kind==='expense'&&t.installments>1))return false;
     if(f.kind==='ocr'&&!['ocr','import'].includes(t.source))return false;
     if(q){const acc=D.account(s,t.accountId);const hay=U.lc([t.merchant,t.note,cat(t.category).name,acc?.name,KINDS[t.kind],String(t.amount),U.num(t.amount)].join(' '));if(!hay.includes(q))return false}
     return true}).sort((a,b)=>b.date.localeCompare(a.date)||s.transactions.indexOf(b)-s.transactions.indexOf(a))};
-D.txSign=t=>['income','refund'].includes(t.kind)||(t.kind==='goal'&&t.dir==='out')?1:t.kind==='transfer'?0:-1;
+D.txSign=t=>['income','refund'].includes(t.kind)||(t.kind==='goal'&&t.dir==='out')||(t.kind==='debt'&&t.dir==='in')?1:t.kind==='transfer'?0:-1;
 
 /* ---------- İşlemin taksit durumu ---------- */
 D.txPlan=(s,t)=>{const acc=D.account(s,t.accountId);if(!acc||acc.type!=='credit'||t.kind!=='expense')return null;
@@ -1253,6 +1289,8 @@ D.insights=U.memo(s=>{const out=[];const t=new Date();
   for(const tx of s.transactions){if(tx.kind!=='expense')continue;
     if(tx.warrantyMonths){const d=U.daysUntil(U.addMonths(tx.date,tx.warrantyMonths));if(d>=0&&d<=30)out.push({sev:'info',icon:'🛡️',title:'Garanti bitiyor',text:`${tx.merchant||'Ürün'} garantisi ${d} gün içinde bitiyor.`,go:['tx',{id:tx.id}]})}
     if(tx.source==='ocr'&&!D.refundMap(s)[tx.id]){const d=14-(-U.daysUntil(tx.date));if(d>=0&&d<=3&&tx.amount>=500)out.push({sev:'info',icon:'↩️',title:'İade süresi doluyor',text:`${tx.merchant||'Alışveriş'} için iade hakkı ${d} gün içinde bitiyor (14 gün varsayımı).`,go:['tx',{id:tx.id}]})}}
+  for(const x of (s.debts||[])){const d=D.debt(s,x.id);if(d.overdue)out.push({sev:d.dir==='owe'?'danger':'warn',icon:'people',title:d.dir==='owe'?d.person+' kişisine borcunun vadesi geçti':d.person+' ödemeyi geciktirdi',text:`Kalan ${U.money(d.remaining)} · vade ${U.fmtDate(d.due)}`,on:`DebtForm.person('${d.person.replace(/'/g,"\\'")}')`})}
+  D.subCandidates(s).slice(0,2).forEach(c=>out.push({sev:'info',icon:'repeat',title:'Abonelik olabilir: '+c.name,text:`Son ${c.months} ayda her ay ~${U.money(c.amount)}. Düzenli ödemelere ekleyelim mi?`,on:"App.go('plan','rec')"}));
   const mc=D.monthCompare(s);if(t.getDate()>=5){
     Object.keys({...mc.curBy,...mc.prevBy}).map(k=>{const c=mc.curBy[k]||0,p=mc.prevBy[k]||0;return{k,c,p,pct:p?(c-p)/p*100:null}})
       .filter(x=>x.p>=100&&x.c>0&&x.pct!==null&&Math.abs(x.pct)>=15).sort((a,b)=>Math.abs(b.c-b.p)-Math.abs(a.c-a.p)).slice(0,2)
@@ -1369,9 +1407,19 @@ const AI={
   models(){const l=Store.get().settings.aiModels;return l&&l.length?l.map(m=>[m,m]):this.MODELS},
   model(){return String(Store.get().settings.aiModel||'gemini-3.8-flash').replace(/^models\//,'')},
   /* Ortak HTTP katmanı: zaman aşımı + 429/5xx için üstel geri çekilme */
-  async request(url,body,timeout=90000){const key=Secrets.get();if(!key)throw new AIError('NO_KEY');let res,lastErr;
+  /* Kimlik doğrulama biçimleri: klasik AIza anahtarı başlıkta; yeni "Authentication Key" (AQ.) bazı hesaplarda farklı biçim isteyebilir */
+  AUTH:['header','query','bearer'],
+  authed(url,key,mode){const h={'Content-Type':'application/json'};
+    if(mode==='bearer')h.Authorization='Bearer '+key;else if(mode==='query')url+=(url.includes('?')?'&':'?')+'key='+encodeURIComponent(key);else h['x-goog-api-key']=key;return{url,h}},
+  async request(url,body,timeout=90000){const key=Secrets.get();if(!key)throw new AIError('NO_KEY');
+    const st=Store.get().settings,modes=st.aiAuth?[st.aiAuth,...this.AUTH.filter(m=>m!==st.aiAuth)]:this.AUTH;
+    let firstErr;for(const mode of (key.startsWith('AQ.')?modes:[st.aiAuth||'header'])){
+      try{const r=await this.requestOnce(url,body,timeout,key,mode);if(st.aiAuth!==mode)Store.dispatch({type:'settings/update',payload:{aiAuth:mode}});return r}
+      catch(e){if(!['INVALID_KEY'].includes(e.code)||e.status!==401&&e.status!==403&&e.status!==400)throw e;firstErr=firstErr||e}}
+    throw firstErr},
+  async requestOnce(url0,body,timeout,key,mode){let res,lastErr;const{url,h}=this.authed(url0,key,mode);
     for(let attempt=0;attempt<3;attempt++){const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),timeout);
-      try{res=await fetch(url,{method:body?'POST':'GET',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:body?JSON.stringify(body):undefined,signal:ctl.signal})}
+      try{res=await fetch(url,{method:body?'POST':'GET',headers:h,body:body?JSON.stringify(body):undefined,signal:ctl.signal})}
       catch(e){clearTimeout(tm);lastErr=new AIError(e.name==='AbortError'?'TIMEOUT':'NETWORK',e.message);if(e.name==='AbortError')throw lastErr;res=null;await this.wait(attempt);continue}
       clearTimeout(tm);
       if(res.status===429||res.status>=500){lastErr=await this.toError(res);if(attempt<2){await this.wait(attempt);continue}throw lastErr}
@@ -1407,8 +1455,8 @@ const AI={
     const score=n=>{const v=parseFloat((n.match(/gemini-(\d+(?:\.\d+)?)/)||[])[1]||0);return v*100-(n.includes('lite')?40:0)-(/preview|exp/.test(n)?20:0)-(/latest/.test(n)?4:0)-(/-\d{3}$|\d{2}-\d{4}/.test(n)?6:0)};
     const flash=all.filter(ok).sort((a,b)=>score(b)-score(a));return{all,flash}},
   wait:a=>new Promise(r=>setTimeout(r,[800,2500,5000][a]||5000)),
-  async toError(res){let msg='';try{const j=await res.json();msg=j.error?.message||j.errors?.[0]?.message||''}catch(e){}
-    const st=res.status,low=msg.toLowerCase();
+  async toError(res){let msg='',reason='';try{const j=await res.json();msg=j.error?.message||j.errors?.[0]?.message||'';reason=(j.error?.details||[]).map(d=>d.reason).filter(Boolean)[0]||j.error?.status||''}catch(e){}
+    const st=res.status,low=(msg+' '+reason).toLowerCase();if(reason)msg=`${st} ${reason}: ${msg}`;else if(msg)msg=`${st}: ${msg}`;
     const code=st===429?'RATE':low.includes('referer')||low.includes('referrer')?'REFERRER':st===401||st===403||(st===400&&(low.includes('api key')||low.includes('api_key')))?'INVALID_KEY':
       st===404?'MODEL':st>=500?'SERVER':'BAD_REQUEST';
     return new AIError(code,msg,st)},
@@ -1418,9 +1466,9 @@ const AI={
     if(typeof d.output_text==='string'&&d.output_text)return d.output_text;
     return (d.candidates?.[0]?.content?.parts||[]).filter(p=>!p.thought).map(p=>p.text||'').join('')},
   parseJSON(t){try{return JSON.parse(t)}catch(e){const m=t.replace(/```json|```/g,'').match(/[\[{][\s\S]*[\]}]/);if(m){try{return JSON.parse(m[0])}catch(e2){}}throw new AIError('BAD_JSON')}},
-  human(e){const det=e?.message&&e.message!==e.code?` (Google: ${e.message.slice(0,160)})`:'';
+  human(e){const det=e?.message&&e.message!==e.code?` (Google: ${e.message.slice(0,220)})`:'';
     const m={NO_KEY:'Gemini API anahtarı eklenmemiş. Ayarlar → Yapay zekâ bölümünden ekle.',
-      INVALID_KEY:'API anahtarı geçersiz ya da bu API için yetkisiz. Anahtarı Google AI Studio\'dan kopyaladığından emin ol.'+det,
+      INVALID_KEY:(Secrets.get().startsWith('AQ.')?'Google bu yeni tür (AQ.) anahtarı kabul etmedi; uygulama bütün gönderim biçimlerini denedi. Bu, Google tarafında bilinen bir sorun.':'API anahtarı geçersiz ya da bu API için yetkisiz. Anahtarı Google AI Studio\'dan kopyaladığından emin ol.')+det,
       REFERRER:'Anahtarın web sitesi kısıtlaması bu sayfayı engelliyor. Google Cloud\'da anahtar kısıtlamasına sitenin adresini ekle ya da kısıtlamayı kaldır.'+det,
       RATE:'İstek sınırına takıldın. Biraz bekleyip tekrar dene.'+det,TIMEOUT:'Gemini zamanında yanıt vermedi. Tekrar dene.',
       NETWORK:'Google\'a bağlanılamadı. İnternetini kontrol et; dosyayı telefonda doğrudan açıyorsan GitHub Pages adresinden açmayı dene.',
@@ -1533,9 +1581,9 @@ const Receipt={
     if(!r||r.is_receipt===false||!(+r.total>0))return{ok:false,reason:r?.notes||'Belgede okunabilir bir toplam tutar bulunamadı.'};
     const T=U.today();let date=/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')?r.date:T;if(date>T)date=T;
     const n=Math.min(36,Math.max(1,parseInt(r.installments)||1)),nOpt=INSTALLMENT_OPTS.reduce((a,b)=>Math.abs(b-n)<Math.abs(a-n)?b:a);
-    const m=this.matchAccount(s,r.card_hint,n),acc=m.acc;
+    const rec=r.merchant&&D.recallMerchant(s,r.merchant,'expense');const m=this.matchAccount(s,r.card_hint,n);if(!m.matched&&rec&&D.account(s,rec.accountId)){m.acc=D.account(s,rec.accountId)}const acc=m.acc;
     return{ok:true,
-      draft:{amount:U.r2(+r.total),merchant:String(r.merchant||'').slice(0,60),date,category:expenseCats().includes(r.category)?r.category:'other',
+      draft:{amount:U.r2(+r.total),merchant:String(r.merchant||'').slice(0,60),date,category:rec?.category||(expenseCats().includes(r.category)?r.category:'other'),
         accountId:acc?.id,installments:acc?.type==='credit'?nOpt:1,source:'ocr',
         items:(r.items||[]).slice(0,30),vat:{total:r.vat_total??null,lines:r.vat_lines||[]},warrantyMonths:r.warranty_months??null},
       meta:{confidence:r.confidence,currency:r.currency,cardHint:r.card_hint,matched:m.matched,installments:n,notes:r.notes,itemCount:(r.items||[]).length}}},
@@ -1554,7 +1602,8 @@ const StatementImport={
     const cutIdx=valid(r.cut_date)?D.stmtIdx(c,r.cut_date):D.stmtIdx(c,r.transactions.map(x=>x.date).filter(valid).sort().pop()||T);
     const rows=r.transactions.filter(x=>+x.amount>0).map((x,i)=>{
       const amount=U.r2(+x.amount),date=valid(x.date)&&x.date<=T?x.date:D.cutDate(c,cutIdx);
-      const base={id:'r'+i,sel:true,desc:String(x.description||'').slice(0,60)||'İşlem',category:expenseCats().includes(x.category)?x.category:'other',raw:x};
+      const learned=D.recallMerchant(s,x.description||'','expense');
+      const base={id:'r'+i,sel:true,desc:String(x.description||'').slice(0,60)||'İşlem',category:learned?.category||(expenseCats().includes(x.category)?x.category:'other'),raw:x};
       if(x.kind==='payment')return{...base,type:'payment',amount,date,label:'Ödeme'};
       if(x.kind==='refund')return{...base,type:'refund',amount,date,label:'İade / alacak'};
       const n=+x.installment_total||1,k=+x.installment_no||1;
@@ -1601,6 +1650,160 @@ const AIActions={
     SettingsSheet.open('ai')}
 };
 
+/* ---------- 45_features.js ---------- */
+
+/* =====================================================================
+   v5 özellikleri: borç/alacak, kategori öğrenme, abonelik tespiti, canlı kur,
+   takvim (.ics), nakit akışı simülasyonu, AI asistan, sesle ekleme, iptal metni
+   ===================================================================== */
+U.norm=s=>U.lc(s).replace(/[^a-z0-9çğıöşü]+/g,' ').trim();
+
+/* ---------- Borç / alacak ---------- */
+D.debt=U.memo((s,id)=>{const d=(s.debts||[]).find(x=>x.id===id);if(!d)return null;
+  const moves=s.transactions.filter(t=>t.kind==='debt'&&t.debtId===id).sort((a,b)=>a.date.localeCompare(b.date));
+  const paid=U.r2(moves.filter(t=>t.settle).reduce((a,t)=>a+t.amount,0)),remaining=U.r2(Math.max(0,d.amount-paid));
+  return{...d,moves,paid,remaining,done:remaining<=0.009,overdue:!!d.due&&remaining>0.009&&U.daysUntil(d.due)<0,pct:d.amount?Math.min(1,paid/d.amount):0}});
+D.debtTotals=U.memo(s=>{let lent=0,owe=0;(s.debts||[]).forEach(x=>{const d=D.debt(s,x.id);if(d.dir==='lent')lent+=d.remaining;else owe+=d.remaining});
+  return{lent:U.r2(lent),owe:U.r2(owe),net:U.r2(lent-owe)}});
+D.people=U.memo(s=>{const m={};(s.debts||[]).forEach(x=>{const d=D.debt(s,x.id),k=U.lc(d.person.trim());
+  const p=m[k]=m[k]||{name:d.person.trim(),lent:0,owe:0,items:[]};p.items.push(d);if(d.dir==='lent')p.lent+=d.remaining;else p.owe+=d.remaining});
+  return Object.values(m).map(p=>({...p,lent:U.r2(p.lent),owe:U.r2(p.owe),net:U.r2(p.lent-p.owe),open:p.items.filter(d=>!d.done).length}))
+    .sort((a,b)=>(b.open>0)-(a.open>0)||Math.abs(b.net)-Math.abs(a.net))});
+D.debtAt=(s,E)=>{let lent=0,owe=0;(s.debts||[]).forEach(d=>{if(d.date>E)return;
+  const paid=s.transactions.filter(t=>t.kind==='debt'&&t.debtId===d.id&&t.settle&&t.date<=E).reduce((a,t)=>a+t.amount,0),r=Math.max(0,d.amount-paid);
+  if(d.dir==='lent')lent+=r;else owe+=r});return{lent,owe}};
+
+/* ---------- Mağaza hafızası: kategori / hesap / tutar öğrenme ---------- */
+D.merchantMemory=U.memo(s=>{const m={};
+  [...s.transactions].sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{if(!['expense','income'].includes(t.kind)||!t.merchant)return;const k=U.norm(t.merchant);if(k.length<2)return;
+    const e=m[k]=m[k]||{name:t.merchant,count:0};Object.assign(e,{count:e.count+1,category:t.category,accountId:t.accountId,amount:t.amount,kind:t.kind,date:t.date,installments:t.installments||1})});
+  return m});
+D.recallMerchant=(s,name,kind='expense')=>{const k=U.norm(name);if(k.length<2)return null;const m=D.merchantMemory(s);let e=m[k];
+  if(!e){const keys=Object.keys(m).filter(x=>m[x].kind===kind);const key=keys.find(x=>x.startsWith(k))||keys.find(x=>x.length>=4&&k.startsWith(x));e=key?m[key]:null}
+  return e&&e.kind===kind?e:null};
+D.merchantNames=U.memo(s=>Object.values(D.merchantMemory(s)).sort((a,b)=>b.count-a.count).slice(0,80).map(e=>e.name));
+
+/* ---------- Abonelik otomatik tespiti ---------- */
+D.subCandidates=U.memo(s=>{const ign=new Set(s.settings.subIgnore||[]),rec=s.recurring.map(r=>U.norm(r.name)),from=U.monthStart(new Date().getFullYear(),new Date().getMonth()-5),g={};
+  s.transactions.filter(t=>t.kind==='expense'&&t.date>=from&&t.merchant&&!t.recurringId&&(t.installments||1)===1).forEach(t=>{const k=U.norm(t.merchant);if(k)(g[k]=g[k]||[]).push(t)});
+  const out=[];for(const[k,list]of Object.entries(g)){if(ign.has(k)||rec.some(r=>r===k||(r.length>3&&(r.includes(k)||k.includes(r)))))continue;
+    const byM={};list.forEach(t=>{byM[t.date.slice(0,7)]=t});const ms=Object.values(byM);if(ms.length<3||list.length>ms.length*1.4)continue;
+    const amts=ms.map(t=>t.amount),avg=amts.reduce((a,b)=>a+b,0)/amts.length;if(amts.some(a=>Math.abs(a-avg)/avg>.12))continue;
+    const days=ms.map(t=>+t.date.slice(8)).sort((a,b)=>a-b),med=days[Math.floor(days.length/2)];if(days.some(d=>Math.abs(d-med)>5))continue;
+    const last=[...ms].sort((a,b)=>b.date.localeCompare(a.date))[0];
+    out.push({key:k,name:last.merchant,amount:U.r2(last.amount),day:med,category:last.category,accountId:last.accountId,months:ms.length,lastTx:last})}
+  return out.sort((a,b)=>b.amount-a.amount)});
+
+/* ---------- 6 aylık nakit akışı projeksiyonu ("Ya şöyle olursa?") ---------- */
+D.liquid=s=>U.r2(s.accounts.filter(a=>a.type==='checking'||a.type==='cash').reduce((x,a)=>x+D.toTRY(s,D.balance(s,a.id),a.currency),0));
+D.variableSpend=U.memo(s=>{const t=new Date();let sum=0;
+  for(let k=1;k<=3;k++){const y=t.getFullYear(),m=t.getMonth()-k,from=U.monthStart(y,m),to=U.monthEnd(y,m);
+    sum+=s.transactions.filter(x=>x.kind==='expense'&&x.date>=from&&x.date<=to&&!x.recurringId&&(x.installments||1)===1).reduce((a,x)=>a+x.amount,0)}
+  return U.r2(sum/3)});
+D.cashflow=(s,extra)=>{const t=new Date(),T=U.today(),rows=[];let bal=D.liquid(s);const start=bal,variable=D.variableSpend(s);
+  for(let k=0;k<6;k++){const y=t.getFullYear(),m=t.getMonth()+k,from=k===0?T:U.monthStart(y,m),to=U.monthEnd(y,m),ym=U.monthStart(y,m).slice(0,7);
+    const factor=k===0?(U.dim(t.getFullYear(),t.getMonth())-t.getDate()+1)/U.dim(t.getFullYear(),t.getMonth()):1;
+    let income=0,fixed=0,cards=0,loans=0,debts=0,np=0;
+    s.recurring.forEach(r=>{if(k===0&&r.paid?.[ym])return;const d=U.iso(new Date(y,m,Math.min(r.day,U.dim(y,m))));if(d<from||d>to)return;
+      if(r.type==='income')income+=r.amount;else if(!D.isCredit(s,r.accountId))fixed+=r.amount});
+    s.accounts.filter(a=>a.type==='credit').forEach(a=>{const o=D.openIdx(a.credit);for(let i=o-3;i<=o+24;i++){const st=D.stmtAt(s,a.id,i);if(st.due>=from&&st.due<=to)cards+=Math.max(0,st.remaining)}});
+    s.loans.forEach(l0=>{D.loan(s,l0.id).schedule.forEach(x=>{if(!x.paid&&x.date<=to&&(x.date>=from||(k===0&&x.date<T)))loans+=x.amount})});
+    (s.debts||[]).forEach(d0=>{const d=D.debt(s,d0.id);if(d.dir==='owe'&&!d.done&&d.due&&d.due<=to&&(d.due>=from||k===0))debts+=d.remaining});
+    if(extra&&extra.amount>0){const acc=D.account(s,extra.accId);
+      if(acc&&acc.type==='credit'){const f=D.stmtIdx(acc.credit,extra.date||T),parts=U.split(extra.amount,extra.n||1);parts.forEach((p,i)=>{const due=D.dueDate(acc.credit,f+i);if(due>=from&&due<=to)np+=p})}
+      else{const d=extra.date||T;if(d>=from&&d<=to)np+=extra.amount}}
+    const v=U.r2(variable*factor),out=U.r2(fixed+cards+loans+debts+v+np);bal=U.r2(bal+income-out);
+    rows.push({label:U.mon(((m%12)+12)%12),ym,income:U.r2(income),fixed,cards:U.r2(cards),loans,debts,variable:v,np:U.r2(np),out,balance:bal})}
+  return{start,rows,min:Math.min(...rows.map(r=>r.balance)),variable}};
+
+/* ---------- AI asistanı için veri bağlamı (kompakt tablo) ---------- */
+D.chatContext=s=>{const from=U.addMonths(U.today(),-4),nw=D.netWorth(s);
+  const txs=s.transactions.filter(t=>t.date>=from).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,400).map(t=>{const v=C.txVis(s,t);
+    return[t.date,KINDS[t.kind]||t.kind,(t.merchant||v.title||'').slice(0,40),['expense','income','refund'].includes(t.kind)?cat(t.category).name:'',D.account(s,t.accountId)?.name||'',(v.sign||-1)*t.amount,t.installments>1?t.installments:'']});
+  return{bugun:U.today(),
+    hesaplar:s.accounts.map(a=>a.type==='credit'?(m=>({ad:a.name,tur:'kredi kartı',limit:m.limit,kullanilabilir:m.available,kart_borcu:m.own,son_ekstre_kalan:m.lastRemaining,asgari:m.minPay,son_odeme:m.lastDue,hesap_kesim_gunu:a.credit.cutDay}))(D.cardSummary(s,a.id))
+      :{ad:a.name,tur:ACCOUNT_TYPES[a.type].name,bakiye:D.balance(s,a.id),para_birimi:a.currency}),
+    net_varlik:nw,krediler:s.loans.map(l=>{const L=D.loan(s,l.id);return{ad:l.name,aylik:l.monthly,odenen:L.paidCount,toplam:l.count,kalan:L.remaining,siradaki:L.next?.date}}),
+    kumbaralar:s.goals.map(g=>{const G=D.goal(s,g.id);return{ad:g.name,hedef:g.target,biriken:G.saved,hedef_tarih:g.deadline,aylik_gereken:G.perMonth}}),
+    borc_alacak:(s.debts||[]).map(x=>{const d=D.debt(s,x.id);return{kisi:d.person,yon:d.dir==='lent'?'bana borçlu':'ben borçluyum',tutar:d.amount,kalan:d.remaining,vade:d.due||null}}),
+    duzenli:s.recurring.map(r=>({ad:r.name,tur:r.type==='income'?'gelir':'gider',tutar:r.amount,gun:r.day})),
+    butceler:D.budgetStatus(s).map(b=>({kategori:cat(b.category).name,limit:b.limit,harcanan:b.spent})),
+    yaklasan:D.upcoming(s).slice(0,10).map(x=>({tarih:x.date,ad:x.title,tutar:x.amount})),
+    islem_sutunlari:['tarih','tür','açıklama','kategori','hesap','tutar(− çıkış,+ giriş)','taksit'],islemler:txs}};
+
+/* ---------- Canlı kur (anahtarsız, ücretsiz kaynaklar) ---------- */
+const Rates={busy:false,
+  async fetch(manual){if(this.busy)return;this.busy=true;const s=Store.get(),out={...s.settings.rates};let ok=0;
+    const get=async(u)=>{const c=new AbortController(),tm=setTimeout(()=>c.abort(),9000);try{const r=await fetch(u,{signal:c.signal});return r.ok?await r.json():null}catch(e){return null}finally{clearTimeout(tm)}};
+    const fx=await get('https://api.frankfurter.dev/v1/latest?base=TRY&symbols=USD,EUR');   // Avrupa Merkez Bankası referans kurları
+    if(fx&&fx.rates&&fx.rates.USD>0){out.USD=U.r2(1/fx.rates.USD);out.EUR=U.r2(1/fx.rates.EUR);ok++}
+    const au=await get('https://api.gold-api.com/price/XAU');                               // ons altın (USD)
+    if(au&&au.price>0&&out.USD>0){out.XAU=U.r2(au.price/31.1034768*out.USD);ok++}
+    this.busy=false;
+    if(ok)Store.dispatch({type:'settings/update',payload:{rates:out,ratesAt:Date.now()}});
+    if(manual)Toast.show(ok?'✓ Kurlar güncellendi':'⚠️ Kurlar alınamadı, internet bağlantını kontrol et');return ok},
+  auto(){const st=Store.get().settings;if(st.autoRates===false||!navigator.onLine)return;if(Date.now()-(st.ratesAt||0)>6*3600e3)this.fetch(false)}};
+
+/* ---------- Takvim (.ics) dışa aktarma: telefon takvimi gerçek bildirim gönderir ---------- */
+const ICS={
+  esc:v=>String(v).replace(/\\/g,'\\\\').replace(/[;,]/g,m=>'\\'+m).replace(/\n/g,'\\n'),
+  d:s=>s.replace(/-/g,''),
+  next:s=>U.addDays(s,1),
+  build(o){const s=Store.get(),L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Cuzdan//TR','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:Cüzdan Ödemeleri','X-WR-TIMEZONE:Europe/Istanbul'];
+    const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+    const trig={0:'PT9H',1:'-PT15H',3:'-P2DT15H'};   // tüm gün etkinliğinde: aynı gün 09:00, 1 gün önce 09:00, 3 gün önce 09:00
+    const alarms=o.alarms.map(a=>['BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Cüzdan hatırlatması','TRIGGER:'+trig[a],'END:VALARM']).flat();
+    let n=0;const ev=(uid,date,title,desc,rrule)=>{n++;L.push('BEGIN:VEVENT','UID:'+uid+'@cuzdan','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+this.d(date),'DTEND;VALUE=DATE:'+this.d(this.next(date)),
+      'SUMMARY:'+this.esc(title),'DESCRIPTION:'+this.esc(desc),...(rrule?['RRULE:'+rrule]:[]),'TRANSP:TRANSPARENT',...alarms,'END:VEVENT')};
+    if(o.cards)s.accounts.filter(a=>a.type==='credit').forEach(a=>{const m=D.cardSummary(s,a.id);const first=m.lastRemaining>0?m.lastDue:m.openDue;
+      ev('card-'+a.id,first,a.name+' son ödeme',`Kredi kartı son ödeme günü. Güncel tutar için Cüzdan'ı aç.`,'FREQ=MONTHLY;BYMONTHDAY='+Math.min(28,a.credit.dueDay))});
+    if(o.rec)s.recurring.forEach(r=>{const c=D.recurCycle(r);ev('rec-'+r.id,c.date,(r.type==='income'?'Gelir: ':'')+r.name+' · '+U.money(r.amount,{raw:true}),'Düzenli '+(r.type==='income'?'gelir':'ödeme'),'FREQ=MONTHLY;BYMONTHDAY='+Math.min(28,r.day))});
+    if(o.loans)s.loans.forEach(l0=>{const l=D.loan(s,l0.id);l.schedule.filter(x=>!x.paid).forEach(x=>ev('loan-'+l.id+'-'+x.k,x.date,`${l.name} ${x.k+1}/${l.count} · ${U.money(x.amount,{raw:true})}`,'Kredi taksiti'))});
+    if(o.debts)(s.debts||[]).forEach(x=>{const d=D.debt(s,x.id);if(d.due&&!d.done)ev('debt-'+d.id,d.due,(d.dir==='lent'?d.person+' sana ödeyecek':d.person+' kişisine ödeme')+' · '+U.money(d.remaining,{raw:true}),d.note||'Borç / alacak vadesi')});
+    if(o.goals)s.goals.forEach(g0=>{const g=D.goal(s,g0.id);if(g.deadline&&!g.done)ev('goal-'+g.id,g.deadline,'Kumbara hedefi: '+g.name,`Hedef ${U.money(g.target,{raw:true})}, biriken ${U.money(g.saved,{raw:true})}`)});
+    L.push('END:VCALENDAR');return{text:L.join('\r\n'),count:n}},
+  async share(o){const{text,count}=this.build(o);if(!count){Toast.show('Aktarılacak hatırlatma yok');return}
+    const file=new File([text],'cuzdan-hatirlatmalar.ics',{type:'text/calendar'});
+    try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Cüzdan hatırlatmaları'});return}}catch(e){if(e.name==='AbortError')return}
+    Exporter.download(text,'cuzdan-hatirlatmalar.ics','text/calendar;charset=utf-8');Toast.show(`📅 ${count} hatırlatma hazır; dosyayı açıp takvime ekle`,4500)}};
+
+/* ---------- Basit Markdown (asistan yanıtları) ---------- */
+U.md=t=>U.esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^#{1,3}\s*(.+)$/gm,'<b>$1</b>').replace(/^\s*[-•*]\s+(.+)$/gm,'<span class="md-li">$1</span>').replace(/<\/span>\n/g,'</span>').replace(/\n/g,'<br>');
+
+/* ---------- Ek AI şemaları ve şablonları ---------- */
+Schemas.voice=()=>({type:'object',properties:{
+  kind:{type:'string',enum:['expense','income']},amount:{type:['number','null']},merchant:{type:['string','null']},
+  category:{type:'string',enum:[...expenseCats(),...incomeCats()]},account_hint:{type:['string','null'],description:'Söylenen hesap/kart adı'},
+  installments:{type:'integer',minimum:1,maximum:36},date:{type:['string','null'],format:'date'},note:{type:['string','null']}},required:['kind','amount','category','installments']});
+Schemas.letter={type:'object',properties:{subject:{type:'string'},body:{type:'string'}},required:['subject','body']};
+Prompts.voice=(text,s)=>({thinking:'minimal',maxTokens:1024,schema:Schemas.voice(),
+  system:`Kullanıcının Türkçe söylediği/yazdığı cümleden tek bir harcama veya gelir kaydı çıkar. Bugün ${U.today()} (${U.DAYS[new Date().getDay()]}). "dün", "geçen cuma" gibi ifadeleri tarihe çevir; tarih yoksa null.
+Tutarı sayı ver ("450 lira"→450, "bin iki yüz"→1200). "3 taksit" → installments=3, yoksa 1. Mağaza/açıklamayı kısa ve düzgün yaz. Kullanıcının hesapları: ${s.accounts.map(a=>a.name).join(', ')}. ${catHint()}`,
+  input:text});
+Prompts.chat=(q,history,ctx)=>({thinking:'medium',maxTokens:4096,
+  system:`Sen kullanıcının kişisel finans asistanısın. Türkçe, kısa ve net cevap ver. Yalnızca aşağıdaki verilere dayan; hesaplamaları dikkatle yap ve gerekirse nasıl hesapladığını tek cümleyle söyle.
+Veri yoksa ya da yetersizse bunu açıkça söyle, tahmin uydurma. Tutarları "1.250 ₺" biçiminde yaz. Gerektiğinde madde işaretleri (- ) ve **kalın** kullan. Hisse/kripto gibi yatırım tavsiyesi verme.
+KULLANICI VERİSİ (JSON):\n${JSON.stringify(ctx)}`,
+  input:(history.length?'Önceki konuşma:\n'+history.slice(-6).map(m=>(m.role==='user'?'Kullanıcı: ':'Asistan: ')+m.text).join('\n')+'\n\n':'')+'Yeni soru: '+q});
+Prompts.letter=(o)=>({thinking:'low',maxTokens:2048,schema:Schemas.letter,
+  system:'Türkçe, kibar ve resmi bir abonelik iptal e-postası yaz. Kısa tut (en fazla 150 kelime). Uydurma sözleşme/müşteri numarası yazma; gerekiyorsa [köşeli parantez] ile yer tutucu bırak.',
+  input:`Hizmet: ${o.name}\nAylık ücret: ${U.money(o.amount,{raw:true})}\nAbone adı: ${o.user||'[Ad Soyad]'}\nTarih: ${U.fmtDate(U.today(),'y')}\nİstek: aboneliğin bir sonraki fatura döneminden önce iptali, otomatik yenilemenin durdurulması, iptalin yazılı olarak onaylanması.`});
+const Voice={
+  local(text,s){const t=U.lc(text);const num=t.replace(/(\d)\.(\d{3})/g,'$1$2').match(/(\d+(?:[.,]\d+)?)\s*(?:lira|tl|₺)?/);const amount=num?U.parseNum(num[1]):null;
+    const inst=(t.match(/(\d+)\s*taksit/)||[])[1];const income=/(aldım|geldi|yattı|maaş|harçlık|kazandım|gelir)/.test(t);
+    const acc=s.accounts.find(a=>U.norm(a.name).split(' ').some(w=>w.length>=3&&t.includes(w)));
+    const mm=text.match(/([A-ZÇĞİÖŞÜ][\wçğıöşüÇĞİÖŞÜ&]+(?:\s[A-ZÇĞİÖŞÜ][\wçğıöşü]+)?)'?(?:da|de|ta|te|dan|den|tan|ten)\b/)||text.match(/^([A-ZÇĞİÖŞÜa-zçğıöşü&]+)/);
+    const merchant=mm?mm[1]:'';const rec=merchant&&D.recallMerchant(s,merchant,income?'income':'expense');
+    const date=/dün/.test(t)?U.addDays(U.today(),-1):U.today();
+    return{kind:income?'income':'expense',amount,merchant,category:rec?.category||(income?'income':'other'),accountId:acc?.id||rec?.accountId,installments:inst?+inst:1,date}},
+  async parse(text){const s=Store.get();let r;
+    if(Secrets.get()){try{const a=await AIActions.run('voice',()=>AI.call(Prompts.voice(text,s)));
+      const acc=a.account_hint&&s.accounts.find(x=>U.norm(x.name).split(' ').some(w=>w.length>=3&&U.norm(a.account_hint).includes(w)));const rec=a.merchant&&D.recallMerchant(s,a.merchant,a.kind);
+      r={kind:a.kind,amount:a.amount,merchant:a.merchant||'',category:rec?.category||a.category,accountId:acc?.id||rec?.accountId,installments:a.installments||1,date:/^\d{4}-\d{2}-\d{2}$/.test(a.date||'')&&a.date<=U.today()?a.date:U.today(),note:a.note||''}}
+      catch(e){Toast.show('AI kullanılamadı, basit çözümleme yapıldı');r=this.local(text,s)}}
+    else r=this.local(text,s);
+    return r}};
+
 /* ---------- 50_components.js ---------- */
 
 /* ===================== ui/components (saf HTML üreticileri) ===================== */
@@ -1616,7 +1819,7 @@ C.iconBtn=(icon,on,label='')=>`<button class="icon-btn glass pressable" onclick=
 C.topbar=s=>{const d=new Date();
   return `<header class="topbar"><div><div class="t-sub">${d.toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'})} · ${C.greeting()}</div>
     <h1>${s.settings.name?U.esc(s.settings.name):'Cüzdan'}</h1></div>
-    <div class="top-actions">${C.eye()}${C.iconBtn(Theme.effective()==='dark'?'sun':'moon','App.toggleTheme()','Tema')}
+    <div class="top-actions">${C.iconBtn('sparkles',"App.push('chat',{})",'Asistan')}${C.eye()}
     <button class="avatar pressable" onclick="App.openSettings()" aria-label="Ayarlar">${U.esc((s.settings.name||'?')[0].toUpperCase())}</button></div></header>`};
 C.tabHead=(title,sub,right='')=>`<header class="topbar"><div><div class="t-sub">${sub||''}</div><h1>${title}</h1></div><div class="top-actions">${right}</div></header>`;
 C.pageHead=(title,sub,right='')=>`<div class="page-head"><button class="back pressable" onclick="App.back()"><b>‹</b>Geri</button>${right}</div>
@@ -1717,7 +1920,7 @@ C.accTiles=s=>{const rest=s.accounts.filter(a=>a.type!=='credit');
     <button class="acc-tile glass pressable add-tile" onclick="AccForm.open()"><div><span>+</span>Hesap ekle</div></button></div>`};
 
 /* --- İçgörüler: kaydırılabilir şerit --- */
-C.insightCard=i=>`<div class="insight glass sev-${i.sev} ${i.go?'pressable':''}" ${i.go?`onclick="App.push('${i.go[0]}',${U.esc(JSON.stringify(i.go[1]))})"`:''}><span class="ic">${C.ic(i.icon)}</span><div><b>${U.esc(i.title)}</b><p>${i.text}</p></div></div>`;
+C.insightCard=i=>`<div class="insight glass sev-${i.sev} ${i.go||i.on?'pressable':''}" ${i.on?`onclick="${U.esc(i.on)}"`:i.go?`onclick="App.push('${i.go[0]}',${U.esc(JSON.stringify(i.go[1]))})"`:''}><span class="ic">${C.ic(i.icon)}</span><div><b>${U.esc(i.title)}</b><p>${i.text}</p></div></div>`;
 C.insights=s=>{const list=D.insights(s).slice(0,6);if(!list.length)return '';
   return C.section('Akıllı Özet',`<span class="muted sm">${list.length} uyarı</span>`,`<div class="strip" data-dots="ins">${list.map(C.insightCard).join('')}</div>
     ${list.length>1?`<div class="dots-ind" id="dots-ins">${list.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('')}</div>`:''}`)};
@@ -1730,13 +1933,13 @@ C.coach=s=>{const ai=s.ai||{},busy=ai.pending?.coach,err=ai.errors?.coach,c=ai.c
   else if(busy)body=`<div class="shimmer" style="width:92%"></div><div class="shimmer" style="width:70%"></div><div class="shimmer" style="width:84%"></div><p class="muted xs">Gemini son 3 ayını inceliyor…</p>`;
   else if(d)body=`<div class="ai-headline">${U.esc(d.headline)}</div>
     ${(d.tips||[]).map(t=>`<div class="tip"><span class="pr" style="background:${PR[t.priority]||'var(--blue)'}"></span><div><b>${U.esc(t.title)}</b><p>${U.esc(t.detail)}</p>${t.monthly_saving>0?`<span class="save-pill">≈ ${U.money(t.monthly_saving,{dec:false})}/ay tasarruf</span>`:''}</div></div>`).join('')}
-    ${d.subscriptions?.length?`<div class="ai-sub">ABONELİKLER</div>${d.subscriptions.map(x=>{const v=V[x.verdict]||V.review;return `<div class="tip"><span style="color:var(--${v[1]==='red'?'red':v[1]==='orange'?'orange':'green'})">${C.ic(v[0])}</span><div><b>${U.esc(x.name)} <span class="badge ${v[1]}">${v[2]}</span></b><p>${U.esc(x.reason)}</p></div></div>`}).join('')}`:''}`;
+    ${d.subscriptions?.length?`<div class="ai-sub">ABONELİKLER</div>${d.subscriptions.map(x=>{const v=V[x.verdict]||V.review;const rr=Store.get().recurring.find(r=>U.norm(r.name)===U.norm(x.name));return `<div class="tip"><span style="color:var(--${v[1]==='red'?'red':v[1]==='orange'?'orange':'green'})">${C.ic(v[0])}</span><div><b>${U.esc(x.name)} <span class="badge ${v[1]}">${v[2]}</span></b><p>${U.esc(x.reason)}</p>${x.verdict!=='keep'?`<button class="mini-btn" style="margin-top:6px" onclick="LetterSheet.open('${U.esc(x.name).replace(/'/g,"\\'")}',${rr?rr.amount:0})">İptal metni hazırla</button>`:''}</div></div>`}).join('')}`:''}`;
   else body=`<p class="muted sm">Son 3 ayının özetini Gemini'ye gönderip kişisel tavsiyeler al. Kart numarası veya işlem listesi gönderilmez, sadece özet.</p><button class="btn primary pressable" onclick="AIActions.coach()">${C.ic('sparkles')}Analiz et</button>`;
   return `<div class="section"><div class="glass ai-card"><div class="ai-head"><span class="ai-orb ${busy?'busy':''}"></span>
     <div style="flex:1;min-width:0"><b>AI Finans Koçu</b><div class="muted xs">${d&&!busy?'Gemini · '+C.relTime(c.at):'Google Gemini ile'}</div></div>
     ${d&&!busy?`<span class="score">${d.health_score}/1000</span>`:''}</div>
     ${err&&!busy?`<div class="err-box">${U.esc(err)}</div>`:''}${body}
-    ${d&&!busy&&key?`<button class="btn pressable" onclick="AIActions.coach()">${C.ic('flip')}Yeniden analiz et</button>`:''}</div></div>`};
+    ${key&&!busy?`<div class="btn-row">${d?`<button class="btn pressable" onclick="AIActions.coach()">${C.ic('flip')}Yenile</button>`:''}<button class="btn pressable" onclick="App.push('chat',{})">${C.ic('chat')}Asistana sor</button></div>`:''}</div></div>`};
 
 /* --- Harcama dağılımı (donut) --- */
 C.donut=(items,total,sel)=>{const R=70,CIRC=2*Math.PI*R;let off=0;const gap=items.length>1?3:0;
@@ -1762,8 +1965,8 @@ C.installments=s=>{const L=D.installmentLoad(s);if(!L||!L.cols.some(c=>c.tot))re
 /* --- Yaklaşan ödemeler (kompakt; kaydır → öde) --- */
 C.dueBadge=(date,kind)=>{const n=U.daysUntil(date);
   return kind==='open'?`<span class="badge blue">${U.fmtDate(date)}</span>`:n<0?`<span class="badge red">${-n} gün gecikti</span>`:n<=3?`<span class="badge orange">${n===0?'Bugün':n+' gün kaldı'}</span>`:`<span class="badge blue">${U.fmtDate(date)}</span>`};
-C.upItem=x=>{const pay=x.kind==='stmt'?`PaySheet.open('${x.accId}')`:x.kind==='rec'?`RecurringForm.pay('${x.id}')`:x.kind==='loan'?`LoanForm.pay('${x.id}')`:'';
-  const go=x.kind==='stmt'||x.kind==='open'?`App.push('card',{id:'${x.accId}'})`:x.kind==='loan'?`App.push('loan',{id:'${x.id}'})`:`RecurringForm.open('${x.id}')`;
+C.upItem=x=>{const pay=x.kind==='stmt'?`PaySheet.open('${x.accId}')`:x.kind==='rec'?`RecurringForm.pay('${x.id}')`:x.kind==='loan'?`LoanForm.pay('${x.id}')`:x.kind==='debt'?`DebtForm.settle('${x.id}')`:'';
+  const go=x.kind==='stmt'||x.kind==='open'?`App.push('card',{id:'${x.accId}'})`:x.kind==='loan'?`App.push('loan',{id:'${x.id}'})`:x.kind==='debt'?`DebtForm.person('${U.esc(x.person||'').replace(/'/g,"\\'")}')`:`RecurringForm.open('${x.id}')`;
   const icon=x.kind==='stmt'?'card':x.kind==='open'?'receipt':x.kind==='loan'?'bank':x.icon;
   return C.swipe(`<div class="row pressable" onclick="${go}">${C.icb(icon,x.color)}<div class="mid"><b>${U.esc(x.title)}</b><span>${U.esc(x.sub)}</span></div>
     <div class="end"><b class="num ${x.income?'pos':''}">${x.income?'+':''}${U.money(x.amount)}</b>${C.dueBadge(x.date,x.kind)}</div></div>`,
@@ -1784,6 +1987,7 @@ C.txVis=(s,t,ctx)=>{const c=cat(t.category),a=D.account(s,t.accountId),b=D.accou
     case 'refund':{const o=t.refOf&&D.tx(s,t.refOf);return{icon:'refund',color:'#30d158',title:'İade · '+(o?.merchant||t.merchant||'Alışveriş'),sub:(a?.name||'')+(o?' · '+cat(o.category).name:''),sign:1}}
     case 'goal':{const g=s.goals.find(x=>x.id===t.goalId);return{icon:g?.icon||'piggy',color:gcol(g?.color),title:(g?.name||'Kumbara'),sub:(t.dir==='out'?'Kumbaradan → ':'Kumbaraya ← ')+(a?.name||''),sign:ctx===t.goalId?(t.dir==='out'?-1:1):(t.dir==='out'?1:-1)}}
     case 'loan':{const l=s.loans.find(x=>x.id===t.loanId);return{icon:'bank',color:'#8e8e93',title:(l?.name||'Kredi')+' taksiti',sub:a?.name||'',sign:-1}}
+    case 'debt':{const d=(s.debts||[]).find(x=>x.id===t.debtId);const lbl=t.settle?(t.dir==='in'?'Tahsilat':'Borç ödemesi'):(t.dir==='out'?'Borç verildi':'Borç alındı');return{icon:'people',color:t.dir==='in'?'#30d158':'#ff453a',title:(d?.person||t.merchant||'Kişi')+' · '+lbl,sub:(a?.name||'Hesaba işlenmedi')+(d?.note?' · '+d.note:''),sign:t.dir==='in'?1:-1}}
     default:return{icon:c.icon,color:c.color,title:t.merchant||c.name,sub:c.name+(a?' · '+a.name:'')+(t.installments>1?' · '+t.installments+' taksit':''),sign:-1}}};
 C.txRow=(s,t,ctx,extra='')=>{const v=C.txVis(s,t,ctx),refunded=t.kind==='expense'&&D.refundMap(s)[t.id];
   const amt=v.amt??t.amount,cur=v.cur||D.account(s,t.accountId)?.currency||'TRY',editable=['expense','income','transfer'].includes(t.kind);
@@ -1856,9 +2060,9 @@ const Screens={
 
   /* --- Planla: takvim, bütçe, düzenli ödemeler, kumbaralar --- */
   plan(s,ui){const tab=ui.planTab;
-    const add={cal:'',budget:`<button class="icon-btn glass pressable" onclick="BudgetForm.open()">${C.ic('plus')}</button>`,rec:`<button class="icon-btn glass pressable" onclick="RecurringForm.open()">${C.ic('plus')}</button>`,goals:`<button class="icon-btn glass pressable" onclick="GoalForm.open()">${C.ic('plus')}</button>`}[tab];
-    return C.tabHead('Planla','Takvim, bütçe ve hedefler',add)+`<div style="margin-top:12px">${C.segmented([['cal','Takvim'],['budget','Bütçe'],['rec','Düzenli'],['goals','Kumbara']],tab,'App.planTab')}</div>`+
-      ({cal:Screens.calendar,budget:Screens.budget,rec:Screens.recurring,goals:Screens.goals})[tab](s,ui)},
+    const add={debts:`<button class="icon-btn glass pressable" onclick="DebtForm.open()">${C.ic('plus')}</button>`,cal:'',budget:`<button class="icon-btn glass pressable" onclick="BudgetForm.open()">${C.ic('plus')}</button>`,rec:`<button class="icon-btn glass pressable" onclick="RecurringForm.open()">${C.ic('plus')}</button>`,goals:`<button class="icon-btn glass pressable" onclick="GoalForm.open()">${C.ic('plus')}</button>`}[tab];
+    return C.tabHead('Planla','Takvim, bütçe ve hedefler',add)+`<div style="margin-top:12px">${C.segmented([['cal','Takvim'],['budget','Bütçe'],['rec','Düzenli'],['goals','Kumbara'],['debts','Borç']],tab,'App.planTab')}</div>`+
+      ({cal:Screens.calendar,budget:Screens.budget,rec:Screens.recurring,goals:Screens.goals,debts:Screens.debts})[tab](s,ui)},
   calendar(s,ui){const{y,m}=ui.cal,days=D.calendar(s,y,m),first=new Date(y,m,1),lead=(first.getDay()+6)%7,T=U.today();
     const sel=ui.cal.sel&&days[ui.cal.sel]?ui.cal.sel:(T.slice(0,7)===U.monthStart(y,m).slice(0,7)?T:U.monthStart(y,m));
     let cells=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'].map(d=>`<div class="wd">${d}</div>`).join('')+'<div></div>'.repeat(lead);
@@ -1867,8 +2071,8 @@ const Screens={
     const all=Object.values(days).flatMap(v=>v.events).filter(e=>!e.info&&!e.done&&!e.income),planned=U.r2(all.reduce((a,e)=>a+e.amount,0));
     const spent=U.r2(Object.values(days).reduce((a,v)=>a+v.spent,0));
     const dv=days[sel];
-    const evHtml=dv.events.map(e=>{const btn=e.done||e.info?'':e.type==='stmt'&&!e.projected?`<button class="mini-btn" onclick="PaySheet.open('${e.accId}',${e.idx})">Öde</button>`:e.type==='rec'?`<button class="mini-btn" onclick="RecurringForm.pay('${e.id}')">${e.income?'Aldım':'Öde'}</button>`:e.type==='loan'?`<button class="mini-btn" onclick="LoanForm.pay('${e.id}')">Öde</button>`:'';
-      return `<div class="row">${C.icb({stmt:'card',cut:'scissors',rec:'repeat',loan:'bank',warranty:'shield'}[e.type],e.color)}<div class="mid"><b>${U.esc(e.title)}</b><span>${e.sub?U.esc(e.sub)+' · ':''}${e.done?'✓ tamamlandı':e.info?'bilgi':e.projected?'tahmini':'bekliyor'}</span></div>
+    const evHtml=dv.events.map(e=>{const btn=e.done||e.info?'':e.type==='stmt'&&!e.projected?`<button class="mini-btn" onclick="PaySheet.open('${e.accId}',${e.idx})">Öde</button>`:e.type==='rec'?`<button class="mini-btn" onclick="RecurringForm.pay('${e.id}')">${e.income?'Aldım':'Öde'}</button>`:e.type==='loan'?`<button class="mini-btn" onclick="LoanForm.pay('${e.id}')">Öde</button>`:e.type==='debt'?`<button class="mini-btn" onclick="DebtForm.settle('${e.id}')">${e.income?'Tahsil et':'Öde'}</button>`:'';
+      return `<div class="row">${C.icb({stmt:'card',cut:'scissors',rec:'repeat',loan:'bank',warranty:'shield',debt:'people'}[e.type],e.color)}<div class="mid"><b>${U.esc(e.title)}</b><span>${e.sub?U.esc(e.sub)+' · ':''}${e.done?'✓ tamamlandı':e.info?'bilgi':e.projected?'tahmini':'bekliyor'}</span></div>
         <div class="end"><b class="num ${e.income?'pos':''}">${e.amount!=null?U.money(e.amount):''}</b>${btn}</div></div>`}).join('');
     return `<div class="cal-nav"><button class="pressable" onclick="App.calMove(-1)">‹</button><b>${U.MONTHS[m]} ${y}</b><button class="pressable" onclick="App.calMove(1)">›</button></div>
       <div class="glass cal">${cells}</div>
@@ -1883,10 +2087,10 @@ const Screens={
       <div><div class="muted sm">${U.MONTHS[t.getMonth()]} bütçesi · ${left} gün kaldı</div><div style="font-size:22px;font-weight:800;margin:3px 0" class="num">${U.money(sp,{dec:false})} <span class="muted sm">/ ${U.money(lim,{dec:false})}</span></div>
       <div class="sm ${pr>lim?'warn':'pos'}">Ay sonu tahmini ${U.money(pr,{dec:false})}</div></div></div>
       <div class="section"><div class="glass list">${st.map(C.budgetRow).join('')}</div></div>`},
-  recurring(s){if(!s.recurring.length)return C.empty('🔁','Kira, abonelik, fatura ve harçlık gibi her ay tekrarlayan kalemleri ekle; takvime ve hatırlatmalara otomatik düşsün.',`<button class="btn primary pressable" onclick="RecurringForm.open()">Düzenli ödeme ekle</button>`);
+  recurring(s){if(!s.recurring.length)return SubCand.block(s)+C.empty('🔁','Kira, abonelik, fatura ve harçlık gibi her ay tekrarlayan kalemleri ekle; takvime ve hatırlatmalara otomatik düşsün.',`<button class="btn primary pressable" onclick="RecurringForm.open()">Düzenli ödeme ekle</button>`);
     const list=s.recurring.map(r=>({r,c:D.recurCycle(r)})).sort((a,b)=>a.c.date.localeCompare(b.c.date));
     const out=U.r2(s.recurring.filter(r=>r.type!=='income').reduce((a,r)=>a+r.amount,0)),inc=U.r2(s.recurring.filter(r=>r.type==='income').reduce((a,r)=>a+r.amount,0));
-    return `<div class="stats"><div class="stat glass"><div class="l">Aylık sabit gider</div><div class="v num">${U.money(out,{dec:false})}</div><div class="s">${s.recurring.filter(r=>r.type!=='income').length} kalem</div></div>
+    return SubCand.block(s)+`<div class="stats"><div class="stat glass"><div class="l">Aylık sabit gider</div><div class="v num">${U.money(out,{dec:false})}</div><div class="s">${s.recurring.filter(r=>r.type!=='income').length} kalem</div></div>
       <div class="stat glass"><div class="l">Aylık düzenli gelir</div><div class="v num pos">${U.money(inc,{dec:false})}</div><div class="s">${inc?'Gelirinin %'+Math.round(out/inc*100)+'\'i sabit gider':'—'}</div></div></div>
       <div class="section"><div class="glass list">${list.map(({r,c})=>{const thisYm=U.today().slice(0,7),paidNow=!!r.paid?.[thisYm];const n=U.daysUntil(c.date);
         return `<div class="row pressable" onclick="RecurringForm.open('${r.id}')">${C.icb(r.icon||cat(r.category).icon,cat(r.category).color)}
@@ -1926,6 +2130,8 @@ const Screens={
         <button class="row pressable" onclick="Reports.printMonth(${y},${m})">${C.icb('doc','#0a84ff')}<div class="mid"><b>${U.MONTHS[m]} hesap özeti (PDF)</b><span>Yazdır → PDF olarak kaydet</span></div></button>
         <button class="row pressable" onclick="App.exportMonth(${y},${m})">${C.icb('bars','#30d158')}<div class="mid"><b>${U.MONTHS[m]} işlemleri (CSV)</b><span>Excel / Numbers ile açılır</span></div></button>
         <button class="row pressable" onclick="Exporter.csv(Store.get(),D.filterTx(Store.get(),{}))">${C.icb('download','#30d158')}<div class="mid"><b>Tüm işlemler (CSV)</b><span>${s.transactions.length} işlem</span></div></button>
+        <button class="row pressable" onclick="WhatIf.open()">${C.icb('up','#ff9f0a')}<div class="mid"><b>Ya şöyle olursa?</b><span>Büyük bir alışverişin 6 aya etkisi</span></div></button>
+        <button class="row pressable" onclick="ICSSheet.open()">${C.icb('calendar','#ff375f')}<div class="mid"><b>Takvime hatırlatma ekle</b><span>Ödeme günleri telefon takvimine</span></div></button>
         <button class="row pressable" onclick="ImportSheet.open()">${C.icb('inbox','#bf5af2')}<div class="mid"><b>Ekstre içe aktar</b><span>Banka ekstresi PDF'i → Gemini → işlemler</span></div></button></div>`)}`}
 };
 
@@ -2016,6 +2222,8 @@ const Pages={
       <div class="section">
         ${t.kind==='expense'&&!refunds.some(r=>r.amount>=t.amount-0.01)?`<button class="btn pressable" onclick="RefundSheet.open('${t.id}')">${C.ic('refund')}İade / iptal et</button>`:''}
         ${plan&&plan.canClose?`<button class="btn pressable" onclick="App.closeInstallments('${t.id}')">${C.ic('arrowup')}Kalan taksitleri bu döneme al</button>`:''}
+        ${t.kind==='expense'?`<button class="btn pressable" onclick="SplitSheet.open('${t.id}')">${C.ic('split')}Hesabı böl</button>`:''}
+        ${t.kind==='debt'&&t.debtId?`<button class="btn pressable" onclick="DebtForm.person('${U.esc((s.debts||[]).find(x=>x.id===t.debtId)?.person||'').replace(/'/g,"\\'")}')">${C.ic('people')}Kişinin hesabını aç</button>`:''}
         ${['expense','income'].includes(t.kind)?`<button class="btn pressable" onclick="TemplateForm.fromTx('${t.id}')">${C.ic('bolt')}Hızlı ekle şablonu yap</button>`:''}
         <button class="btn danger pressable" onclick="App.deleteTx('${t.id}')">${C.ic('trash')}İşlemi sil</button></div>`},
 
@@ -2061,13 +2269,14 @@ const Reports={
 
 /* ===================== ui/sheets · alt pencereler ve formlar ===================== */
 const Sheet={
-  open(html,onMount){this.close(true);const bd=document.createElement('div');bd.className='sheet-backdrop';bd.id='sheet';
+  open(html,onMount){const old=document.getElementById('sheet'),top=old?old.firstElementChild.scrollTop:0;this.close(true);const bd=document.createElement('div');bd.className='sheet-backdrop'+(old?' swap':'');bd.id='sheet';
     bd.innerHTML=`<div class="sheet" role="dialog"><div class="grabber"></div>${html}</div>`;
     bd.addEventListener('click',e=>{if(e.target===bd)this.close()});document.body.appendChild(bd);
     const sh=bd.firstElementChild;let y0=null,dy=0;   // aşağı kaydırarak kapatma
     sh.addEventListener('touchstart',e=>{if(sh.scrollTop<=0&&!e.target.closest('input,select,textarea'))y0=e.touches[0].clientY},{passive:true});
     sh.addEventListener('touchmove',e=>{if(y0===null)return;dy=Math.max(0,e.touches[0].clientY-y0);if(dy>0){sh.style.transform=`translateY(${dy}px)`;sh.style.transition='none'}},{passive:true});
     sh.addEventListener('touchend',()=>{if(y0===null)return;sh.style.transition='transform .35s var(--ease)';if(dy>110)this.close();else sh.style.transform='';y0=null;dy=0});
+    if(old)sh.scrollTop=top;   // aynı pencere yenilenince kayma animasyonu ve kaydırma konumu korunur
     onMount&&onMount(bd)},
   close(instant){const bd=document.getElementById('sheet');if(!bd)return;if(instant){bd.remove();return}
     bd.classList.add('closing');setTimeout(()=>bd.remove(),240)},
@@ -2090,7 +2299,7 @@ const F={
 /* --- İşlem formu: harcama / gelir / transfer --- */
 const TxForm={draft:null,aiMeta:null,
   open(id,preset={}){const s=Store.get();if(!s.accounts.length){Toast.show('Önce bir hesap ekle');return AccForm.open()}
-    const t=id&&D.tx(s,id);
+    const t=id&&D.tx(s,id);this.catTouched=!!(preset.prefill&&preset.prefill.category);
     if(t&&!['expense','income','transfer'].includes(t.kind))return Toast.show('Bu işlem türü düzenlenemez; silip yeniden ekleyebilirsin.');
     const kind=t?.kind||preset.type||'expense',nc=F.nonCredit();
     this.draft=t?{...t}:{id:'',kind,amount:'',merchant:'',category:kind==='income'?'income':'market',
@@ -2109,6 +2318,7 @@ const TxForm={draft:null,aiMeta:null,
     if(m.currency&&m.currency!=='TRY')w.push(`Belge ${m.currency} ile; tutarı TL'ye çevirmen gerekebilir.`);
     if(m.installments>1&&!D.isCredit(Store.get(),this.draft.accountId))w.push(`Belgede ${m.installments} taksit yazıyor; kredi kartı seçersen plana işlenir.`);
     if(m.notes)w.push(U.esc(m.notes));
+    if(m.voice)return `<div class="ai-banner">🎙️ <b>Söylediğinden dolduruldu.</b> Kaydetmeden önce kontrol et.${!m.matched?'<br>Hesap belirtilmedi, doğru hesabı seç.':''}</div>`;
     return `<div class="ai-banner">✨ <b>Gemini ile dolduruldu</b>${m.confidence!=null?' · güven %'+Math.round(m.confidence*100):''}${m.itemCount?' · '+m.itemCount+' kalem okundu':''}. Kaydetmeden önce kontrol et.${w.length?'<br>⚠️ '+w.join('<br>⚠️ '):''}</div>`},
   render(){const s=Store.get(),d=this.draft,acc=D.account(s,d.accountId),to=D.account(s,d.toAccountId),isCredit=acc?.type==='credit',k=d.kind;
     const nc=F.nonCredit(),title=d.id?'Düzenle':{expense:'Harcama Ekle',income:'Gelir Ekle',transfer:'Transfer'}[k];
@@ -2121,8 +2331,8 @@ const TxForm={draft:null,aiMeta:null,
         <label class="field"><span>Nereye</span><select class="input" onchange="TxForm.set('toAccountId',this.value)">${F.accOpts(nc.filter(a=>a.id!==d.accountId),d.toAccountId)}</select></label></div>
         ${fx?`<label class="field"><span>Alınan tutar (${to.currency}) · kur ${U.money(s.settings.rates[to.currency]||s.settings.rates[acc.currency]||0,{raw:true})}</span><input class="input" id="tx-toamount" inputmode="decimal" value="${F.money(d.toAmount)}" placeholder="otomatik hesaplanır"></label>`:''}
         <label class="field"><span>Açıklama</span><input class="input" id="tx-merchant" value="${U.esc(d.merchant)}" placeholder="ör. ATM'den para çekme"></label>`
-      :`<label class="field"><span>${k==='income'?'Açıklama':'Nereden / ne aldın?'}</span><input class="input" id="tx-merchant" value="${U.esc(d.merchant)}" placeholder="${k==='income'?'ör. Aylık harçlık':'ör. Migros, Kulaklık'}"></label>
-        <div class="field"><span>Kategori</span>${F.catGrid(k==='income'?incomeCats():expenseCats(),d.category,'TxForm.setCat')}</div>
+      :`<label class="field"><span>${k==='income'?'Açıklama':'Nereden / ne aldın?'}</span><input class="input" id="tx-merchant" list="tx-mlist" value="${U.esc(d.merchant)}" placeholder="${k==='income'?'ör. Aylık harçlık':'ör. Migros, Kulaklık'}" autocomplete="off"><datalist id="tx-mlist">${D.merchantNames(s).map(n=>`<option value="${U.esc(n)}">`).join('')}</datalist></label><div id="tx-hint"></div>
+        <div class="field" id="tx-cats"><span>Kategori</span>${F.catGrid(k==='income'?incomeCats():expenseCats(),d.category,'TxForm.setCat')}</div>
         <div class="grid2"><label class="field"><span>Hesap</span><select class="input" onchange="TxForm.set('accountId',this.value)">${F.accOpts(k==='income'?nc:s.accounts,d.accountId)}</select></label>
         <label class="field"><span>Tarih</span><input class="input" type="date" id="tx-date" value="${d.date}"></label></div>`}
       ${k==='transfer'?`<label class="field"><span>Tarih</span><input class="input" type="date" id="tx-date" value="${d.date}"></label>`:''}
@@ -2132,11 +2342,20 @@ const TxForm={draft:null,aiMeta:null,
       <div id="tx-preview"></div>
       ${d.id?`<button class="btn danger pressable" onclick="App.deleteTx('${d.id}')">${C.ic('trash')}İşlemi sil</button>`:''}`,
       bd=>{bd.querySelectorAll('#tx-amount,#tx-merchant,#tx-date,#tx-inst,#tx-note,#tx-toamount').forEach(el=>{el.addEventListener('input',()=>this.sync());el.addEventListener('change',()=>this.sync())});
+        const me=bd.querySelector('#tx-merchant');if(me){me.addEventListener('input',()=>this.learn());me.addEventListener('change',()=>this.learn())}this.learn(true);
         this.preview();if(!d.id&&!d.amount)setTimeout(()=>bd.querySelector('#tx-amount')?.focus(),350)})},
   sync(){const d=this.draft;if(!Sheet.el('#tx-amount'))return;d.amount=Sheet.val('#tx-amount');d.merchant=Sheet.val('#tx-merchant');d.date=Sheet.val('#tx-date')||U.today();d.note=Sheet.val('#tx-note');
     const i=Sheet.el('#tx-inst');d.installments=i?+i.value:1;if(Sheet.el('#tx-toamount'))d.toAmount=Sheet.val('#tx-toamount');this.preview()},
   set(k,v){this.sync();this.draft[k]=v;this.fixAccounts();Haptic.tap();this.render()},
-  setCat(c){this.set('category',c)},
+  setCat(c){this.catTouched=true;this.set('category',c)},
+  /* mağaza hafızası: aynı yer için son kategoriyi otomatik seç, son tutar/hesabı öner */
+  learn(silent){const s=Store.get(),d=this.draft,box=Sheet.el('#tx-hint');if(!box||d.kind==='transfer')return;const r=d.merchant&&D.recallMerchant(s,d.merchant,d.kind);
+    if(!r){box.innerHTML='';return}
+    if(!d.id&&!this.catTouched&&!this.aiMeta&&r.category!==d.category&&(d.kind==='income'?incomeCats():expenseCats()).includes(r.category)){d.category=r.category;const g=Sheet.el('#tx-cats');if(g)g.innerHTML='<span>Kategori</span>'+F.catGrid(d.kind==='income'?incomeCats():expenseCats(),d.category,'TxForm.setCat')}
+    const acc=D.account(s,r.accountId);const diff=(acc&&acc.id!==d.accountId)||(!U.parseNum(d.amount)&&r.amount);
+    box.innerHTML=d.id?'':`<div class="preview" style="margin-top:8px;display:flex;align-items:center;gap:10px;padding:10px 12px">${C.ic('sparkles')}<span style="flex:1">Son seferki: <b>${U.money(r.amount)}</b>${acc?' · '+U.esc(acc.name):''}${r.installments>1?' · '+r.installments+' taksit':''} · ${cat(r.category).name}</span>${diff?`<button class="mini-btn" onclick="TxForm.useLast()">Kullan</button>`:''}</div>`},
+  useLast(){this.sync();const s=Store.get(),d=this.draft,r=D.recallMerchant(s,d.merchant,d.kind);if(!r)return;
+    if(!U.parseNum(d.amount))d.amount=r.amount;if(D.account(s,r.accountId)&&!(d.kind==='income'&&D.isCredit(s,r.accountId)))d.accountId=r.accountId;d.category=r.category;if(r.installments>1)d.installments=r.installments;this.fixAccounts();this.render()},
   setKind(k){this.sync();const d=this.draft;d.kind=k;d.category=k==='income'?'income':'market';
     if(k!=='expense'&&!F.nonCredit().length){Toast.show('Bunun için önce vadesiz veya nakit hesap ekle');d.kind='expense';d.category='market'}
     if(k==='transfer'&&F.nonCredit().length<2){Toast.show('Transfer için en az iki nakit/vadesiz/döviz hesabı gerekir');d.kind='expense';d.category='market'}
@@ -2328,6 +2547,7 @@ const RecurringForm={d:null,
       <label class="field"><span>Kategori</span><select class="input" id="rc-cat">${F.catOpts(inc?incomeCats():expenseCats(),d.category)}</select></label></div>
       <label class="field"><span>Hesap</span><select class="input" id="rc-acc">${F.accOpts(inc?F.nonCredit():s.accounts,d.accountId,'<option value="">Seçilmedi</option>')}</select></label>
       <div class="field"><span>Simge</span>${F.emojis(d.icon,'RecurringForm.setIcon')}</div>
+      ${d.id&&d.type!=='income'?`<button class="btn pressable" onclick="LetterSheet.open('${U.esc(d.name).replace(/'/g,"\\'")}',${+d.amount||0})">${C.ic('doc')}İptal metni hazırla</button>`:''}
       ${d.id?`<button class="btn danger pressable" onclick="RecurringForm.remove()">Sil</button>`:''}`)},
   sync(){const d=this.d;if(!Sheet.el('#rc-name'))return;d.name=Sheet.val('#rc-name');d.amount=Sheet.val('#rc-amt');d.day=Sheet.val('#rc-day');d.category=Sheet.val('#rc-cat');d.accountId=Sheet.val('#rc-acc')},
   setType(t){this.sync();this.d.type=t;this.d.category=t==='income'?'gift':'subscription';if(t==='income'&&D.isCredit(Store.get(),this.d.accountId))this.d.accountId=F.nonCredit()[0]?.id||'';this.render()},
@@ -2447,7 +2667,8 @@ const SettingsSheet={
         ${s.settings.aiDiag?`<div class="${s.settings.aiDiag.ok?'preview':'err-box'}" style="margin-top:12px;white-space:pre-line;font-size:12.5px">${U.esc(s.settings.aiDiag.text)}</div>`:''}
         <p class="muted xs" style="margin-top:10px;line-height:1.5">Anahtarı <a class="link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> adresinden alabilirsin. Anahtar yalnızca bu cihazda saklanır ve yedek dosyasına eklenmez. ${s.ai?.calls?'Bu cihazdan yapılan AI isteği: '+s.ai.calls:''}</p></div>
 
-      <div class="field"><span>Kurlar (elle güncellenir)</span></div>
+      <div class="field" id="sec-app"><span>Uygulama, kurlar ve hatırlatmalar</span></div>${Install.block()}
+      <div class="field" id="sec-rates"><span>Kurlar (otomatik güncellenir, elle de değiştirebilirsin)</span></div>
       <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
         <label><input class="input" id="st-usd" inputmode="decimal" value="${F.money(r.USD)}"><span class="muted xs" style="margin-left:4px">1 $ = ₺</span></label>
         <label><input class="input" id="st-eur" inputmode="decimal" value="${F.money(r.EUR)}"><span class="muted xs" style="margin-left:4px">1 € = ₺</span></label>
@@ -2467,7 +2688,7 @@ const SettingsSheet={
   async motion(on){if(on&&window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){try{await DeviceOrientationEvent.requestPermission()}catch(e){}}
     this.look('motion',on);Tilt.init()},
   persist(){const q=Sheet.el;if(!q('#st-name'))return;const n=x=>{const v=U.parseNum(q(x).value);return v>0?v:null};const r=Store.get().settings.rates;
-    const prevKey=Secrets.get(),newKey=q('#st-key').value.trim();Secrets.set(newKey);if(prevKey!==newKey)Store.dispatch({type:'settings/update',payload:{aiDiag:null,aiApi:null}});
+    const prevKey=Secrets.get(),newKey=q('#st-key').value.trim();Secrets.set(newKey);if(prevKey!==newKey)Store.dispatch({type:'settings/update',payload:{aiDiag:null,aiApi:null,aiAuth:null}});
     Store.dispatch({type:'settings/update',payload:{name:q('#st-name').value.trim(),aiModel:q('#st-model').value,rates:{USD:n('#st-usd')??r.USD,EUR:n('#st-eur')??r.EUR,XAU:n('#st-xau')??r.XAU}}})},
   save(){this.persist();Sheet.close()},
   removePin(){if(!confirm('PIN kilidi kaldırılsın mı?'))return;this.persist();Store.dispatch({type:'security/update',payload:{pinHash:'',bioId:''}});this.open('security')},
@@ -2527,6 +2748,8 @@ const ImportSheet={accId:null,rows:[],meta:null,
 const AddMenu={open(){Sheet.open(Sheet.head('Ekle',{left:'Kapat',right:''})+
   `<div class="action-list">${[['expense','minus','Harcama','Kart, nakit veya hesaptan','#ff375f'],['income','plus','Gelir','Harçlık, maaş, iade','#30d158'],['transfer','transfer','Transfer','Hesaplar arası, döviz alım','#64d2ff'],
     ['pay','send','Kart borcu öde','Ekstre, asgari veya tüm borç','#0a84ff'],['scan','camera','Fiş / Fatura Tara','Gemini ile otomatik doldurma','#bf5af2'],['import','inbox','Ekstre içe aktar','Banka PDF\'inden toplu ekleme','#5e5ce6'],
+    ['voice','voice','Sesle ekle','"Migros\'ta 450 lira harcadım"','#ff9f0a'],['chat','chat','Asistana sor','Verilerin hakkında soru sor','#5e5ce6'],['debt','people','Borç / alacak','Arkadaşına verdiğin, aldığın','#30d158'],
+    ['whatif','up','Ya şöyle olursa?','Alışverişin 6 aya etkisi','#ff9f0a'],['ics','calendar','Takvime hatırlatma','Ödeme günleri telefon takvimine','#ff375f'],
     ['account','bank','Hesap / Kart','Kredi kartı, vadesiz, nakit, döviz','#0a84ff'],['loan','doc','Kredi','İhtiyaç, taşıt, eğitim kredisi','#8e8e93'],['goal','piggy','Kumbara','Birikim hedefi','#ff9f0a'],['rec','repeat','Düzenli ödeme','Abonelik, fatura, kira, harçlık','#ff375f']]
     .map(([k,ic,t,sub,c])=>`<button class="row pressable" onclick="App.quick('${k}')">${C.icb(ic,c)}<div class="mid"><b>${t}</b><span>${sub}</span></div><span class="faint">${C.ic('chev')}</span></button>`).join('')}</div>`)}};
 
@@ -2584,6 +2807,198 @@ const Onboard={
     if(U.parseNum(d.cash)>0)acts.push({type:'upsert',col:'accounts',item:{id:U.uid(),type:'cash',name:'Cüzdan',bank:'',color:3,currency:'TRY',opening:U.r2(U.parseNum(d.cash)),overdraft:0}});
     UI.ob=0;UI.obd=null;Store.dispatch({type:'batch',actions:acts});Confetti.burst();Toast.show('🎉 Hazırsın! İlk harcamanı + ile ekleyebilirsin')}
 };
+
+/* ---------- 75_sheets_v5.js ---------- */
+
+/* ===================== v5 ekranları ve formları ===================== */
+
+/* --- Borç / alacak --- */
+Screens.debts=s=>{const tot=D.debtTotals(s),people=D.people(s);
+  if(!people.length)return C.empty('heart','Arkadaşına verdiğin ya da ondan aldığın borçları burada tut; vadesi gelince hatırlatayım.<br>Ortak harcamaları işlem detayındaki <b>"Hesabı böl"</b> ile paylaştırabilirsin.',`<button class="btn primary pressable" onclick="DebtForm.open()">Borç / alacak ekle</button>`);
+  return `<div class="stats"><div class="stat glass"><div class="l">Alacağın</div><div class="v num pos">${U.money(tot.lent,{dec:false})}</div><div class="s">sana borçlu olanlar</div></div>
+    <div class="stat glass"><div class="l">Borcun</div><div class="v num ${tot.owe?'neg':''}">${U.money(tot.owe,{dec:false})}</div><div class="s">senin ödeyeceklerin</div></div></div>
+    <div class="section"><div class="glass list">${people.map(p=>`<button class="row pressable" onclick="DebtForm.person('${U.esc(p.name).replace(/'/g,"\\'")}')">
+      <span class="ic" style="background:${p.net>=0?'rgba(48,209,88,.15)':'rgba(255,69,58,.15)'};color:${p.net>=0?'var(--green)':'var(--red)'};font-weight:800">${U.esc(p.name[0]?.toUpperCase()||'?')}</span>
+      <div class="mid"><b>${U.esc(p.name)}</b><span>${p.open?p.open+' açık kayıt':'Hepsi kapandı'}${p.items.some(d=>d.overdue)?' · vadesi geçti':''}</span></div>
+      <div class="end"><b class="num ${p.net>0?'pos':p.net<0?'neg':''}">${p.net?U.money(Math.abs(p.net),{dec:false}):'—'}</b><span class="muted xs">${p.net>0?'sana borçlu':p.net<0?'sen borçlusun':'denk'}</span></div></button>`).join('')}</div></div>`};
+const DebtForm={d:null,
+  open(id,pre={}){const s=Store.get(),x=id&&(s.debts||[]).find(d=>d.id===id);
+    this.d=x?{...x}:{id:'',dir:'lent',person:'',amount:'',date:U.today(),due:'',note:'',accountId:'',...pre};this.render()},
+  render(){const s=Store.get(),d=this.d,people=[...new Set((s.debts||[]).map(x=>x.person))];
+    Sheet.open(Sheet.head(d.id?'Kaydı Düzenle':'Borç / Alacak',{onRight:'DebtForm.save()'})+
+      `${C.segmented([['lent','Bana borçlu'],['owe','Ben borçluyum']],d.dir,'DebtForm.setDir')}
+      <input class="amount-in num" id="db-amt" inputmode="decimal" value="${F.money(d.amount)}" placeholder="0"><div class="amount-cur">${d.dir==='lent'?'Sana ödenecek tutar':'Senin ödeyeceğin tutar'}</div>
+      <label class="field"><span>Kişi</span><input class="input" id="db-p" list="db-people" value="${U.esc(d.person)}" placeholder="ör. Ahmet"><datalist id="db-people">${people.map(p=>`<option value="${U.esc(p)}">`).join('')}</datalist></label>
+      <div class="grid2"><label class="field"><span>Tarih</span><input class="input" type="date" id="db-d" value="${d.date}"></label><label class="field"><span>Vade (opsiyonel)</span><input class="input" type="date" id="db-due" value="${d.due||''}"></label></div>
+      <label class="field"><span>Not</span><input class="input" id="db-n" value="${U.esc(d.note)}" placeholder="ör. Akşam yemeği"></label>
+      ${d.id?'':`<label class="field"><span>${d.dir==='lent'?'Parayı hangi hesaptan verdin?':'Para hangi hesaba girdi?'}</span><select class="input" id="db-acc">${F.accOpts(F.nonCredit(),d.accountId,'<option value="">Hesaba işleme (sadece kayıt)</option>')}</select></label>`}
+      ${d.id?`<button class="btn danger pressable" onclick="DebtForm.remove()">${C.ic('trash')}Kaydı sil</button>`:''}`,bd=>{if(!d.id)setTimeout(()=>bd.querySelector('#db-amt')?.focus(),350)})},
+  sync(){const d=this.d;if(!Sheet.el('#db-amt'))return;d.amount=Sheet.val('#db-amt');d.person=Sheet.val('#db-p');d.date=Sheet.val('#db-d')||U.today();d.due=Sheet.val('#db-due');d.note=Sheet.val('#db-n');if(Sheet.el('#db-acc'))d.accountId=Sheet.val('#db-acc')},
+  setDir(v){this.sync();this.d.dir=v;this.render()},
+  save(){this.sync();const d=this.d,amt=U.parseNum(d.amount);if(!d.person.trim()||!(amt>0)){Toast.show('Kişi ve tutar gir');return}
+    const item={id:d.id||U.uid(),dir:d.dir,person:d.person.trim(),amount:U.r2(amt),date:d.date,due:d.due||'',note:d.note.trim(),linkTx:d.linkTx||''};const acts=[{type:'upsert',col:'debts',item}];
+    if(!d.id&&d.accountId)acts.push({type:'upsert',col:'transactions',item:{id:U.uid(),kind:'debt',debtId:item.id,dir:d.dir==='lent'?'out':'in',settle:false,accountId:d.accountId,amount:item.amount,date:d.date,merchant:item.person,source:'manual'}});
+    Store.dispatch({type:'batch',actions:acts});Haptic.success();Sheet.close();Toast.show('✓ Kaydedildi')},
+  remove(){if(!confirm('Kayıt ve bağlı ödeme hareketleri silinsin mi?'))return;Store.dispatch({type:'remove',col:'debts',id:this.d.id});Sheet.close()},
+  person(name){const s=Store.get(),p=D.people(s).find(x=>x.name===name);if(!p)return;
+    Sheet.open(Sheet.head(U.esc(name),{left:'Kapat',right:'Yeni',onRight:`DebtForm.open(null,{person:'${U.esc(name).replace(/'/g,"\\'")}'})`})+
+      `<div class="preview" style="text-align:center;font-size:15px">${p.net>0?`<b>${U.esc(name)}</b> sana <b class="pos">${U.money(p.net)}</b> borçlu`:p.net<0?`Sen <b>${U.esc(name)}</b> kişisine <b class="neg">${U.money(-p.net)}</b> borçlusun`:'Hesaplar denk'}</div>
+      <div class="glass list" style="margin-top:12px">${p.items.sort((a,b)=>a.done-b.done||b.date.localeCompare(a.date)).map(d=>`<div class="row" style="flex-wrap:wrap">
+        ${C.icb(d.dir==='lent'?'arrowup':'arrowdown',d.dir==='lent'?'#30d158':'#ff453a')}<div class="mid"><b>${U.esc(d.note||(d.dir==='lent'?'Alacak':'Borç'))}</b><span>${U.fmtDate(d.date)}${d.due?' · vade '+U.fmtDate(d.due):''}${d.overdue?' · gecikti':''}</span></div>
+        <div class="end"><b class="num">${U.money(d.remaining)}</b><span class="muted xs">${d.done?'✓ kapandı':'/ '+U.money(d.amount,{dec:false})}</span></div>
+        <div style="width:100%;display:flex;gap:8px;margin:8px 0 0 50px">${d.done?'':`<button class="mini-btn" onclick="DebtForm.settle('${d.id}')">${d.dir==='lent'?'Tahsil et':'Öde'}</button>`}<button class="mini-btn" style="color:var(--text2);background:var(--fill)" onclick="DebtForm.open('${d.id}')">Düzenle</button></div></div>`).join('')}</div>`)},
+  settle(id){const d=D.debt(Store.get(),id);this.sid=id;
+    Sheet.open(Sheet.head(d.dir==='lent'?'Tahsilat':'Ödeme',{onRight:'DebtForm.saveSettle()',right:'Kaydet'})+
+      `<input class="amount-in num" id="ds-amt" inputmode="decimal" value="${F.money(d.remaining)}"><div class="amount-cur">${U.esc(d.person)} · kalan ${U.money(d.remaining)}</div>
+      <div class="grid2"><label class="field"><span>${d.dir==='lent'?'Hangi hesaba girdi?':'Hangi hesaptan?'}</span><select class="input" id="ds-acc">${F.accOpts(F.nonCredit(),F.nonCredit()[0]?.id,'<option value="">Hesaba işleme</option>')}</select></label>
+      <label class="field"><span>Tarih</span><input class="input" type="date" id="ds-d" value="${U.today()}"></label></div>`)},
+  saveSettle(){const s=Store.get(),d=D.debt(s,this.sid),amt=U.parseNum(Sheet.val('#ds-amt'));if(!(amt>0)||amt>d.remaining+0.01){Toast.show('Tutar 0 ile '+U.money(d.remaining,{raw:true})+' arasında olmalı');return}
+    Store.dispatch({type:'upsert',col:'transactions',item:{id:U.uid(),kind:'debt',debtId:d.id,dir:d.dir==='lent'?'in':'out',settle:true,accountId:Sheet.val('#ds-acc'),amount:U.r2(amt),date:Sheet.val('#ds-d')||U.today(),merchant:d.person,source:'manual'}});
+    Haptic.success();const nd=D.debt(Store.get(),d.id);if(nd.done){Confetti.burst();Toast.show('🎉 Kapandı')}else Toast.show('✓ Kaydedildi');this.person(d.person)}
+};
+/* --- Ortak harcamayı bölüştür --- */
+const SplitSheet={id:null,people:[],me:true,
+  open(id){this.id=id;this.people=[];this.me=true;this.render()},
+  render(){const s=Store.get(),t=D.tx(s,this.id),known=[...new Set((s.debts||[]).map(x=>x.person))].filter(p=>!this.people.includes(p));
+    const n=this.people.length+(this.me?1:0),share=n?U.r2(t.amount/n):0;
+    Sheet.open(Sheet.head('Hesabı Böl',{onRight:'SplitSheet.save()',right:'Böl'})+
+      `<div class="preview"><b>${U.esc(t.merchant||cat(t.category).name)}</b> · ${U.money(t.amount)} · ${U.fmtDate(t.date)}</div>
+      <div class="set-row"><div>Ben de dahilim<small>Payımı ben ödüyorum</small></div><label class="switch"><input type="checkbox" ${this.me?'checked':''} onchange="SplitSheet.me=this.checked;SplitSheet.render()"><span></span></label></div>
+      <div class="field"><span>Kimlerle?</span><div style="display:flex;gap:8px"><input class="input" id="sp-new" placeholder="İsim yaz" onkeydown="if(event.key==='Enter')SplitSheet.add()"><button class="mini-btn" style="padding:0 16px" onclick="SplitSheet.add()">Ekle</button></div></div>
+      ${known.length?`<div class="chips" style="padding-top:8px">${known.map(p=>`<button class="chip pressable" onclick="SplitSheet.add('${U.esc(p).replace(/'/g,"\\'")}')">+ ${U.esc(p)}</button>`).join('')}</div>`:''}
+      ${this.people.length?`<div class="glass list" style="margin-top:12px">${this.people.map((p,i)=>`<div class="row"><span class="ic" style="background:rgba(48,209,88,.15);color:var(--green);font-weight:800">${U.esc(p[0].toUpperCase())}</span><div class="mid"><b>${U.esc(p)}</b><span>sana borçlu olacak</span></div><div class="end"><b class="num">${U.money(share)}</b></div><button class="mini-btn" style="margin-left:6px;color:var(--red);background:rgba(255,69,58,.12)" onclick="SplitSheet.del(${i})">${C.ic('close')}</button></div>`).join('')}</div>
+        <div class="preview">${n} kişiye eşit bölündü: kişi başı <b>${U.money(share)}</b>${this.me?' · senin payın '+U.money(share):''}. Toplam alacak <b>${U.money(share*this.people.length)}</b>.</div>`:''}`)},
+  add(name){const v=(name||Sheet.val('#sp-new')||'').trim();if(!v)return;if(!this.people.includes(v))this.people.push(v);this.render()},
+  del(i){this.people.splice(i,1);this.render()},
+  save(){if(!this.people.length){Toast.show('En az bir kişi ekle');return}const t=D.tx(Store.get(),this.id),n=this.people.length+(this.me?1:0),parts=U.split(t.amount,n);
+    Store.dispatch({type:'batch',actions:this.people.map((p,i)=>({type:'upsert',col:'debts',item:{id:U.uid(),dir:'lent',person:p,amount:parts[i],date:t.date,due:'',note:t.merchant||cat(t.category).name,linkTx:t.id}}))});
+    Haptic.success();Sheet.close();Toast.show(`✓ ${this.people.length} kişiye alacak yazıldı`)}
+};
+
+/* --- Abonelik adayları --- */
+const SubCand={
+  add(key){const s=Store.get(),c=D.subCandidates(s).find(x=>x.key===key);if(!c)return;
+    Store.dispatch({type:'upsert',col:'recurring',item:{id:U.uid(),type:'expense',name:c.name,amount:c.amount,day:c.day,category:c.category==='other'?'subscription':c.category,accountId:c.accountId,icon:'repeat',paid:{[c.lastTx.date.slice(0,7)]:c.lastTx.id}}});
+    Haptic.success();Toast.show('✓ '+c.name+' düzenli ödemelere eklendi')},
+  ignore(key){Store.dispatch({type:'settings/update',payload:{subIgnore:[...(Store.get().settings.subIgnore||[]),key]}})},
+  block(s){const list=D.subCandidates(s);if(!list.length)return '';
+    return `<div class="section"><div class="section-head"><h2>Abonelik olabilir</h2><span class="muted sm">otomatik tespit</span></div><div class="glass list">${list.map(c=>`<div class="row" style="flex-wrap:wrap">${C.icb('repeat','#ff375f')}
+      <div class="mid"><b>${U.esc(c.name)}</b><span>Son ${c.months} ayda her ay · ayın ~${U.dayOf(c.day)}</span></div><div class="end"><b class="num">${U.money(c.amount)}</b></div>
+      <div style="width:100%;display:flex;gap:8px;margin:8px 0 0 50px"><button class="mini-btn" onclick="SubCand.add('${c.key}')">Ekle</button><button class="mini-btn" style="color:var(--text2);background:var(--fill)" onclick="SubCand.ignore('${c.key}')">Abonelik değil</button></div></div>`).join('')}</div></div>`}};
+
+/* --- Takvime hatırlatma aktar --- */
+const ICSSheet={o:{cards:true,rec:true,loans:true,debts:true,goals:false,alarms:[1,3]},
+  open(){const o=this.o,s=Store.get(),cnt=k=>({cards:s.accounts.filter(a=>a.type==='credit').length,rec:s.recurring.length,loans:s.loans.reduce((a,l)=>a+D.loan(s,l.id).schedule.filter(x=>!x.paid).length,0),
+      debts:(s.debts||[]).filter(x=>{const d=D.debt(s,x.id);return d.due&&!d.done}).length,goals:s.goals.filter(g=>g.deadline).length}[k]);
+    Sheet.open(Sheet.head('Takvime Hatırlatma',{left:'Kapat',right:''})+
+      `<p class="muted sm" style="margin:0 4px 10px">Ödeme günleri telefonunun takvimine eklenir; uygulama kapalıyken bile <b>gerçek bildirim</b> alırsın.</p>
+      <div class="glass" style="padding:2px 14px">${[['cards','Kart son ödeme günleri','her ay tekrarlar'],['rec','Düzenli ödemeler ve gelirler','her ay tekrarlar'],['loans','Kredi taksitleri','kalan taksitler'],['debts','Borç / alacak vadeleri',''],['goals','Kumbara hedef tarihleri','']]
+        .map(([k,l,sub])=>`<div class="set-row"><div>${l}<small>${cnt(k)} kayıt${sub?' · '+sub:''}</small></div><label class="switch"><input type="checkbox" ${o[k]?'checked':''} onchange="ICSSheet.o.${k}=this.checked"><span></span></label></div>`).join('')}</div>
+      <div class="field"><span>Ne zaman hatırlatılsın? (09:00)</span><div class="chips" style="padding-top:2px">${[[3,'3 gün önce'],[1,'1 gün önce'],[0,'Aynı gün']].map(([v,l])=>`<button class="chip pressable ${o.alarms.includes(v)?'on':''}" onclick="ICSSheet.alarm(${v})">${l}</button>`).join('')}</div></div>
+      <button class="btn primary pressable" onclick="ICS.share(ICSSheet.o)">${C.ic('calendar')}Takvime ekle</button>
+      <p class="muted xs" style="margin:10px 4px 0;line-height:1.5">iPhone'da açılan dosyada "Tümünü ekle"ye dokun. Tekrar aktarırsan bazı takvimler etkinlikleri ikinci kez ekleyebilir; önce eskileri silmen gerekebilir. Kart son ödeme günleri her ay tekrar eder; güncel tutar uygulamada görünür.</p>`)},
+  alarm(v){const a=this.o.alarms;this.o.alarms=a.includes(v)?a.filter(x=>x!==v):[...a,v];if(!this.o.alarms.length)this.o.alarms=[1];this.open()}};
+
+/* --- "Ya şöyle olursa?" nakit akışı simülatörü --- */
+const WhatIf={st:{amount:'',n:1,accId:'',date:''},
+  open(pre={}){const s=Store.get();this.st={amount:'',n:1,accId:(s.accounts.find(a=>a.type==='credit')||s.accounts[0]||{}).id||'',date:U.today(),...pre};this.render()},
+  render(){const s=Store.get(),st=this.st,acc=D.account(s,st.accId);
+    Sheet.open(Sheet.head('Ya şöyle olursa?',{left:'Kapat',right:''})+
+      `<p class="muted sm" style="margin:0 4px 6px">Planladığın bir alışverişin önümüzdeki 6 aylık nakit akışına etkisini gör. Hiçbir şey kaydedilmez.</p>
+      <input class="amount-in num" id="wi-amt" inputmode="decimal" value="${F.money(st.amount)}" placeholder="0" oninput="WhatIf.sync()"><div class="amount-cur">Alışveriş tutarı</div>
+      <div class="grid2"><label class="field"><span>Nasıl ödeyeceksin?</span><select class="input" id="wi-acc" onchange="WhatIf.sync()">${F.accOpts(s.accounts,st.accId)}</select></label>
+      <label class="field"><span>Taksit</span><select class="input" id="wi-n" onchange="WhatIf.sync()" ${acc?.type==='credit'?'':'disabled'}>${INSTALLMENT_OPTS.map(n=>`<option value="${n}" ${+st.n===n?'selected':''}>${n===1?'Tek çekim':n+' taksit'}</option>`).join('')}</select></label></div>
+      <div id="wi-out">${this.out()}</div>`)},
+  out(){const s=Store.get(),st=this.st,acc=D.account(s,st.accId),amt=U.parseNum(st.amount);
+    const base=D.cashflow(s),sim=amt>0?D.cashflow(s,{amount:amt,n:acc?.type==='credit'?(+st.n||1):1,accId:st.accId,date:st.date}):null;
+    let verdict='';if(sim){const lim=acc?.type==='credit'?D.cardSummary(s,acc.id).available-amt:null;
+      verdict=lim!==null&&lim<0?`<div class="verdict" style="background:rgba(255,69,58,.13);color:var(--red)">Kart limiti yetmiyor: ${U.money(-lim)} eksik.</div>`
+        :sim.min<0?`<div class="verdict" style="background:rgba(255,69,58,.13);color:var(--red)">${sim.rows.find(r=>r.balance<0).label} ayında nakit bakiyen eksiye düşüyor (${U.money(sim.min,{dec:false})}).</div>`
+        :sim.min<base.variable?`<div class="verdict" style="background:rgba(255,159,10,.13);color:var(--orange)">Alınabilir ama en sıkışık ayda elinde sadece ${U.money(sim.min,{dec:false})} kalıyor.</div>`
+        :`<div class="verdict" style="background:rgba(48,209,88,.12);color:var(--green)">Rahat. 6 ay boyunca bakiyen ${U.money(sim.min,{dec:false})} altına düşmüyor.</div>`}
+    return `${verdict}<table><tr><th>Ay</th><th>Gelir</th><th>Gider</th><th>Bakiye</th>${sim?'<th>Alırsan</th>':''}</tr>
+        ${base.rows.map((r,i)=>`<tr><td>${r.label}</td><td class="pos">${U.money(r.income,{dec:false})}</td><td>${U.money(r.out,{dec:false})}</td><td class="${r.balance<0?'neg':''}">${U.money(r.balance,{dec:false})}</td>${sim?`<td class="${sim.rows[i].balance<0?'neg':''}"><b>${U.money(sim.rows[i].balance,{dec:false})}</b></td>`:''}</tr>`).join('')}</table>
+      <div style="margin-top:12px">${C.lineChart((sim||base).rows.map(r=>({label:r.label,value:r.balance})),{id:'wi',h:120,color:sim&&sim.min<0?'#ff453a':'#30d158'})}</div>
+      <p class="muted xs" style="margin-top:8px;line-height:1.5">Başlangıç: nakit + vadesiz bakiyen ${U.money(base.start,{dec:false})}. Gider; düzenli ödemeleri, kart ekstrelerini, kredi taksitlerini, borçlarını ve son 3 ayın ortalama değişken harcamasını (aylık ~${U.money(base.variable,{dec:false})}) içerir. Tahmindir.</p>`},
+  sync(){this.st.amount=Sheet.val('#wi-amt');this.st.accId=Sheet.val('#wi-acc');this.st.n=Sheet.val('#wi-n')||1;
+    const acc=D.account(Store.get(),this.st.accId),n=Sheet.el('#wi-n');if(n)n.disabled=acc?.type!=='credit';
+    clearTimeout(this._t);this._t=setTimeout(()=>{const o=Sheet.el('#wi-out');if(o)o.innerHTML=this.out()},250)}};
+
+/* --- Sesle / yazarak hızlı ekleme --- */
+const VoiceSheet={rec:null,
+  open(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    Sheet.open(Sheet.head('Söyle, ekleyeyim',{left:'Kapat',right:''})+
+      `<p class="muted sm" style="margin:0 4px 10px">Örnek: <i>"Migros'ta 450 lira harcadım Bonus karttan"</i>, <i>"dün kahveye 120 lira"</i>, <i>"harçlık 5000 lira geldi"</i></p>
+      ${SR?`<button class="mic pressable" id="vc-mic" onclick="VoiceSheet.toggle()">${C.ic('voice')}</button><div class="muted sm" id="vc-st" style="text-align:center;margin-top:8px">Dokun ve konuş</div>`:
+        `<div class="preview">Bu tarayıcıda konuşma tanıma yok. Klavyendeki 🎤 dikte tuşuyla konuşarak yazabilirsin.</div>`}
+      <label class="field"><span>Ne harcadın?</span><textarea class="input" id="vc-t" rows="2" style="resize:none" placeholder="Yaz ya da konuş"></textarea></label>
+      <button class="btn primary pressable" onclick="VoiceSheet.go()">${C.ic('sparkles')}Forma dönüştür</button>
+      <p class="muted xs" style="margin:8px 4px 0">${Secrets.get()?'Cümle Gemini ile anlaşılır; kaydetmeden önce formu kontrol edersin.':'Gemini bağlı değil; basit çözümleme yapılır. Daha iyi sonuç için Ayarlar\'dan Gemini\'yi bağla.'}</p>`)},
+  toggle(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(this.rec){this.rec.stop();return}
+    const r=new SR();r.lang='tr-TR';r.interimResults=true;r.continuous=false;this.rec=r;const mic=Sheet.el('#vc-mic'),st=Sheet.el('#vc-st'),ta=Sheet.el('#vc-t');
+    mic&&mic.classList.add('on');st&&(st.textContent='Dinliyorum…');Haptic.tap();
+    r.onresult=e=>{let t='';for(const res of e.results)t+=res[0].transcript;if(ta)ta.value=t};
+    r.onerror=e=>{st&&(st.textContent=e.error==='not-allowed'?'Mikrofon izni verilmedi':'Anlaşılamadı, tekrar dene')};
+    r.onend=()=>{this.rec=null;mic&&mic.classList.remove('on');const v=Sheet.val('#vc-t');if(st&&st.textContent==='Dinliyorum…')st.textContent=v?'Tamam':'Dokun ve konuş';if(v)this.go()};
+    try{r.start()}catch(e){this.rec=null}},
+  async go(){const text=Sheet.val('#vc-t').trim();if(!text){Toast.show('Bir şey söyle ya da yaz');return}const b=Sheet.el('.btn.primary');if(b){b.disabled=true;b.innerHTML='Anlaşılıyor…'}
+    const r=await Voice.parse(text);if(!(r.amount>0)){Toast.show('Tutarı anlayamadım, tekrar dener misin?');if(b){b.disabled=false;b.innerHTML=C.ic('sparkles')+'Forma dönüştür'}return}
+    Haptic.success();TxForm.open(null,{type:r.kind==='income'?'income':'expense',prefill:{amount:r.amount,merchant:r.merchant,category:r.category,accountId:r.accountId,installments:r.installments,date:r.date,note:r.note||'',source:'manual'},
+      ai:{confidence:null,matched:!!r.accountId,voice:true,itemCount:0}})}};
+
+/* --- Abonelik iptal metni --- */
+const LetterSheet={
+  async open(name,amount){const s=Store.get();this.o={name,amount:amount||0,user:s.settings.name||''};
+    Sheet.open(Sheet.head('İptal Metni',{left:'Kapat',right:''})+`<div id="lt-body"><div class="shimmer" style="width:80%"></div><div class="shimmer"></div><div class="shimmer" style="width:65%"></div><p class="muted sm">Hazırlanıyor…</p></div>`);
+    let r;if(Secrets.get()){try{r=await AIActions.run('letter',()=>AI.call(Prompts.letter(this.o)))}catch(e){Toast.show('AI kullanılamadı, hazır şablon kullanıldı')}}
+    if(!r||!r.body)r=this.template(this.o);this.show(r)},
+  template(o){return{subject:`${o.name} aboneliğimin iptali hk.`,
+    body:`Merhaba,\n\n${o.name} hizmetindeki aboneliğimin bir sonraki fatura döneminden itibaren geçerli olmak üzere iptal edilmesini ve otomatik yenilemenin durdurulmasını talep ediyorum.\n\nAbonelik bilgilerim: [kayıtlı e-posta / telefon]\nAylık ücret: ${U.money(o.amount,{raw:true})}\n\nİptal işleminin tamamlandığını yazılı olarak onaylamanızı rica ederim. İptal sonrasında herhangi bir ücret tahsil edilmemesini bekliyorum.\n\nSaygılarımla,\n${o.user||'[Ad Soyad]'}\n${U.fmtDate(U.today(),'y')}`}},
+  show(r){const b=Sheet.el('#lt-body');if(!b)return;b.innerHTML=`<label class="field"><span>Konu</span><input class="input" id="lt-s" value="${U.esc(r.subject)}"></label>
+    <label class="field"><span>Metin</span><textarea class="input" id="lt-b" rows="12" style="resize:vertical;line-height:1.45">${U.esc(r.body)}</textarea></label>
+    <div class="btn-row"><button class="btn primary pressable" onclick="LetterSheet.copy()">${C.ic('copy')}Kopyala</button><button class="btn pressable" onclick="LetterSheet.mail()">${C.ic('send')}E-posta aç</button></div>
+    <p class="muted xs" style="margin:10px 4px 0">Şirketin iptal adresini ya da uygulama içi iptal adımlarını kontrol et; çoğu dijital abonelik uygulama mağazasındaki "Abonelikler" bölümünden iptal edilir.</p>`},
+  async copy(){const t=Sheet.val('#lt-s')+'\n\n'+Sheet.val('#lt-b');try{await navigator.clipboard.writeText(t);Toast.show('✓ Kopyalandı')}catch(e){Sheet.el('#lt-b').select();Toast.show('Metni seçip kopyala')}},
+  mail(){location.href='mailto:?subject='+encodeURIComponent(Sheet.val('#lt-s'))+'&body='+encodeURIComponent(Sheet.val('#lt-b'))}};
+
+/* --- AI Asistan (sohbet) --- */
+const Chat={msgs:[],busy:false,
+  SUGGEST:['Bu ay en çok nereye harcadım?','Geçen aya göre neler değişti?','Önümüzdeki ay kart borcum ne kadar olacak?','Telefon hedefime ne zaman ulaşırım?','Kafe harcamalarım ne kadar?','Hangi abonelikleri iptal edebilirim?'],
+  async ask(q){q=(q||'').trim();if(!q||this.busy)return;const s=Store.get();
+    if(!Secrets.get()){App.openSettings('ai');return}
+    if(!s.settings.chatConsent){if(!confirm('Asistan, sorunu cevaplamak için son 4 ayın işlem listesini (mağaza adları ve tutarlar) ve hesap özetini Google Gemini\'ye gönderir. Devam edilsin mi?'))return;
+      Store.dispatch({type:'settings/update',payload:{chatConsent:true}})}
+    this.msgs.push({role:'user',text:q});this.busy=true;App.render();this.scroll();
+    try{const a=await AIActions.run('chat',()=>AI.call(Prompts.chat(q,this.msgs.slice(0,-1),D.chatContext(Store.get()))));this.msgs.push({role:'ai',text:String(a)})}
+    catch(e){this.msgs.push({role:'ai',text:'⚠️ '+AI.human(e),err:true})}
+    this.busy=false;App.render();this.scroll()},
+  scroll(){setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),60)},
+  send(){const el=document.getElementById('chat-in');if(!el)return;const v=el.value;el.value='';this.ask(v)},
+  clear(){this.msgs=[];App.render()}};
+Pages.chat=(s)=>{const key=!!Secrets.get();
+  return C.pageHead('Asistan','Verilerine soru sor · Google Gemini',Chat.msgs.length?`<button class="head-btn" onclick="Chat.clear()">Temizle</button>`:'')+
+    `<div class="chat">${!Chat.msgs.length?`<div class="glass ai-card" style="margin-top:14px"><div class="ai-head"><span class="ai-orb"></span><div><b>Merhaba ${U.esc(s.settings.name||'')}!</b><div class="muted xs">Harcamaların, kartların, kredilerin ve hedeflerin hakkında sor.</div></div></div>
+        ${key?'':`<button class="btn primary pressable" onclick="App.openSettings('ai')">Gemini'yi bağla</button>`}</div>
+      <div class="chips" style="flex-wrap:wrap;margin:0;padding:14px 0 0">${Chat.SUGGEST.map(q=>`<button class="chip pressable" onclick="Chat.ask('${q.replace(/'/g,"\\'")}')">${q}</button>`).join('')}</div>`:''}
+    ${Chat.msgs.map(m=>`<div class="bubble ${m.role}${m.err?' err':''}">${m.role==='ai'?U.md(m.text):U.esc(m.text)}</div>`).join('')}
+    ${Chat.busy?`<div class="bubble ai typing"><i></i><i></i><i></i></div>`:''}</div>
+    <div class="chat-bar glass"><input id="chat-in" placeholder="Bir şey sor…" autocomplete="off" onkeydown="if(event.key==='Enter')Chat.send()" ${Chat.busy?'disabled':''}><button class="send pressable" onclick="Chat.send()" aria-label="Gönder">${C.ic('arrowup')}</button></div>`};
+
+/* --- Uygulama kurulumu (PWA) --- */
+const Install={deferred:null,
+  init(){window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();this.deferred=e});
+    if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(()=>{})},
+  standalone:()=>window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone===true,
+  ios:()=>/iphone|ipad|ipod/i.test(navigator.userAgent),
+  async prompt(){if(this.deferred){this.deferred.prompt();const r=await this.deferred.userChoice;this.deferred=null;if(r.outcome==='accepted')Toast.show('✓ Uygulama yüklendi');SettingsSheet.open('app')}},
+  block(){const st=this.standalone(),https=location.protocol==='https:';
+    return `<div class="glass" style="padding:4px 14px 14px">
+      <div class="set-row"><div>Durum<small>${st?'Uygulama olarak çalışıyor ✓':https?'Tarayıcıda açık':'Dosya olarak açık · kurulum için GitHub Pages adresinden aç'}</small></div>${st?C.ic('check'):''}</div>
+      ${st?'':this.deferred?`<button class="btn primary pressable" onclick="Install.prompt()">${C.ic('download')}Uygulamayı yükle</button>`:
+        `<div class="preview" style="line-height:1.55">${this.ios()?'<b>iPhone:</b> Safari\'de alttaki <b>Paylaş</b> düğmesine dokun → <b>Ana Ekrana Ekle</b>.':'<b>Android:</b> Chrome menüsü (⋮) → <b>Uygulamayı yükle</b> / <b>Ana ekrana ekle</b>.'}<br>Kurulunca tam ekran ve internetsiz açılır.</div>`}
+      <div class="set-row"><div>Kurları otomatik güncelle<small>${Store.get().settings.ratesAt?'Son: '+C.relTime(new Date(Store.get().settings.ratesAt).toISOString()):'Henüz güncellenmedi'} · ECB + gold-api</small></div><label class="switch"><input type="checkbox" ${Store.get().settings.autoRates!==false?'checked':''} onchange="SettingsSheet.look('autoRates',this.checked)"><span></span></label></div>
+      <button class="btn pressable" onclick="Rates.fetch(true).then(()=>SettingsSheet.open('rates'))">${C.ic('flip')}Kurları şimdi güncelle</button>
+      <button class="btn pressable" onclick="ICSSheet.open()">${C.ic('calendar')}Takvime hatırlatma ekle</button></div>`}};
 
 /* ---------- 80_app.js ---------- */
 
@@ -2748,7 +3163,7 @@ const App={
   togglePrivacy(v){const on=typeof v==='boolean'?v:!Store.get().settings.privacy;Store.dispatch({type:'settings/update',payload:{privacy:on}});Haptic.tap()},
   openAdd(){Haptic.tap();AddMenu.open()},
   openSettings(sec){SettingsSheet.open(sec)},
-  quick(k){Sheet.close(true);({scan:()=>ScanSheet.open(),import:()=>ImportSheet.open(),account:()=>AccForm.open(),pay:()=>PaySheet.open(),loan:()=>LoanForm.open(),
+  quick(k){Sheet.close(true);({voice:()=>VoiceSheet.open(),chat:()=>App.push('chat',{}),debt:()=>DebtForm.open(),whatif:()=>WhatIf.open(),ics:()=>ICSSheet.open(),scan:()=>ScanSheet.open(),import:()=>ImportSheet.open(),account:()=>AccForm.open(),pay:()=>PaySheet.open(),loan:()=>LoanForm.open(),
     goal:()=>GoalForm.open(),rec:()=>RecurringForm.open()}[k]||(()=>TxForm.open(null,{type:k})))()},
   useTemplate(id){const s=Store.get(),t=s.templates.find(x=>x.id===id);if(!t)return;const acc=D.account(s,t.accountId);if(!acc){Toast.show('Şablonun hesabı silinmiş');return TemplateForm.open(id)}
     const item={id:U.uid(),kind:t.kind||'expense',accountId:acc.id,amount:t.amount,date:U.today(),category:t.category,merchant:t.merchant||t.name,note:'',installments:1,source:'manual'};
@@ -2782,7 +3197,7 @@ const App={
     window.addEventListener('popstate',e=>this.onPop(e));try{history.replaceState({d:0},'')}catch(e){}
     this.render('fade');
     if(Store.get()._migrated){Toast.show('📥 Taksitlerim verilerin taşındı');const s={...Store.get()};delete s._migrated;Store.dispatch({type:'state/replace',payload:s})}
-    Security.init();if(Security.unlocked)Reminders.run()}
+    Security.init();if(Security.unlocked)Reminders.run();Install.init();setTimeout(()=>Rates.auto(),1200)}
 };
 
 /* ===================== Demo verisi ===================== */
@@ -2817,6 +3232,10 @@ const Demo={build(prev){
   for(let k=0;k<4;k++)s.transactions.push({id:id(),kind:'loan',loanId:ln.id,accountId:chk.id,amount:850,date:U.addDays(U.addMonths(ln.firstDate,k),-1),source:'manual'});
   const g1={id:id(),name:'Yeni telefon',icon:'phone',target:15000,deadline:U.addMonths(T,6),color:0},g2={id:id(),name:'Yaz tatili',icon:'umbrella',target:8000,deadline:U.addMonths(T,8),color:3};s.goals=[g1,g2];
   [[g1,1500,40],[g1,1000,10],[g2,1200,20]].forEach(([g,a,d])=>s.transactions.push({id:id(),kind:'goal',goalId:g.id,dir:'in',accountId:chk.id,amount:a,date:ago(d),source:'manual'}));
+  /* demo: abonelik tespiti için 3 ay düzenli bir harcama + borç/alacak */
+  [0,1,2].forEach(k=>{const d=U.addMonths(T,-k);if(d.slice(8)>='05'||k){const dd=d.slice(0,8)+'05';if(dd<=T)s.transactions.push({id:id(),kind:'expense',accountId:vc.id,amount:229.99,date:dd,category:'subscription',merchant:'Disney+',installments:1,source:'manual'})}});
+  const db1={id:id(),dir:'lent',person:'Çağan',amount:450,date:ago(12),due:U.addDays(T,5),note:'Konser bileti',linkTx:''},db2={id:id(),dir:'owe',person:'Ahmet',amount:300,date:ago(20),due:U.addDays(T,2),note:'Yemek',linkTx:''};s.debts=[db1,db2];
+  s.transactions.push({id:id(),kind:'debt',debtId:db1.id,dir:'out',settle:false,accountId:chk.id,amount:450,date:ago(12),merchant:'Çağan',source:'manual'},{id:id(),kind:'debt',debtId:db1.id,dir:'in',settle:true,accountId:chk.id,amount:150,date:ago(3),merchant:'Çağan',source:'manual'});
   s.templates=[{id:id(),kind:'expense',name:'Kahve',amount:120,category:'food',accountId:cc.id,merchant:'Kahve Dünyası'},{id:id(),kind:'expense',name:'Simit',amount:25,category:'food',accountId:cash.id,merchant:'Simit Sarayı'},
     {id:id(),kind:'expense',name:'Kart dolum',amount:200,category:'transport',accountId:chk.id,merchant:'İstanbulkart dolum'}];
   /* geçmiş ekstreleri vadesiz hesaptan öde (son ödeme gününden 2 gün önce) */
