@@ -1090,6 +1090,39 @@ html.wide .dock{padding:0 24px}
 .tr-bot .spark{width:100%;height:30px;display:block}
 .tr-avg{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sheet-head h3:focus{outline:none}
+
+/* ===================== v8 · araçlar, rozetler ===================== */
+.wi-card{padding:12px 14px;margin-top:12px;border-radius:20px}
+.wi-h{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:15px}.wi-h .i{width:18px;height:18px;color:var(--blue)}
+.wi-kv{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0;border-bottom:.5px solid var(--sep,rgba(128,128,128,.2));font-size:14px}
+.wi-kv:last-child{border-bottom:0}.wi-kv span{color:var(--text2)}.wi-kv b{text-align:right}
+.wi-t{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;font-variant-numeric:tabular-nums}
+.wi-t th{text-align:left;font-weight:600;color:var(--text2);font-size:11.5px;padding:4px 0}.wi-t td{padding:5px 0;border-top:.5px solid var(--sep,rgba(128,128,128,.2))}
+.wi-t th:not(:first-child),.wi-t td:not(:first-child){text-align:right}
+button.stat{text-align:left;font:inherit;color:inherit;width:100%;display:block}
+.steps{margin:0;padding:12px 14px 12px 34px;border-radius:20px;font-size:14px;line-height:1.5}
+.steps li{margin:6px 0}.steps li::marker{color:var(--blue);font-weight:700}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--fill,rgba(128,128,128,.14));padding:6px 9px;border-radius:9px;margin:6px 0 4px;display:inline-block}
+.code i{color:var(--blue);font-style:normal;font-weight:600}
+.chips.wrap{flex-wrap:wrap;overflow:visible;margin:0;padding:6px 0 0}
+.streak-hero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:22px}
+.sh-fire{font-size:44px;line-height:1;filter:drop-shadow(0 4px 14px rgba(255,159,10,.45))}
+.sh-n{font-size:30px;font-weight:800;letter-spacing:-.5px}
+.streak-week{display:flex;justify-content:space-between;gap:4px;margin:12px 4px 4px}
+.streak-week>span{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--text2);flex:1}
+.streak-week i{width:22px;height:22px;border-radius:50%;background:var(--fill,rgba(128,128,128,.16));display:block}
+.streak-week .ok i{background:linear-gradient(135deg,#ffd60a,#ff9f0a);box-shadow:0 2px 8px rgba(255,159,10,.4)}
+.streak-week .x i{background:rgba(255,69,58,.22);box-shadow:inset 0 0 0 2px rgba(255,69,58,.55)}
+.streak-week .pre i{opacity:.35}
+.streak-week.sm{margin:0;gap:5px;flex:0 0 auto}.streak-week.sm>span{flex:0 0 auto}.streak-week.sm i{width:13px;height:13px}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.badge{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;padding:12px 6px;border-radius:18px;background:var(--glass);border:1px solid var(--glass-border);opacity:.45;filter:grayscale(1)}
+.badge.on{opacity:1;filter:none}
+.badge .be{font-size:30px;line-height:1.1}.badge b{font-size:12.5px;line-height:1.2}.badge small{font-size:10.5px;color:var(--text2);line-height:1.25}
+.streak-w{width:100%;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:10px 8px;align-items:center;padding:14px 16px;border-radius:24px;text-align:left;font:inherit;color:inherit}
+.sw-l{display:flex;align-items:center;gap:10px;min-width:0}.sw-f{font-size:30px;line-height:1}
+.sw-l b{display:block;font-size:20px;font-weight:800}.sw-l small{display:block;font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sw-b{grid-column:1/-1;font-size:12.5px;color:var(--text2)}
 </style>
 </head>
 <body>
@@ -2552,7 +2585,7 @@ const Pages={
     return C.pageHead(U.esc(a.name),m.shared?'Ortak limit · '+U.esc(m.root.name):U.esc(a.bank||'Kredi Kartı'),`<button class="head-btn" onclick="AccForm.open('${a.id}')">Düzenle</button>`)+`<div class="page-flip" style="margin-top:10px">${C.cardFlip(s,a,ui)}</div>`+
       `<div class="stats"><div class="stat glass"><div class="l">Kart borcu</div><div class="v num">${U.money(m.own)}</div><div class="s">${m.activeInstallments} aktif taksit</div></div>
         <div class="stat glass"><div class="l">${m.dueNow>0?'Ödenecek ekstre':'Dönem içi'}</div><div class="v num ${m.dueNow>0?'warn':''}">${U.money(m.dueNow>0?m.dueNow:m.openTotal)}</div><div class="s">${m.dueNow>0?'Son ödeme '+U.fmtDate(m.lastDue):'Kesim '+U.fmtDate(m.openCut)}</div></div>
-        <div class="stat glass"><div class="l">Asgari ödeme</div><div class="v num">${U.money(m.minPay)}</div><div class="s">${m.minTotal?'Oran %'+(a.credit.minRate||20):'—'}</div></div>
+        <button class="stat glass pressable" onclick="MinPay.open('${a.id}')"><div class="l">Asgari ödeme</div><div class="v num">${U.money(m.minPay)}</div><div class="s">${m.minTotal?'Oran %'+(a.credit.minRate||20)+' · ':''}<span style="color:var(--accent,var(--blue))">tuzağı gör ›</span></div></button>
         <div class="stat glass"><div class="l">Limit</div><div class="v num">${U.money(m.limit,{dec:false})}</div><div class="s">%${Math.round(m.usage*100)} kullanımda${m.interest?' · faiz ~'+U.money(m.interest):''}</div></div></div>
       <div class="actions"><button class="act glass pressable" onclick="PaySheet.open('${a.id}')"><span class="ic">${C.ic('send')}</span>Borç öde</button>
         <button class="act glass pressable" onclick="TxForm.open(null,{type:'expense',prefill:{accountId:'${a.id}'}})"><span class="ic">${C.ic('minus')}</span>Harcama</button>
@@ -3052,6 +3085,7 @@ const SettingsSheet={
       <div class="field"><span>Kişiselleştirme</span></div>
       <div class="glass list action-list" style="padding:0 12px">
         <button class="row pressable" onclick="CategoryForm.list()">${C.icb('tag','#bf5af2')}<div class="mid"><b>Kategoriler</b><span>${s.categories.length} özel kategori</span></div><span class="faint">${C.ic('chev')}</span></button>
+        <button class="row pressable" onclick="Badges.open()">${C.icb('flame','#ff9f0a')}<div class="mid"><b>Seri ve rozetler</b><span>Harcamasız gün serisi</span></div><span class="faint">${C.ic('chev')}</span></button>
         <button class="row pressable" onclick="TemplateForm.list()">${C.icb('bolt','#ff9f0a')}<div class="mid"><b>Hızlı ekle şablonları</b><span>${s.templates.length} şablon</span></div><span class="faint">${C.ic('chev')}</span></button></div>
 
       <div class="field" id="sec-ai"><span>Yapay zekâ · Google Gemini</span></div>
@@ -3063,6 +3097,8 @@ const SettingsSheet={
         <p class="muted xs" style="margin-top:10px;line-height:1.5">Anahtarı <a class="link" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> adresinden alabilirsin. Anahtar yalnızca bu cihazda saklanır ve yedek dosyasına eklenmez. ${s.ai?.calls?'Bu cihazdan yapılan AI isteği: '+s.ai.calls:''}</p></div>
 
       <div class="field" id="sec-app"><span>Uygulama, kurlar ve hatırlatmalar</span></div>${Install.block()}
+      <div class="glass list action-list" style="padding:0 12px;margin-bottom:10px"><button class="row pressable" onclick="PayShortcutSheet.open()">${C.icb('phonevib','#30d158')}<div class="mid"><b>Apple Pay ile otomatik kayıt</b><span>${s.settings.payShortcut?'Açık · ':''}Kestirmeler kurulum rehberi</span></div><span class="faint">${C.ic('chev')}</span></button>
+        <button class="row pressable" onclick="ICSSheet.open()">${C.icb('calendar','#ff375f')}<div class="mid"><b>Takvime hatırlatma</b><span>Son ödeme günleri telefon takvimine</span></div><span class="faint">${C.ic('chev')}</span></button></div>
       <div class="field" id="sec-rates"><span>Kurlar (otomatik güncellenir, elle de değiştirebilirsin)</span></div>
       <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
         <label><input class="input" id="st-usd" inputmode="decimal" value="${F.money(r.USD)}"><span class="muted xs" style="margin-left:4px">1 $ = ₺</span></label>
@@ -3071,8 +3107,8 @@ const SettingsSheet={
 
       <div class="field"><span>Veri</span></div>
       <div class="glass list action-list" style="padding:0 12px">
-        <button class="row pressable" onclick="App.exportJSON()">${C.icb('download','#0a84ff')}<div class="mid"><b>Yedek indir</b><span>Tüm veriler JSON olarak (fiş görselleri hariç)</span></div></button>
-        <label class="row pressable">${C.icb('upload','#30d158')}<div class="mid"><b>Yedekten yükle</b><span>Önceki yedeği geri al</span></div><input type="file" accept=".json,application/json" hidden onchange="App.importJSON(this)"></label>
+        <button class="row pressable" onclick="BackupSheet.open()">${C.icb('lock','#0a84ff')}<div class="mid"><b>Yedekle</b><span>Şifreli yedek · ${s.settings.lastBackup?'son '+U.fmtDate(U.iso(new Date(s.settings.lastBackup))):'henüz alınmadı'}</span></div><span class="faint">${C.ic('chev')}</span></button>
+        <label class="row pressable">${C.icb('upload','#30d158')}<div class="mid"><b>Yedekten yükle</b><span>Önceki yedeği geri al</span></div><input type="file" accept=".cuzdan,.json,application/json,application/octet-stream" hidden onchange="App.importJSON(this)"></label>
         <button class="row pressable" onclick="Exporter.csv(Store.get(),D.filterTx(Store.get(),{}))">${C.icb('bars','#30d158')}<div class="mid"><b>İşlemleri CSV olarak indir</b><span>Excel / Numbers</span></div></button>
         <button class="row pressable" onclick="App.loadDemo()">${C.icb('sparkles','#bf5af2')}<div class="mid"><b>Örnek verileri yükle</b><span>Mevcut verilerin yerine geçer</span></div></button>
         <button class="row pressable" onclick="App.resetAll()">${C.icb('trash','#ff453a')}<div class="mid"><b style="color:var(--red)">Tüm verileri sil</b><span>Geri alınamaz</span></div></button></div>`,
@@ -3143,8 +3179,8 @@ const ImportSheet={accId:null,rows:[],meta:null,
 const AddMenu={open(){Sheet.open(Sheet.head('Ekle',{left:'Kapat',right:''})+
   `<div class="action-list">${[['expense','minus','Harcama','Kart, nakit veya hesaptan','#ff375f'],['income','plus','Gelir','Harçlık, maaş, iade','#30d158'],['transfer','transfer','Transfer','Hesaplar arası, döviz alım','#64d2ff'],
     ['pay','send','Kart borcu öde','Ekstre, asgari veya tüm borç','#0a84ff'],['scan','camera','Fiş / Fatura Tara','Gemini ile otomatik doldurma','#bf5af2'],['import','inbox','Ekstre içe aktar','Banka PDF\'inden toplu ekleme','#5e5ce6'],
-    ['voice','voice','Sesle ekle','"Migros\'ta 450 lira harcadım"','#ff9f0a'],['chat','chat','Asistana sor','Verilerin hakkında soru sor','#5e5ce6'],['debt','people','Borç / alacak','Arkadaşına verdiğin, aldığın','#30d158'],
-    ['whatif','up','Ya şöyle olursa?','Alışverişin 6 aya etkisi','#ff9f0a'],['ics','calendar','Takvime hatırlatma','Ödeme günleri telefon takvimine','#ff375f'],
+    ['voice','voice','Sesle ekle','"Migros\'ta 450 lira harcadım"','#ff9f0a'],['clip','copy','Apple Pay ödemesini ekle','Kestirmeler ile panoya kopyalanan','#30d158'],['chat','chat','Asistana sor','Verilerin hakkında soru sor','#5e5ce6'],['debt','people','Borç / alacak','Arkadaşına verdiğin, aldığın','#30d158'],
+    ['whatif','up','Alabilir miyim?','Ekstre, limit ve 6 aylık nakit etkisi','#ff9f0a'],['pesin','scissors','Taksit mi, peşin mi?','Hangisi gerçekten ucuz?','#32ade6'],['minpay','alert','Asgari ödeme tuzağı','Sadece asgari ödersen ne olur?','#ff453a'],['ics','calendar','Takvime hatırlatma','Ödeme günleri telefon takvimine','#ff375f'],
     ['account','bank','Hesap / Kart','Kredi kartı, vadesiz, nakit, döviz','#0a84ff'],['loan','doc','Kredi','İhtiyaç, taşıt, eğitim kredisi','#8e8e93'],['goal','piggy','Kumbara','Birikim hedefi','#ff9f0a'],['rec','repeat','Düzenli ödeme','Abonelik, fatura, kira, harçlık','#ff375f']]
     .map(([k,ic,t,sub,c])=>`<button class="row pressable" onclick="App.quick('${k}')">${C.icb(ic,c)}<div class="mid"><b>${t}</b><span>${sub}</span></div><span class="faint">${C.ic('chev')}</span></button>`).join('')}</div>`)}};
 
@@ -3298,7 +3334,7 @@ const ICSSheet={o:{cards:true,rec:true,loans:true,debts:true,goals:false,alarms:
 const WhatIf={st:{amount:'',n:1,accId:'',date:''},
   open(pre={}){const s=Store.get();this.st={amount:'',n:1,accId:(s.accounts.find(a=>a.type==='credit')||s.accounts[0]||{}).id||'',date:U.today(),...pre};this.render()},
   render(){const s=Store.get(),st=this.st,acc=D.account(s,st.accId);
-    Sheet.open(Sheet.head('Ya şöyle olursa?',{left:'Kapat',right:''})+
+    Sheet.open(Sheet.head('Alabilir miyim?',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
       `<p class="muted sm" style="margin:0 4px 6px">Planladığın bir alışverişin önümüzdeki 6 aylık nakit akışına etkisini gör. Hiçbir şey kaydedilmez.</p>
       <input class="amount-in num" id="wi-amt" inputmode="decimal" value="${F.money(st.amount)}" placeholder="0" oninput="WhatIf.sync()"><div class="amount-cur">Alışveriş tutarı</div>
       <div class="grid2"><label class="field"><span>Nasıl ödeyeceksin?</span><select class="input" id="wi-acc" onchange="WhatIf.sync()">${F.accOpts(s.accounts,st.accId)}</select></label>
@@ -3311,8 +3347,8 @@ const WhatIf={st:{amount:'',n:1,accId:'',date:''},
         :sim.min<0?`<div class="verdict" style="background:rgba(255,69,58,.13);color:var(--red)">${sim.rows.find(r=>r.balance<0).label} ayında nakit bakiyen eksiye düşüyor (${U.money(sim.min,{dec:false})}).</div>`
         :sim.min<base.variable?`<div class="verdict" style="background:rgba(255,159,10,.13);color:var(--orange)">Alınabilir ama en sıkışık ayda elinde sadece ${U.money(sim.min,{dec:false})} kalıyor.</div>`
         :`<div class="verdict" style="background:rgba(48,209,88,.12);color:var(--green)">Rahat. 6 ay boyunca bakiyen ${U.money(sim.min,{dec:false})} altına düşmüyor.</div>`}
-    return `${verdict}<table><tr><th>Ay</th><th>Gelir</th><th>Gider</th><th>Bakiye</th>${sim?'<th>Alırsan</th>':''}</tr>
-        ${base.rows.map((r,i)=>`<tr><td>${r.label}</td><td class="pos">${U.money(r.income,{dec:false})}</td><td>${U.money(r.out,{dec:false})}</td><td class="${r.balance<0?'neg':''}">${U.money(r.balance,{dec:false})}</td>${sim?`<td class="${sim.rows[i].balance<0?'neg':''}"><b>${U.money(sim.rows[i].balance,{dec:false})}</b></td>`:''}</tr>`).join('')}</table>
+    return `${verdict}<div class="glass wi-card"><table class="wi-t" style="margin-top:0"><tr><th>Ay</th><th>Gelir</th><th>Gider</th><th>Bakiye</th>${sim?'<th>Alırsan</th>':''}</tr>
+        ${base.rows.map((r,i)=>`<tr><td>${r.label}</td><td class="pos">${U.money(r.income,{dec:false})}</td><td>${U.money(r.out,{dec:false})}</td><td class="${r.balance<0?'neg':''}">${U.money(r.balance,{dec:false})}</td>${sim?`<td class="${sim.rows[i].balance<0?'neg':''}"><b>${U.money(sim.rows[i].balance,{dec:false})}</b></td>`:''}</tr>`).join('')}</table></div>
       <div style="margin-top:12px">${C.lineChart((sim||base).rows.map(r=>({label:r.label,value:r.balance})),{id:'wi',h:120,color:sim&&sim.min<0?'#ff453a':'#30d158'})}</div>
       <p class="muted xs" style="margin-top:8px;line-height:1.5">Başlangıç: nakit + vadesiz bakiyen ${U.money(base.start,{dec:false})}. Gider; düzenli ödemeleri, kart ekstrelerini, kredi taksitlerini, borçlarını ve son 3 ayın ortalama değişken harcamasını (aylık ~${U.money(base.variable,{dec:false})}) içerir. Tahmindir.</p>`},
   sync(){this.st.amount=Sheet.val('#wi-amt');this.st.accId=Sheet.val('#wi-acc');this.st.n=Sheet.val('#wi-n')||1;
@@ -3527,7 +3563,7 @@ const SheetDrag={
     if(tall&&keep!=='large'){bd.dataset.detent='medium';sh.style.height=Math.round(maxH*.6)+'px'}else bd.dataset.detent=tall?'large':'fit'}
 };
 Sheet.open=function(html,onMount){
-  const old=document.getElementById('sheet'),oldSh=old&&old.firstElementChild,top=oldSh?oldSh.scrollTop:0,keep=old?old.dataset.detent:null,keepH=oldSh?oldSh.style.height:'';
+  const old=document.getElementById('sheet'),oldSh=old&&old.firstElementChild,top=oldSh?oldSh.scrollTop:0,keep=old?old.dataset.detent:(/\bdata-full\b/.test(html)?'large':null),keepH=oldSh?oldSh.style.height:'';
   if(old)old.remove();
   const bd=document.createElement('div');bd.className='sheet-backdrop'+(old?' swap':'');bd.id='sheet';
   bd.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="grab-zone" aria-hidden="true"><div class="grabber"></div></div>${html}</div>`;
@@ -4123,6 +4159,290 @@ const Demo={build(prev){
   for(const card of [cc,vc])for(let i=o-4;i<=o-2;i++){const st=D.stmtAt(s,card.id,i);if(st.total>0)s.transactions.push({id:id(),kind:'payment',accountId:chk.id,toAccountId:card.id,amount:st.total,date:U.addDays(st.due,-2),merchant:'Kart ödemesi',source:'manual'})}
   return{...s,transactions:[...s.transactions]}}};   // yeni referans → hesap önbelleği temiz başlar
 
+/* ---------- 88_extras.js ---------- */
+
+/* =====================================================================
+   v8 · Karar araçları, hızlı kayıt, şifreli yedek, zam takibi, seri & rozetler
+   ===================================================================== */
+
+/* ---------- Ortak hesap yardımcıları ---------- */
+const Calc={
+  /* Eylül 2026 BDDK/TCMB azami akdi faiz tavanları (aylık %) · bankan daha düşük uygulayabilir */
+  capRate:debt=>debt<30000?3.25:debt<=180000?3.75:4.25,
+  TAX:1.30,   // faize KKDF %15 + BSMV %15
+  /* tutar metni → sayı: "₺1.234,56" · "1,234.56" · "250.00" · "TRY 99,90" */
+  amount(str){if(str==null)return null;let v=String(str).replace(/\s/g,'').replace(/[^\d.,]/g,'');if(!v)return null;
+    const ld=v.lastIndexOf('.'),lc=v.lastIndexOf(',');
+    if(ld>-1&&lc>-1){const dec=ld>lc?'.':',';v=v.split(dec===','?'.':',').join('');v=v.replace(dec,'.')}
+    else if(lc>-1){const tail=v.length-lc-1;v=tail===3&&v.split(',').length>1&&!/^0/.test(v)&&v.length>4?v.replace(/,/g,''):v.replace(/,/g,'.')}
+    else if(ld>-1){const parts=v.split('.'),tail=parts[parts.length-1].length;if(parts.length>2||tail===3)v=v.replace(/\./g,'')}
+    const n=parseFloat(v);return isFinite(n)&&n>0?U.r2(n):null},
+  pv(total,n,r){const p=total/n;let pv=0;for(let k=1;k<=n;k++)pv+=p/Math.pow(1+r,k);return U.r2(pv)},
+  /* asgari / sabit ödeme senaryosu (yeni harcama yok varsayımı) */
+  payoff(debt,{minRate,rate,fixed}){let bal=debt,paid=0,interest=0,m=0;const series=[bal];
+    while(bal>0.5&&m<600){const pay=Math.min(bal,fixed?fixed:Math.max(bal*minRate,50));paid+=pay;bal-=pay;m++;
+      const i=bal*rate*this.TAX;interest+=i;bal+=i;series.push(bal);if(fixed&&i>=fixed&&m>2)return{never:true,months:m,paid,interest,series}}
+    return{never:bal>0.5,months:m,paid:U.r2(paid),interest:U.r2(interest),series}}};
+
+/* ---------- 1) "Alabilir miyim?": kart ekstresi ve limit takvimi ---------- */
+{const _out=WhatIf.out;
+  WhatIf.out=function(){const html=_out.call(this),s=Store.get(),st=this.st,acc=D.account(s,st.accId),amt=U.parseNum(st.amount);
+    if(!(amt>0))return html;
+    let card='';
+    if(acc?.type==='credit'){const c=acc.credit,n=+st.n||1,f=D.stmtIdx(c,st.date||U.today()),o=D.openIdx(c),per=U.r2(amt/n),m=D.cardSummary(s,acc.id);
+      const rows=[];for(let i=o;i<o+Math.max(4,Math.min(n+1,7));i++){const base=D.stmtAt(s,acc.id,i).total,add=i>=f&&i<f+n?per:0;rows.push({i,base,add})}
+      const back=D.dueDate(c,f+n-1);
+      card=`<div class="glass wi-card"><div class="wi-h">${C.ic('card')}<b>${U.esc(acc.name)} ekstrelerin</b></div>
+        <div class="wi-kv"><span>Kullanılabilir limit</span><b class="num">${U.money(m.available,{dec:false})} → <span class="${m.available-amt<0?'neg':''}">${U.money(m.available-amt,{dec:false})}</span></b></div>
+        <div class="wi-kv"><span>Ekstrene eklenen</span><b class="num">${n>1?n+' ay × '+U.money(per):U.money(amt)+' tek seferde'}</b></div>
+        <div class="wi-kv"><span>Limitin tamamen geri gelmesi</span><b>${U.fmtDate(back,'y')}</b></div>
+        <table class="wi-t"><tr><th>Ekstre</th><th>Şu an</th><th>Alırsan</th></tr>${rows.map(r=>`<tr><td>${D.stmtName(r.i)}</td><td>${U.money(r.base,{dec:false})}</td><td>${r.add?`<b>${U.money(r.base+r.add,{dec:false})}</b>`:U.money(r.base,{dec:false})}</td></tr>`).join('')}</table></div>`}
+    const vm=html.match(/^\s*(<div class="verdict"[^>]*>[^<]*(?:<(?!\/?div)[^<]*)*<\/div>)/),v=vm?vm[1]:'',rest=vm?html.slice(vm[0].length):html;
+    return v+card+rest+`<button class="btn pressable" style="margin-top:12px" onclick="PesinCalc.open({cash:${amt},n:${Math.max(2,+st.n||6)}})">${C.ic('scissors')}Taksit mi peşin mi? Hesapla</button>`}}
+
+/* ---------- 2) Taksit mi, peşin mi? ---------- */
+const PesinCalc={st:{cash:'',total:'',n:6,r:''},
+  open(pre={}){const s=Store.get();this.st={cash:pre.cash||'',total:'',n:pre.n||6,r:s.settings.moneyRate??2.5};this.render()},
+  render(){const st=this.st;
+    Sheet.open(Sheet.head('Taksit mi, peşin mi?',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<p class="muted sm" style="margin:0 4px 8px">Bugün ödenen 1.000 ₺ ile 6 ay sonra ödenen 1.000 ₺ aynı değildir. Taksitlerin bugünkü değerini peşin fiyatla karşılaştırır.</p>
+      <div class="grid2"><label class="field"><span>Peşin fiyat</span><input class="input num" id="pc-cash" inputmode="decimal" value="${F.money(st.cash)}" placeholder="0" oninput="PesinCalc.sync()"></label>
+        <label class="field"><span>Taksitli toplam fiyat</span><input class="input num" id="pc-total" inputmode="decimal" value="${F.money(st.total)}" placeholder="peşinle aynı" oninput="PesinCalc.sync()"></label></div>
+      <div class="grid2"><label class="field"><span>Taksit sayısı</span><select class="input" id="pc-n" onchange="PesinCalc.sync()">${INSTALLMENT_OPTS.filter(n=>n>1).map(n=>`<option value="${n}" ${+st.n===n?'selected':''}>${n} taksit</option>`).join('')}</select></label>
+        <label class="field"><span>Paranın aylık getirisi %</span><input class="input num" id="pc-r" inputmode="decimal" value="${F.money(st.r)}" oninput="PesinCalc.sync()"></label></div>
+      <div id="pc-out">${this.out()}</div>`)},
+  out(){const st=this.st,cash=U.parseNum(st.cash),total=U.parseNum(st.total)||cash,n=+st.n||6,r=(U.parseNum(st.r)||0)/100;
+    if(!(cash>0))return `<div class="preview">Peşin fiyatı gir; taksitli fiyat farklıysa onu da yaz.</div>`;
+    const pv=Calc.pv(total,n,r),diff=U.r2(cash-pv),be=total>0?Math.max(0,(1-pv/total)*100):0,per=U.r2(total/n);
+    const good=diff>0.5,even=Math.abs(diff)<=Math.max(1,cash*.003);
+    return `<div class="verdict" style="background:${even?'rgba(142,142,147,.15)':good?'rgba(48,209,88,.12)':'rgba(255,159,10,.13)'};color:${even?'var(--text)':good?'var(--green)':'var(--orange)'}">
+        ${even?'İkisi neredeyse aynı. Nakit akışına hangisi uyuyorsa onu seç.':good?`Taksit daha avantajlı: bugünkü değeri ${U.money(diff)} daha ucuz.`:`Peşin daha avantajlı: taksit bugünkü parayla ${U.money(-diff)} daha pahalı.`}</div>
+      <div class="glass wi-card">
+        <div class="wi-kv"><span>Aylık taksit</span><b class="num">${n} × ${U.money(per)}</b></div>
+        <div class="wi-kv"><span>Taksitlerin bugünkü değeri</span><b class="num">${U.money(pv)}</b></div>
+        <div class="wi-kv"><span>Peşin fiyat</span><b class="num">${U.money(cash)}</b></div>
+        <div class="wi-kv"><span>Başabaş peşin indirimi</span><b class="num">%${be.toFixed(1)}</b></div></div>
+      <p class="muted xs" style="margin:10px 4px 0;line-height:1.5">Peşin indirimi %${be.toFixed(1)}'den fazlaysa peşin almak kârlı. Hesap, paranı bekletirken aylık %${U.esc(String(st.r||0))} kazanabileceğini (mevduat, enflasyon) varsayar ve ilk taksiti 1 ay sonra öder. Tahmindir, yatırım tavsiyesi değildir.</p>`},
+  sync(){const v=x=>Sheet.val(x);this.st={cash:v('#pc-cash'),total:v('#pc-total'),n:v('#pc-n'),r:v('#pc-r')};
+    const r=U.parseNum(this.st.r);if(r>=0&&r<20)Store.dispatch({type:'settings/update',payload:{moneyRate:r}});
+    clearTimeout(this._t);this._t=setTimeout(()=>{const o=Sheet.el('#pc-out');if(o)o.innerHTML=this.out()},200)}};
+
+/* ---------- 3) Asgari ödeme tuzağı ---------- */
+const MinPay={st:null,
+  open(accId){const s=Store.get(),a=D.account(s,accId)||s.accounts.find(x=>x.type==='credit');if(!a){Toast.show('Önce bir kredi kartı ekle');return}
+    const m=D.cardSummary(s,a.id),debt=U.r2(m.lastRemaining>0?m.lastRemaining:m.own),c=a.credit,min=(+c.minRate||20)/100;
+    this.st={accId:a.id,debt:debt||'',minRate:+c.minRate||20,rate:+c.contractRate||Calc.capRate(debt),fixed:''};this.render()},
+  render(){const st=this.st,a=D.account(Store.get(),st.accId);
+    Sheet.open(Sheet.head('Asgari ödeme tuzağı',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<p class="muted sm" style="margin:0 4px 8px">${U.esc(a.name)} borcunu her ay sadece asgari öderek kapatırsan ne olur? Kartla yeni harcama yapmadığın varsayılır.</p>
+      <label class="field"><span>Borç</span><input class="input num" id="mp-d" inputmode="decimal" value="${F.money(st.debt)}" oninput="MinPay.sync()"></label>
+      <div class="grid2"><label class="field"><span>Asgari oran %</span><input class="input num" id="mp-m" inputmode="decimal" value="${F.money(st.minRate)}" oninput="MinPay.sync()"></label>
+        <label class="field"><span>Akdi faiz (aylık %)</span><input class="input num" id="mp-r" inputmode="decimal" value="${F.money(st.rate)}" oninput="MinPay.sync()"></label></div>
+      <label class="field"><span>Bunun yerine her ay sabit ödesem</span><input class="input num" id="mp-f" inputmode="decimal" value="${F.money(st.fixed)}" placeholder="örn. ${U.money(Math.ceil((U.parseNum(st.debt)||0)/4/100)*100||1000,{raw:true,dec:false})}" oninput="MinPay.sync()"></label>
+      <div id="mp-out">${this.out()}</div>`)},
+  out(){const st=this.st,debt=U.parseNum(st.debt),minRate=(U.parseNum(st.minRate)||20)/100,rate=(U.parseNum(st.rate)||0)/100,fixed=U.parseNum(st.fixed);
+    if(!(debt>0))return `<div class="preview">Bu kartta şu an ödenecek borç yok. Bir tutar yazıp deneyebilirsin.</div>`;
+    const a=Calc.payoff(debt,{minRate,rate}),b=fixed>0?Calc.payoff(debt,{minRate,rate,fixed}):null;
+    const dur=x=>x.never?'hiç bitmiyor':x.months>=12?`${Math.floor(x.months/12)} yıl${x.months%12?' '+x.months%12+' ay':''}`:x.months+' ay';
+    const pts=a.series.filter((_,i)=>i%Math.max(1,Math.ceil(a.series.length/24))===0).map((v,i,arr)=>({label:'',value:U.r2(v)}));
+    return `<div class="verdict" style="background:rgba(255,69,58,.12);color:var(--red)">Sadece asgari ödersen borç <b>${dur(a)}</b> sürer, <b>${U.money(a.interest,{dec:false})}</b> faiz ve vergi ödersin.</div>
+      <div class="glass wi-card">
+        <div class="wi-kv"><span>Tamamını şimdi öde</span><b class="num pos">${U.money(debt)} · faiz yok</b></div>
+        <div class="wi-kv"><span>Sadece asgari</span><b class="num neg">${U.money(a.paid,{dec:false})} · ${dur(a)}</b></div>
+        ${b?`<div class="wi-kv"><span>Ayda ${U.money(fixed,{dec:false})} sabit</span><b class="num ${b.never?'neg':''}">${b.never?'faizi bile karşılamıyor':U.money(b.paid,{dec:false})+' · '+dur(b)}</b></div>
+        ${b.never?'':`<div class="wi-kv"><span>Asgariye göre kazancın</span><b class="num pos">${U.money(Math.max(0,a.interest-b.interest),{dec:false})}</b></div>`}`:''}
+        <div class="wi-kv"><span>İlk ay asgari tutar</span><b class="num">${U.money(Math.max(debt*minRate,50))}</b></div></div>
+      <div style="margin-top:12px">${C.lineChart(pts,{id:'mp',h:100,color:'#ff453a',labels:false})}</div>
+      <p class="muted xs" style="margin:8px 4px 0;line-height:1.5">Faize %15 KKDF ve %15 BSMV eklenir. Faiz oranını kartının ayarlarından yazmadıysan, Eylül 2026 tavan oranı (${Calc.capRate(debt)}%) kullanılır; bankan daha düşük uygulayabilir. Gecikme olursa gecikme faizi daha yüksektir.</p>`},
+  sync(){const v=x=>Sheet.val(x);Object.assign(this.st,{debt:v('#mp-d'),minRate:v('#mp-m'),rate:v('#mp-r'),fixed:v('#mp-f')});
+    clearTimeout(this._t);this._t=setTimeout(()=>{const o=Sheet.el('#mp-out');if(o)o.innerHTML=this.out()},220)}};
+
+/* ---------- 4) Apple Pay / Kestirmeler ile hızlı kayıt ---------- */
+const PayCapture={pending:null,
+  parse(text){text=String(text||'').trim();if(!text)return null;const s=Store.get();let amount=null,merchant='',card='';
+    const m=text.match(/^CUZDAN\s*\|(.*)$/i);
+    if(m){const p=m[1].split('|').map(x=>x.trim());amount=Calc.amount(p[0]);merchant=p[1]||'';card=p[2]||''}
+    else{if(text.length>200)return null;const mm=text.match(/(?:₺|TL|TRY)?\s*\d[\d.,]*\s*(?:₺|TL|TRY|lira)?/i);if(!mm||!/₺|tl|try|lira/i.test(text))return null;
+      amount=Calc.amount(mm[0]);merchant=text.replace(mm[0],'').replace(/[|·,-]+/g,' ').trim().slice(0,40)}
+    if(!amount)return null;return this.build({amount,merchant,card},s)},
+  build({amount,merchant,card},s=Store.get()){const words=U.lc(card).split(/[^a-zçğıöşü0-9]+/).filter(w=>w.length>=3&&!['kart','card','kredi','visa','mastercard','troy','banka'].includes(w));
+    const acc=s.accounts.find(a=>words.some(w=>U.lc(a.name+' '+(a.bank||'')).includes(w)))||s.accounts.find(a=>a.type==='credit')||s.accounts[0];
+    merchant=String(merchant||'').replace(/\s+/g,' ').trim();const rec=merchant&&D.recallMerchant(s,merchant,'expense');
+    return{amount,merchant,category:rec?.category||this.guess(merchant),accountId:rec?.accountId&&!card?rec.accountId:acc?.id}},
+  GUESS:[[/migros|a101|bim|şok|sok market|carrefour|getir|file market|macrocenter|metro|market/,'market'],[/starbucks|kahve|coffee|cafe|kafe|burger|pizza|yemeksepeti|döner|restoran|simit|mcdonald/,'food'],
+    [/netflix|spotify|youtube|disney|icloud|apple\.com|amazon prime|exxen|blutv|tod|gain|chatgpt|openai/,'subscription'],[/shell|opet|petrol ofisi|\bbp\b|total|aytemiz/,'fuel'],
+    [/uber|bitaksi|marti|istanbulkart|metro istanbul|iett|thy|pegasus|bilet/,'transport'],[/eczane|hastane|klinik/,'health'],[/zara|lc waikiki|koton|defacto|h&m|mavi|nike|adidas/,'clothing'],[/mediamarkt|teknosa|vatan|apple store|hepsiburada|trendyol|amazon/,'electronics']],
+  guess(m){const k=U.lc(m);if(!k)return 'other';const g=this.GUESS.find(([re])=>re.test(k));return g?g[1]:'other'},
+  open(r,src){if(!r||!(r.amount>0)){Toast.show('Ödeme bilgisi okunamadı');return}
+    if(!Security.unlocked){this.pending=[r,src];return}
+    Haptic.success();TxForm.open(null,{type:'expense',prefill:{amount:r.amount,merchant:r.merchant,category:r.category,accountId:r.accountId,installments:1,date:U.today(),note:src==='applepay'?'Apple Pay':'',source:'manual'}})},
+  async fromClipboard(){let t='';try{t=await navigator.clipboard.readText()}catch(e){Toast.show('Panoya erişilemedi. Uyarıda "Yapıştır"a dokunman gerekiyor.');return}
+    const r=this.parse(t);if(!r){Toast.show('Panoda ödeme bilgisi bulunamadı');return}
+    const h=U.lc(t).slice(0,120);if(Store.get().settings.clipLast===h){Toast.show('Bu ödeme zaten eklenmiş görünüyor',3500,{label:'Yine de ekle',fn:()=>this.open(r,'applepay')});return}
+    Store.dispatch({type:'settings/update',payload:{clipLast:h}});this.open(r,'applepay')},
+  url(){let q;try{q=new URLSearchParams(location.search)}catch(e){return}if(!q||!(q.has('add')||q.has('amount')))return;
+    const r=this.build({amount:Calc.amount(q.get('amount')),merchant:q.get('merchant')||'',card:q.get('card')||''});
+    try{history.replaceState(history.state,'',location.pathname+location.hash)}catch(e){}
+    setTimeout(()=>this.open(r,q.get('src')||'applepay'),500)},
+  prompt(){if(!Store.get().settings.payShortcut||!Security.unlocked||document.getElementById('sheet'))return;
+    if(Date.now()-(this.lastAsk||0)<15000)return;this.lastAsk=Date.now();
+    Toast.show('💳 Yeni Apple Pay ödemesi var mı?',5000,{label:'Panodan ekle',fn:()=>this.fromClipboard()})},
+  init(){this.url();document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>this.prompt(),700)});
+    const _u=LockScreen.unlock.bind(LockScreen);LockScreen.unlock=(...a)=>{const r=_u(...a);if(this.pending){const p=this.pending;this.pending=null;setTimeout(()=>this.open(...p),400)}return r}}};
+
+const PayShortcutSheet={
+  open(){const s=Store.get(),base=location.origin+location.pathname;
+    Sheet.open(Sheet.head('Apple Pay ile otomatik kayıt',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<p class="muted sm" style="margin:0 4px 10px;line-height:1.5">iPhone'un <b>Kestirmeler</b> uygulaması, telefonla her ödeme yaptığında tutarı ve mağazayı panoya kopyalar. Cüzdan'ı açınca tek dokunuşla eklersin.</p>
+      <ol class="steps glass">
+        <li><b>Kestirmeler</b> uygulamasını aç, alttan <b>Otomasyon</b>'a geç ve <b>+</b> ile yeni otomasyon oluştur.</li>
+        <li>Tetikleyici olarak <b>Cüzdan</b>'ı (Apple Wallet işlem tetikleyicisi) seç, kartlarını işaretle ve <b>Hemen Çalıştır</b>'ı seç.</li>
+        <li><b>Metin</b> eylemi ekle ve şunu yaz:<div class="code">CUZDAN|<i>Miktar</i>|<i>Satıcı</i>|<i>Kart</i></div><span class="muted xs">Eğik yazılanları, metne dokunup <b>Kestirme Girdisi</b>'nden seçerek değişken olarak ekle.</span></li>
+        <li><b>Panoya Kopyala</b> eylemini ekle.</li>
+        <li>İstersen <b>Bildirim Göster</b> ekle: "Cüzdan'a eklemek için aç".</li></ol>
+      <div class="glass" style="padding:2px 14px;margin-top:12px"><div class="set-row"><div>Açılınca panoyu sor<small>Cüzdan'ı açtığında "Panodan ekle" önerisi çıkar</small></div>
+        <label class="switch"><input type="checkbox" ${s.settings.payShortcut?'checked':''} onchange="Store.dispatch({type:'settings/update',payload:{payShortcut:this.checked}})"><span></span></label></div></div>
+      <button class="btn primary pressable" style="margin-top:12px" onclick="PayCapture.fromClipboard()">${C.ic('copy')}Panodan şimdi ekle</button>
+      <button class="btn pressable" style="margin-top:8px" onclick="PayShortcutSheet.test()">${C.ic('check')}Örnekle dene</button>
+      <p class="muted xs" style="margin:12px 4px 0;line-height:1.5">Not: iPhone, ana ekrana eklenen web uygulamalarını Kestirmeler'den doğrudan açamıyor, bu yüzden pano kullanılıyor. Uygulamayı Safari'den ya da Android'den kullanıyorsan "URL'yi Aç" eylemiyle doğrudan da açabilirsin:<span class="code" style="display:block;margin-top:6px;word-break:break-all">${U.esc(base)}?add=1&amp;amount=<i>Miktar</i>&amp;merchant=<i>Satıcı</i>&amp;card=<i>Kart</i></span></p>`)},
+  test(){const acc=Store.get().accounts.find(a=>a.type==='credit');PayCapture.open(PayCapture.parse(`CUZDAN|₺249,90|Migros|${acc?acc.name:''}`),'applepay')}};
+
+/* ---------- 5) Şifreli yedek ---------- */
+const Backup={IT:250000,
+  b64:u=>btoa(String.fromCharCode(...new Uint8Array(u))),
+  ub64:s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)),
+  async key(pw,salt,it){const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+    return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:it,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])},
+  async encrypt(obj,pw){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),k=await this.key(pw,salt,this.IT);
+    const data=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(obj)));
+    return{cuzdan:'enc',v:1,kdf:'PBKDF2-SHA256',it:this.IT,salt:this.b64(salt),iv:this.b64(iv),data:this.b64(data),at:new Date().toISOString()}},
+  async decrypt(env,pw){const k=await this.key(pw,this.ub64(env.salt),+env.it||this.IT);
+    const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:this.ub64(env.iv)},k,this.ub64(env.data));return JSON.parse(new TextDecoder().decode(plain))},
+  async save(text,name,type){const file=new File([text],name,{type});
+    try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Cüzdan yedeği'});return true}}catch(e){if(e.name==='AbortError')return false}
+    Exporter.download(text,name,type);return true},
+  done(enc){Store.dispatch({type:'settings/update',payload:{lastBackup:Date.now(),...(enc?{backupEnc:true}:{})}})},
+  restore(d){if(!d||!Array.isArray(d.accounts)||!Array.isArray(d.transactions))throw new Error('bad');
+    if(!confirm('Mevcut verilerin yerine bu yedek yüklensin mi?'))return false;
+    const cur=Store.get().settings,nd=Persist.migrate(d),keep={};['lastBackup','backupEnc','badgesSeen','v8w'].forEach(k=>{if(cur[k]!=null)keep[k]=cur[k]});
+    Store.dispatch({type:'state/replace',payload:{...nd,settings:{...nd.settings,...keep}}});Sheet.close();UI.stack=[];Toast.show('✓ Yedek yüklendi');return true}};
+const BackupSheet={
+  open(){const s=Store.get(),lb=s.settings.lastBackup,days=lb?Math.floor((Date.now()-lb)/864e5):null;
+    Sheet.open(Sheet.head('Yedekle',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<p class="muted sm" style="margin:0 4px 10px;line-height:1.5">Veriler sadece bu telefonda duruyor. Telefon kaybolur ya da Safari verileri silinirse hepsi gider. Yedeği <b>Dosyalar → iCloud Drive</b>'a kaydet. ${lb?`Son yedek: <b>${days===0?'bugün':days+' gün önce'}</b>.`:'<b>Henüz yedek almadın.</b>'}</p>
+      <div class="glass" style="padding:4px 14px 14px">
+        <label class="field"><span>Yedek şifresi</span><input class="input" id="bk-p1" type="password" autocomplete="new-password" placeholder="en az 6 karakter"></label>
+        <label class="field"><span>Şifre (tekrar)</span><input class="input" id="bk-p2" type="password" autocomplete="new-password"></label>
+        <button class="btn primary pressable" onclick="BackupSheet.enc()">${C.ic('lock')}Şifreli yedek oluştur</button>
+        <p class="muted xs" style="margin:10px 2px 0;line-height:1.5">AES-256 ile şifrelenir. Şifreyi unutursan yedek açılamaz; kimse (ben dahil) kurtaramaz. Gemini anahtarın yedeğe girmez.</p></div>
+      <div class="glass list action-list" style="padding:0 12px;margin-top:12px">
+        <button class="row pressable" onclick="BackupSheet.plain()">${C.icb('download','#8e8e93')}<div class="mid"><b>Şifresiz yedek (JSON)</b><span>Okunabilir dosya; güvenli bir yerde sakla</span></div></button>
+        <label class="row pressable">${C.icb('upload','#30d158')}<div class="mid"><b>Yedekten geri yükle</b><span>Şifreli veya şifresiz yedek</span></div><input type="file" accept=".cuzdan,.json,application/json,application/octet-stream" hidden onchange="App.importJSON(this)"></label></div>`)},
+  async enc(){const p1=Sheet.val('#bk-p1'),p2=Sheet.val('#bk-p2');if(p1.length<6){Toast.show('Şifre en az 6 karakter olmalı');return}if(p1!==p2){Toast.show('Şifreler aynı değil');Haptic.error();return}
+    if(!(window.crypto&&crypto.subtle)){Toast.show('Bu tarayıcı şifrelemeyi desteklemiyor (https gerekli)');return}
+    const b=Sheet.el('.btn.primary');if(b){b.disabled=true;b.textContent='Şifreleniyor…'}
+    try{const env=await Backup.encrypt(Store.get(),p1);const ok=await Backup.save(JSON.stringify(env),'cuzdan-yedek-'+U.today()+'.cuzdan','application/octet-stream');
+      if(ok){Backup.done(true);Haptic.success();Sheet.close();Toast.show('🔒 Şifreli yedek hazır')}}
+    catch(e){Toast.show('⚠️ Yedek oluşturulamadı')}finally{if(b){b.disabled=false;b.innerHTML=C.ic('lock')+'Şifreli yedek oluştur'}}},
+  async plain(){const ok=await Backup.save(JSON.stringify(Store.get(),null,1),'cuzdan-yedek-'+U.today()+'.json','application/json');if(ok){Backup.done(false);Sheet.close();Toast.show('✓ Yedek hazır')}},
+  ask(env){Sheet.open(Sheet.head('Şifreli yedek',{left:'Vazgeç',right:''})+
+      `<p class="muted sm" style="margin:0 4px 10px">Bu yedek ${env.at?U.fmtDate(env.at.slice(0,10),'y')+' tarihinde ':''}şifrelenmiş. Açmak için şifresini gir.</p>
+      <label class="field"><span>Yedek şifresi</span><input class="input" id="bk-pw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')BackupSheet.unlock()"></label>
+      <button class="btn primary pressable" onclick="BackupSheet.unlock()">${C.ic('lock')}Aç ve yükle</button>`);this.env=env},
+  async unlock(){const pw=Sheet.val('#bk-pw');if(!pw)return;let d;try{d=await Backup.decrypt(this.env,pw)}catch(e){Haptic.error();Toast.show('Şifre yanlış');return}
+    try{Backup.restore(d)}catch(e){Toast.show('⚠️ Yedek bozuk görünüyor')}}};
+Object.assign(App,{
+  exportJSON(){BackupSheet.open()},
+  importJSON(inp){const f=inp.files&&inp.files[0];if(!f)return;const rd=new FileReader();
+    rd.onload=()=>{let d;try{d=JSON.parse(rd.result)}catch(e){Toast.show('⚠️ Geçerli bir yedek dosyası değil');return}finally{inp.value=''}
+      if(d&&d.cuzdan==='enc')return BackupSheet.ask(d);
+      try{Backup.restore(d)}catch(e){Toast.show('⚠️ Geçerli bir yedek dosyası değil')}};rd.readAsText(f)}});
+
+/* ---------- 6) Abonelik zam takibi ---------- */
+D.subRises=U.memo(s=>{const out=[],seen=s.settings.riseSeen||{},cutoff=U.iso(new Date(new Date().getFullYear(),new Date().getMonth()-1,1)).slice(0,7),names=new Set();
+  const push=(key,name,prev,cur,rec)=>{if(cur.date.slice(0,7)<cutoff||seen[key]===cur.id)return;const d=U.r2(cur.amount-prev.amount);if(d<=0.009||d<prev.amount*.01)return;
+    out.push({key,name,prev:prev.amount,cur:cur.amount,diff:d,pct:Math.round(d/prev.amount*100),txId:cur.id,recId:rec?.id||null,stale:rec?rec.amount<cur.amount-0.009:false})};
+  for(const r of s.recurring){if(r.type==='income')continue;names.add(U.norm(r.name));
+    const txs=Object.entries(r.paid||{}).sort((a,b)=>a[0].localeCompare(b[0])).map(([,id])=>D.tx(s,id)).filter(t=>t&&t.amount>0);
+    if(txs.length>=2)push('r:'+r.id,r.name,txs[txs.length-2],txs[txs.length-1],r)}
+  const by={};s.transactions.filter(t=>t.kind==='expense'&&t.category==='subscription'&&t.merchant&&!names.has(U.norm(t.merchant))).forEach(t=>{const k=U.norm(t.merchant).replace(/[^a-z0-9]/g,'');if(k)(by[k]=by[k]||[]).push(t)});
+  for(const[k,list]of Object.entries(by)){list.sort((a,b)=>a.date.localeCompare(b.date));if(list.length<2)continue;const cur=list[list.length-1],prev=list[list.length-2];
+    if(cur.date.slice(0,7)!==prev.date.slice(0,7))push('m:'+k,cur.merchant,prev,cur,null)}
+  return out.sort((a,b)=>b.diff-a.diff)});
+const SubRise={
+  open(key){const x=D.subRises(Store.get()).find(r=>r.key===key);if(!x)return;
+    Sheet.open(Sheet.head(U.esc(x.name)+' zamlandı',{left:'Kapat',right:''})+
+      `<div class="glass wi-card"><div class="wi-kv"><span>Önceki</span><b class="num">${U.money(x.prev)}</b></div><div class="wi-kv"><span>Şimdi</span><b class="num neg">${U.money(x.cur)} (+%${x.pct})</b></div>
+        <div class="wi-kv"><span>Yıllık ek maliyet</span><b class="num neg">${U.money(x.diff*12,{dec:false})}</b></div></div>
+      ${x.recId&&x.stale?`<button class="btn primary pressable" style="margin-top:12px" onclick="SubRise.update('${key}')">${C.ic('edit')}Düzenli ödeme tutarını ${U.money(x.cur)} yap</button>`:''}
+      <button class="btn pressable" style="margin-top:8px" onclick="Sheet.close(true);LetterSheet.open(${U.esc(JSON.stringify(x.name))},${x.cur})">${C.ic('doc')}İptal e-postası hazırla</button>
+      <button class="btn pressable" style="margin-top:8px" onclick="SubRise.ok('${key}')">${C.ic('check')}Tamam, gördüm</button>`)},
+  update(key){const s=Store.get(),x=D.subRises(s).find(r=>r.key===key),r=x&&s.recurring.find(q=>q.id===x.recId);if(!r)return;
+    Store.dispatch({type:'upsert',col:'recurring',item:{...r,amount:x.cur}});this.ok(key);Toast.show('✓ '+r.name+' tutarı güncellendi')},
+  ok(key){const s=Store.get(),x=D.subRises(s).find(r=>r.key===key);if(x)Store.dispatch({type:'settings/update',payload:{riseSeen:{...(s.settings.riseSeen||{}),[key]:x.txId}}});Sheet.close()}};
+
+/* ---------- 7) Harcamasız gün serisi ve rozetler ---------- */
+const STREAK_DEFAULT=['food','fun','clothing','electronics'];
+D.streak=U.memo(s=>{const cats=new Set(s.settings.streakCats||STREAK_DEFAULT),T=U.today();
+  const days=new Set(s.transactions.filter(t=>t.kind==='expense'&&cats.has(t.category)).map(t=>t.date));
+  const first=s.transactions.reduce((m,t)=>t.date<m?t.date:m,T);
+  let cur=0,d=T;const spentToday=days.has(T);if(spentToday)cur=0;else{while(d>=first&&!days.has(d)){cur++;d=U.addDays(d,-1)}}
+  let best=0,run=0;for(let x=first;x<=T;x=U.addDays(x,1)){if(days.has(x))run=0;else{run++;if(run>best)best=run}}
+  const week=Array.from({length:7},(_,i)=>{const x=U.addDays(T,i-6);return{date:x,spent:days.has(x),before:x<first}});
+  return{cur,best,spentToday,week,cats:[...cats],since:first}});
+const BADGES=[
+  ['first','🌱','İlk adımlar','10 işlem kaydet',s=>s.transactions.length>=10],
+  ['tx100','📒','Kayıt ustası','100 işlem kaydet',s=>s.transactions.length>=100],
+  ['s3','🔥','Isınma turu','3 gün harcamasız seri',s=>D.streak(s).best>=3],
+  ['s7','⚡','Bir hafta!','7 gün harcamasız seri',s=>D.streak(s).best>=7],
+  ['s30','🏆','Demir irade','30 gün harcamasız seri',s=>D.streak(s).best>=30],
+  ['clean','💳','Tam ödeme','Bir kart ekstresini tamamen öde',s=>s.accounts.some(a=>a.type==='credit'&&D.statements(s,a.id).list.some(x=>x.status==='paid'))],
+  ['inst','🧩','Taksit bitti','Taksitli bir alışverişin son taksitini öde',s=>D.cardLines(s).some(l=>l.kind==='inst'&&l.n>1&&l.k===l.n-1&&(()=>{const a=D.account(s,l.accId);return l.idx<D.openIdx(a.credit)&&D.stmtAt(s,a.id,l.idx).remaining<=0.009})())],
+  ['goal','🐷','Hedefe ulaştın','Bir kumbara hedefini tamamla',s=>s.goals.some(g=>D.goal(s,g.id)?.done)],
+  ['budget','🎯','Bütçe ustası','Geçen ay hiçbir bütçeyi aşma',s=>{if(!s.budgets.length)return false;const t=new Date(),p=new Date(t.getFullYear(),t.getMonth()-1,1);
+    const by=D.sumBy(D.spendIn(s,U.iso(p),U.monthEnd(p.getFullYear(),p.getMonth())));return Object.keys(by).length>0&&s.budgets.every(b=>(by[b.category]||0)<=b.limit)}],
+  ['saver','💰','Artıda kapat','Bir ayı gelirinden az harcayarak bitir',s=>{const t=new Date();for(let i=1;i<=3;i++){const p=new Date(t.getFullYear(),t.getMonth()-i,1),r=D.monthReport(s,p.getFullYear(),p.getMonth());if(r.income>0&&r.expense>0&&r.net>0)return true}return false}],
+  ['backup','🔒','Güvendesin','Şifreli yedek al',s=>!!s.settings.backupEnc],
+  ['recap','🎬','Ayın hikâyesi','Bir ay özetini izle',s=>Object.keys(s.settings.recapSeen||{}).length>0]];
+D.badges=U.memo(s=>BADGES.map(([id,em,name,desc,fn])=>{let on=false;try{on=!!fn(s)}catch(e){}return{id,em,name,desc,on}}));
+const Badges={
+  open(){const s=Store.get(),k=D.streak(s),b=D.badges(s),n=b.filter(x=>x.on).length;
+    Sheet.open(Sheet.head('Seri ve rozetler',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<div class="glass streak-hero"><div class="sh-fire">${k.cur>0?'🔥':'🌤️'}</div><div><div class="sh-n num">${k.cur} gün</div><div class="muted sm">${k.spentToday?'Bugün harcama yaptın, seri yarın yeniden başlar':'harcamasız seri'} · en iyi ${k.best} gün</div></div></div>
+      <div class="streak-week">${k.week.map(d=>`<span class="${d.before?'pre':d.spent?'x':'ok'}"><i></i>${['Pz','Pt','Sa','Ça','Pe','Cu','Ct'][U.parse(d.date).getDay()]}</span>`).join('')}</div>
+      <div class="field"><span>Hangi harcamalar seriyi bozsun?</span><div class="chips wrap" style="padding-top:2px">${expenseCats().map(c=>`<button class="chip pressable ${k.cats.includes(c)?'on':''}" onclick="Badges.cat('${c}')">${U.esc(cat(c).name)}</button>`).join('')}</div></div>
+      <div class="field"><span>Rozetler · ${n}/${b.length}</span></div>
+      <div class="badges">${b.map(x=>`<div class="badge ${x.on?'on':''}"><span class="be">${x.em}</span><b>${x.name}</b><small>${x.desc}</small></div>`).join('')}</div>`)},
+  cat(c){const s=Store.get(),cur=s.settings.streakCats||STREAK_DEFAULT,next=cur.includes(c)?cur.filter(x=>x!==c):[...cur,c];if(!next.length){Toast.show('En az bir kategori seç');return}
+    Store.dispatch({type:'settings/update',payload:{streakCats:next}});const y=Sheet.el('.sheet')?.scrollTop;this.open();const sh=Sheet.el('.sheet');if(sh&&y)sh.scrollTop=y},
+  check(){const s=Store.get(),on=D.badges(s).filter(x=>x.on).map(x=>x.id),seen=s.settings.badgesSeen;
+    if(!Array.isArray(seen)){Store.dispatch({type:'settings/update',payload:{badgesSeen:on}});return}
+    const nw=on.filter(x=>!seen.includes(x));if(!nw.length)return;
+    Store.dispatch({type:'settings/update',payload:{badgesSeen:[...seen,...nw]}});const b=BADGES.find(x=>x[0]===nw[0]);
+    setTimeout(()=>{Haptic.success();typeof Confetti!=='undefined'&&Confetti.burst();Toast.show(`${b[1]} Yeni rozet: <b>${b[2]}</b>`,4000,{label:'Gör',fn:()=>Badges.open()})},500)},
+  init(){let t;Store.subscribe((s,a)=>{if(a.type==='settings/update'&&a.payload&&('badgesSeen' in a.payload))return;clearTimeout(t);t=setTimeout(()=>this.check(),900)});setTimeout(()=>this.check(),1500)}};
+
+WIDGETS.streak={name:'Harcamasız seri',icon:'flame',sizes:['s','m'],r:(s,ui,z)=>{const k=D.streak(s),b=D.badges(s),n=b.filter(x=>x.on).length;
+  if(z==='s')return WT.tile({icon:'flame',color:k.cur?'#ff9f0a':'#8e8e93',label:'Seri',value:k.cur+' gün',sub:`en iyi ${k.best} · 🏅 ${n}/${b.length}`,on:'Badges.open()'});
+  return `<button class="glass streak-w pressable" onclick="Badges.open()"><span class="sw-l"><span class="sw-f">${k.cur?'🔥':'🌤️'}</span><span><b class="num">${k.cur} gün</b><small>harcamasız seri · en iyi ${k.best}</small></span></span>
+    <span class="streak-week sm">${k.week.map(d=>`<span class="${d.before?'pre':d.spent?'x':'ok'}"><i></i></span>`).join('')}</span><span class="sw-b">🏅 ${n}/${b.length} rozet ›</span></button>`}};
+WIDGET_DEFAULT.splice(WIDGET_DEFAULT.findIndex(x=>x[0]==='insights')+1,0,['streak','m']);
+
+/* ---------- Akıllı özet: zam + yedek hatırlatması ---------- */
+{const _ins=D.insights;D.insights=U.memo(s=>{const out=[..._ins(s)];
+  D.subRises(s).slice(0,2).forEach(x=>out.unshift({sev:'warn',icon:'up',title:x.name+' zamlandı',text:`${U.money(x.prev)} → ${U.money(x.cur)} (+%${x.pct}). Yılda ${U.money(x.diff*12,{dec:false})} ek maliyet.`,on:`SubRise.open('${x.key}')`}));
+  const lb=s.settings.lastBackup;if(s.transactions.length>=5&&(!lb||Date.now()-lb>7*864e5))out.push({sev:'info',icon:'shield',title:'Yedek alma zamanı',text:lb?`Son yedek ${Math.floor((Date.now()-lb)/864e5)} gün önce. Telefon kaybolursa veriler gider.`:'Hiç yedek almadın. Veriler sadece bu telefonda duruyor.',on:'BackupSheet.open()'});
+  return out})}
+
+/* ---------- Menü ve ekran bağlantıları ---------- */
+{const _q=App.quick.bind(App),X={clip:()=>PayCapture.fromClipboard(),pesin:()=>PesinCalc.open(),minpay:()=>MinPay.open(),badges:()=>Badges.open(),backup:()=>BackupSheet.open(),applepay:()=>PayShortcutSheet.open()};
+  App.quick=k=>{if(X[k]){if(k==='clip'){X[k]();return}Sheet.close(true);setTimeout(X[k],60);return}return _q(k)}}
+{const _i=App.init.bind(App);App.init=()=>{_i();PayCapture.init();Badges.init();
+  const s=Store.get(),w=s.settings.widgets;if(Array.isArray(w)&&!s.settings.v8w){const i=w.findIndex(x=>x[0]==='insights');
+    Store.dispatch({type:'settings/update',payload:{v8w:true,widgets:w.some(x=>x[0]==='streak')?w:[...w.slice(0,i+1),['streak','m'],...w.slice(i+1)]}})}
+  else if(!s.settings.v8w)Store.dispatch({type:'settings/update',payload:{v8w:true}})}}
+
+/* ---------- 99_boot.js ---------- */
 App.init();
 
 </script>
