@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>try{var sb=localStorage.getItem("cuzdan_sb");if(sb)document.querySelector("meta[name=apple-mobile-web-app-status-bar-style]").content=sb}catch(e){}</script>
 <meta name="apple-mobile-web-app-title" content="Cüzdan">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -19,6 +20,7 @@
 
 /* ---------- 1. Tokens ---------- */
 :root{
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Inter",system-ui,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
   --spring:cubic-bezier(.34,1.56,.64,1);
@@ -55,7 +57,7 @@
 html{background:var(--bg);transition:background .4s var(--ease)}
 body{font-family:var(--font);color:var(--text);background:var(--bg);font-size:15px;line-height:1.35;
   -webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden;
-  padding:calc(env(safe-area-inset-top) + 8px) 0 calc(env(safe-area-inset-bottom) + 110px)}
+  padding:calc(var(--sat) + 8px) 0 calc(var(--sab) + 110px)}
 button{font-family:inherit;color:inherit;background:none;border:0;cursor:pointer}
 input,select,textarea{font-family:inherit;color:var(--text);font-size:16px}
 .num{font-variant-numeric:tabular-nums;letter-spacing:-.01em}
@@ -215,7 +217,7 @@ input,select,textarea{font-family:inherit;color:var(--text);font-size:16px}
 .btn.danger{color:var(--red)}
 
 /* Floating tab bar */
-.tabbar{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);
+.tabbar{position:fixed;left:50%;bottom:calc(12px + var(--sab));transform:translateX(-50%);
   width:min(calc(100% - 28px),430px);height:68px;border-radius:34px;display:flex;align-items:center;padding:0 8px;z-index:50;
   background:var(--glass-strong);box-shadow:var(--shadow),inset 0 1px 0 var(--glass-hi)}
 .tab{position:relative;z-index:1;flex:1;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
@@ -228,7 +230,7 @@ input,select,textarea{font-family:inherit;color:var(--text);font-size:16px}
 
 /* Sheet (bottom modal) */
 .sheet-backdrop{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.38);display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .25s ease}
-.sheet{width:100%;max-width:520px;max-height:93vh;overflow-y:auto;border-radius:32px 32px 0 0;padding:8px 20px calc(28px + env(safe-area-inset-bottom));
+.sheet{width:100%;max-width:520px;max-height:93vh;overflow-y:auto;border-radius:32px 32px 0 0;padding:8px 20px calc(28px + var(--sab));
   background:var(--sheet);-webkit-backdrop-filter:blur(40px) saturate(180%);backdrop-filter:blur(40px) saturate(180%);
   border:1px solid var(--glass-border);border-bottom:0;box-shadow:0 -10px 40px rgba(0,0,0,.3);animation:sheetUp .5s var(--ease)}
 .sheet-backdrop.closing{animation:fadeOut .25s forwards}
@@ -258,7 +260,7 @@ input[type=date].input{min-height:50px}
 .action-list .row+.row::before{left:54px}
 
 /* Toast */
-.toasts{position:fixed;top:calc(env(safe-area-inset-top) + 10px);left:0;right:0;z-index:200;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.toasts{position:fixed;top:calc(var(--sat) + 10px);left:0;right:0;z-index:200;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
 .toast{pointer-events:auto;padding:12px 18px;border-radius:22px;font-size:14px;font-weight:600;max-width:calc(100% - 32px);
   background:var(--glass-strong);box-shadow:var(--shadow);animation:toastIn .5s var(--spring)}
 .toast.out{animation:toastOut .3s forwards}
@@ -695,7 +697,7 @@ body.onboarding .tabbar{transform:translate(-50%,160%);transition:transform .5s 
 .typing i{width:7px;height:7px;border-radius:50%;background:var(--text2);animation:blink 1.2s infinite}
 .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
 @keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
-.chat-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));width:min(calc(100% - 28px),490px);display:flex;gap:8px;padding:6px 6px 6px 16px;border-radius:26px;z-index:40;background:var(--glass-strong)}
+.chat-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + var(--sab));width:min(calc(100% - 28px),490px);display:flex;gap:8px;padding:6px 6px 6px 16px;border-radius:26px;z-index:40;background:var(--glass-strong)}
 .chat-bar input{flex:1;min-width:0;background:none;border:0;outline:none;font-size:16px;color:var(--text)}
 .chat-bar .send{width:40px;height:40px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;flex-shrink:0}
 .chat-bar .send svg.i{width:20px;height:20px;stroke-width:2.3}
@@ -706,12 +708,197 @@ body.onboarding .tabbar{transform:translate(-50%,160%);transition:transform .5s 
 textarea.input{font-family:inherit}
 .seg button{padding:7px 6px}
 .sheet-backdrop.swap,.sheet-backdrop.swap .sheet{animation:none}
+
+/* =====================================================================
+   v6 · Apple Liquid Glass + iPhone düzen düzeltmeleri
+   ===================================================================== */
+:root{--rim-angle:calc(150deg + var(--tx,0deg) * 5);--dock-h:64px}
+[data-theme=dark]{
+  --glass:rgba(255,255,255,.055);--glass-2:rgba(255,255,255,.1);--glass-strong:rgba(28,28,34,.42);--sheet:rgba(30,30,36,.86);--toast:rgba(34,34,40,.88);
+  --glass-hi:rgba(255,255,255,.22);--rim1:rgba(255,255,255,.6);--rim2:rgba(255,255,255,.08);--rim3:rgba(255,255,255,.32);
+  --g-shadow:0 10px 30px rgba(0,0,0,.35);--lens:rgba(255,255,255,.14);--blob-op:.55}
+[data-theme=light]{
+  --glass:rgba(255,255,255,.46);--glass-2:rgba(255,255,255,.66);--glass-strong:rgba(255,255,255,.5);--sheet:rgba(250,250,253,.88);--toast:rgba(255,255,255,.92);
+  --glass-hi:rgba(255,255,255,.95);--rim1:rgba(255,255,255,1);--rim2:rgba(255,255,255,.35);--rim3:rgba(255,255,255,.85);
+  --g-shadow:0 10px 28px rgba(40,50,110,.12);--lens:rgba(120,120,135,.14);--blob-op:.6}
+html[data-theme=dark][data-oled="0"]{--bg:#0c0c11}
+
+/* ---------- Arka plan: cam ancak arkasında renk varken cam gibi görünür ---------- */
+.ambient i{filter:blur(70px);opacity:var(--blob-op)}
+.ambient i:nth-child(1){width:110vw;max-width:520px;height:420px;top:-160px;left:-35vw}
+.ambient i:nth-child(2){width:90vw;max-width:440px;height:380px;top:32%;right:-40vw}
+.ambient i:nth-child(3){width:100vw;max-width:480px;height:360px;bottom:-120px;left:-10vw;background:var(--amb3,#30d158)}
+.ambient i:nth-child(4){position:absolute;border-radius:50%;width:70vw;max-width:320px;height:300px;top:58%;left:-25vw;background:var(--amb4,#ff375f);opacity:calc(var(--blob-op)*.6);animation:drift 26s ease-in-out infinite alternate-reverse}
+
+/* ---------- Cam malzeme: yarı saydam dolgu + güçlü bulanıklık + parlak kenar (ışık yönü telefon eğimini izler) ---------- */
+.glass{background:var(--glass);border:0;
+  -webkit-backdrop-filter:blur(24px) saturate(190%);backdrop-filter:blur(24px) saturate(190%);
+  box-shadow:var(--g-shadow),inset 0 1px 1px rgba(255,255,255,.14),inset 0 -1px 1px rgba(0,0,0,.08),inset 0 0 18px rgba(255,255,255,.03)}
+.glass::before{background:linear-gradient(var(--rim-angle),rgba(255,255,255,.13) 0%,transparent 36%,transparent 70%,rgba(255,255,255,.035) 100%)}
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:linear-gradient(var(--rim-angle),var(--rim1),var(--rim2) 26%,transparent 50%,var(--rim2) 74%,var(--rim3));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.75}
+.hero{background:radial-gradient(circle at 92% -8%,rgba(10,132,255,.38),transparent 46%),var(--glass)}
+.hero::after{width:auto;height:auto;right:0;top:0;border-radius:inherit;filter:none}
+.ai-card::after{opacity:1}
+
+/* Basma hissi: cam düğmeler su damlası gibi hafifçe büyür ve parlar (iOS 26) */
+.glass.pressable:active{transform:scale(1.035);filter:brightness(1.15) saturate(1.1);transition-duration:.12s}
+.row.pressable:active,.sline.pressable:active{transform:none;background:var(--fill)}
+.btn.pressable:active,.chip.pressable:active,.mini-btn:active{transform:scale(.96)}
+.ccard.pressable:active{transform:scale(.985)}
+
+/* ---------- Tipografi (Apple büyük başlık) ---------- */
+.topbar h1,.page-title{font-size:34px;font-weight:700;letter-spacing:-.025em}
+.topbar{gap:12px}.topbar>div:first-child{min-width:0}
+.topbar .t-sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-actions{flex-shrink:0;gap:8px}
+.icon-btn,.avatar{width:40px;height:40px}
+
+/* ---------- Durum çubuğu (saat/pil) alanı + kayan gezinme çubuğu ---------- */
+#sbar{position:fixed;top:0;left:0;right:0;height:calc(var(--sat) + 14px);z-index:44;pointer-events:none;
+  background:linear-gradient(var(--bg) 0%,color-mix(in srgb,var(--bg) 70%,transparent) var(--sat),transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  -webkit-mask-image:linear-gradient(#000 calc(100% - 14px),transparent);mask-image:linear-gradient(#000 calc(100% - 14px),transparent)}
+#navbar{position:fixed;top:0;left:0;right:0;z-index:45;padding-top:var(--sat);height:calc(var(--sat) + 48px);
+  background:var(--glass-strong);-webkit-backdrop-filter:blur(26px) saturate(190%);backdrop-filter:blur(26px) saturate(190%);
+  box-shadow:inset 0 -.5px 0 var(--sep);opacity:0;pointer-events:none;transition:opacity .25s var(--ease)}
+#navbar.show{opacity:1;pointer-events:auto}
+.nb-in{height:48px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 10px;max-width:520px;margin:0 auto}
+.nb-title{font-size:17px;font-weight:600;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56vw;transform:translateY(6px);transition:transform .3s var(--ease)}
+#navbar.show .nb-title{transform:none}
+.nb-back{justify-self:start;color:var(--blue);font-size:17px;font-weight:500;display:flex;align-items:center;gap:2px;min-height:44px;padding:0 8px 0 2px}
+.nb-back b{font-size:30px;font-weight:300;line-height:20px;margin-top:-3px}
+.nb-back.hide{visibility:hidden}
+
+/* ---------- Alt bar: iOS 26 tarzı ayrık cam kapsül + yuvarlak ekle düğmesi ---------- */
+.dock{position:fixed;left:0;right:0;bottom:calc(var(--sab) + 10px);z-index:50;display:flex;justify-content:center;gap:10px;padding:0 14px;pointer-events:none;
+  transition:transform .5s var(--ease),opacity .3s}
+.dock>*{pointer-events:auto}
+.tabbar{position:relative!important;left:auto!important;bottom:auto!important;transform:none!important;width:auto!important;flex:1;max-width:400px;
+  height:var(--dock-h);border-radius:calc(var(--dock-h)/2);display:flex;align-items:center;padding:0 5px;touch-action:none;user-select:none;-webkit-user-select:none;
+  background:var(--glass-strong);transition:height .45s var(--spring),border-radius .45s var(--spring)}
+.tab{flex:1;min-width:0;height:calc(var(--dock-h) - 10px);border-radius:calc((var(--dock-h) - 10px)/2);gap:3px;font-size:10.5px;font-weight:600;color:var(--text2);
+  -webkit-touch-callout:none;transition:color .25s,height .45s var(--spring)}
+.tab svg{width:25px;height:25px;transition:transform .35s var(--spring)}
+.tab span{line-height:1;transition:opacity .25s,max-height .35s var(--ease);max-height:14px;overflow:hidden}
+.tab.on{color:var(--blue)}
+.tab.pressable:active{transform:none}
+.tab-ind{position:absolute;top:5px;bottom:5px;left:0;border:0;border-radius:calc((var(--dock-h) - 10px)/2);z-index:0;pointer-events:none;
+  background:var(--lens);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 .5px rgba(255,255,255,.12);
+  transition:transform .55s var(--spring),width .4s var(--ease),background .25s,box-shadow .25s}
+.tab{position:relative;z-index:1}
+/* Sürükleme: seçim göstergesi parmağı izleyen büyüteç merceğe dönüşür */
+.lens-drag .tab-ind{transition:transform .14s var(--ease),width .2s;background:rgba(255,255,255,.06);
+  box-shadow:0 12px 30px rgba(0,0,0,.28),inset 0 0 0 1.2px rgba(255,255,255,.45),inset 0 2px 6px rgba(255,255,255,.25),inset 0 -2px 8px rgba(0,0,0,.12)}
+[data-theme=light] .lens-drag .tab-ind{background:rgba(255,255,255,.35)}
+.lens-drag .tab.hover{color:var(--blue)}
+.lens-drag .tab.hover svg{transform:scale(1.2)}
+.lens-drag .tab:not(.hover){color:var(--text2)}
+.dock-add{width:var(--dock-h);height:var(--dock-h);border-radius:50%;flex-shrink:0;display:grid;place-items:center;color:var(--blue);
+  background:color-mix(in srgb,var(--blue) 20%,var(--glass-strong));transition:width .45s var(--spring),height .45s var(--spring)}
+.dock-add svg.i{width:28px;height:28px;stroke-width:2.2}
+/* Aşağı kaydırınca küçülür, yukarı kaydırınca açılır */
+.dock.mini{--dock-h:52px}
+.dock.mini .tab span{opacity:0;max-height:0}
+.dock.mini .tab svg{width:23px;height:23px}
+body.onboarding .dock,body.kb .dock,body.typing .dock{transform:translateY(170%);opacity:0;pointer-events:none}
+body.onboarding .tabbar{transform:none!important}
+
+/* Bölümlü kontroller de sürüklenebilir mercek */
+.seg{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.seg button{padding:7px 4px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+.seg .thumb{transition:transform .5s var(--spring),width .3s,box-shadow .2s}
+.seg.lens-drag .thumb{transition:transform .12s var(--ease);box-shadow:0 6px 18px rgba(0,0,0,.25),inset 0 0 0 1px rgba(255,255,255,.45);transform-origin:center}
+.seg.lens-drag button.hover{color:var(--blue)}
+
+/* ---------- Alt pencereler: yüzen cam kart (iOS 26) ---------- */
+.sheet-backdrop{top:var(--vvt,0px);bottom:auto;height:var(--vvh,100%);background:rgba(0,0,0,.28)}
+.sheet{width:calc(100% - 16px);margin:0 8px 8px;border-radius:34px;border:0;max-height:calc(100% - var(--sat) - 16px);
+  background:var(--sheet);-webkit-backdrop-filter:blur(50px) saturate(190%);backdrop-filter:blur(50px) saturate(190%);
+  box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 1px rgba(255,255,255,.18),inset 0 0 0 .5px rgba(255,255,255,.12);
+  padding:6px 18px calc(18px + var(--sab))}
+body.kb .sheet{padding-bottom:18px}
+.sheet-head{margin:0 -8px 6px;min-height:44px}
+.sheet-head button{min-height:44px;min-width:44px;padding:0 8px;font-size:16px}
+.sheet-head h3{font-size:17px;font-weight:700;text-align:center;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
+.grabber{margin:4px auto 6px}
+.section-head{align-items:center}
+.section-head button{min-height:40px;padding:0 0 0 12px}
+.mini-btn{min-height:32px;padding:7px 12px}
+.ob .skip{padding:12px 16px}
+a.link{display:inline-block;padding:9px 0}
+
+/* ---------- Form alanları: Safari'de tarih kutusunun taşıp yanındakinin üstüne binmesini engelle ---------- */
+.grid2>*,.field,.filters>*{min-width:0}
+.input{min-width:0;max-width:100%}
+input[type=date].input{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;text-align:left;line-height:1.2}
+input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+input[type=date]::-webkit-calendar-picker-indicator{margin:0;padding:0}
+select.input{text-overflow:ellipsis;white-space:nowrap;overflow:hidden;padding-right:28px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--text2) 50%),linear-gradient(135deg,var(--text2) 50%,transparent 50%);
+  background-position:calc(100% - 15px) 52%,calc(100% - 10px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+
+/* ---------- Taşma/çakışma güvenlikleri ---------- */
+.legend .nm{min-width:0}
+.legend button{min-height:26px}
+.row .mid>b,.row .mid>span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .end{max-width:48%}
+.row .end b{white-space:nowrap}
+.pills{row-gap:8px}
+.pill{white-space:nowrap}
+.spend-top{flex-wrap:wrap;row-gap:12px}
+.spend-top .seg{flex:1 1 180px;max-width:220px}
+.hero-foot{gap:10px;flex-wrap:wrap}
+.cc-foot{gap:8px}
+.cc-foot span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat .v{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qa{min-width:0}
+.qa,.act{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:370px){
+  .donut{width:140px;height:140px}
+  .donut-wrap{gap:12px}
+  .quick{gap:8px}.qa{font-size:11px}
+  .stats{gap:8px}.stat .v{font-size:17px}
+  .hero-amount{font-size:38px}
+  .topbar h1,.page-title{font-size:30px}
+}
+
+/* ---------- Kart çevirme: Safari'de iki yüzün üst üste görünmesini engelle (backface yerine görünürlük değişimi) ---------- */
+.flip-inner{transition:transform .5s cubic-bezier(.45,0,.25,1)}
+.flip-inner>.ccard{transition:opacity 0s linear .25s}
+.flip-inner>.ccard.cc-back{opacity:0;pointer-events:none}
+.flipper.flipped .flip-inner>.ccard.cc-back{opacity:1;pointer-events:auto}
+.flipper.flipped .flip-inner>.ccard:not(.cc-back){opacity:0;pointer-events:none}
+
+/* ---------- Bildirim: tek seferde tek, Dynamic Island hizasında cam hap ---------- */
+.toasts{top:calc(var(--sat) + 8px)}
+.toast{background:var(--toast);-webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);
+  border-radius:24px;padding:12px 18px;max-width:min(92vw,440px);box-shadow:0 14px 40px rgba(0,0,0,.35),inset 0 1px 1px rgba(255,255,255,.18)}
+
+/* ---------- Klavye açıkken sohbet çubuğu klavyenin üstünde ---------- */
+.chat-bar{bottom:calc(var(--sab) + var(--dock-h) + 22px);transition:bottom .25s var(--ease)}
+body.kb .chat-bar,body.typing .chat-bar{bottom:calc(var(--kb,0px) + 10px)}
+.chat{padding-bottom:calc(var(--dock-h) + 70px)}
+
+/* ---------- Bağlam menüsü, kilit ekranı: cam ---------- */
+.ctx{background:var(--sheet);-webkit-backdrop-filter:blur(40px) saturate(190%);backdrop-filter:blur(40px) saturate(190%);border-radius:20px}
+#lock{padding-top:calc(var(--sat) + 20px)}
+/* Bildirim: başlıkların üstüne binmesin diye alt barın hemen üstünde (iOS Mail "Geri Al" gibi); pencere açıkken üstte */
+.toasts{top:auto;bottom:calc(var(--sab) + var(--dock-h) + 24px);flex-direction:column-reverse}
+body.kb .toasts,body.typing .toasts{bottom:calc(var(--kb,0px) + 12px)}
+body:has(#sheet) .toasts,body.onboarding .toasts{bottom:auto;top:calc(var(--sat) + 8px)}
+@keyframes toastIn{from{transform:translateY(24px) scale(.92);opacity:0}}
+@keyframes toastOut{to{transform:translateY(16px) scale(.96);opacity:0}}
 </style>
 </head>
 <body>
-<div class="ambient"><i></i><i></i><i></i></div>
+<div class="ambient"><i></i><i></i><i></i><i></i></div>
+<div id="sbar"></div>
+<header id="navbar"><div class="nb-in"><button class="nb-back hide"><b>‹</b>Geri</button><span class="nb-title"></span><span></span></div></header>
 <main id="screen"></main>
-<nav class="tabbar glass" id="tabbar"></nav>
+<nav class="dock" id="dock"><div class="tabbar glass" id="tabbar"></div><button class="dock-add glass pressable" id="dock-add" onclick="App.openAdd()" aria-label="Ekle"></button></nav>
 <div class="toasts" id="toasts"></div>
 <div id="print"></div>
 <script>
@@ -1330,7 +1517,7 @@ const Theme={
   toggle(){Store.dispatch({type:'settings/update',payload:{theme:this.effective()==='dark'?'light':'dark'}});Haptic.tap()}
 };
 
-const Toast={show(msg,ms=2600,action){const box=document.getElementById('toasts');if(!box)return;const el=document.createElement('div');
+const Toast={show(msg,ms=2600,action){const box=document.getElementById('toasts');if(!box)return;box.querySelectorAll('.toast').forEach(t=>t.remove());const el=document.createElement('div');
   el.className='toast glass';el.innerHTML=`<span>${msg}</span>`;
   if(action){const b=document.createElement('button');b.className='toast-act';b.textContent=action.label;b.onclick=()=>{action.fn();el.remove()};el.appendChild(b);ms=Math.max(ms,4500)}
   box.appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),300)},ms)}};
@@ -1338,7 +1525,7 @@ const Toast={show(msg,ms=2600,action){const box=document.getElementById('toasts'
 /* Bildirim simülasyonu: 0, 1 ve 3 gün kala hatırlatma (oturum başına bir kez) */
 const Reminders={run(){let seen;try{seen=sessionStorage.getItem('rem_shown')}catch(e){}if(seen)return;
   const due=D.upcoming(Store.get()).filter(x=>x.kind!=='open'&&!x.income&&[0,1,3].includes(U.daysUntil(x.date)));
-  due.slice(0,3).forEach((x,i)=>setTimeout(()=>Toast.show(`🔔 ${U.esc(x.title)}: ${U.daysUntil(x.date)===0?'bugün son gün':U.daysUntil(x.date)+' gün kaldı'} · <b>${U.money(x.amount)}</b>`,4200),700+i*900));
+  if(due.length){const x=due[0],n=U.daysUntil(x.date);setTimeout(()=>Toast.show(`🔔 ${U.esc(x.title)}: ${n===0?'bugün son gün':n+' gün kaldı'} · <b>${U.money(x.amount)}</b>${due.length>1?` <span class="muted">+${due.length-1} ödeme daha</span>`:''}`,5200,due.length>1?{label:'Takvim',fn:()=>App.go('plan','cal')}:null),900)}
   try{sessionStorage.setItem('rem_shown','1')}catch(e){}}};
 
 /* Fiş görselleri / PDF'ler: IndexedDB (localStorage ~5 MB sınırına takılmaz) */
@@ -2273,7 +2460,7 @@ const Sheet={
     bd.innerHTML=`<div class="sheet" role="dialog"><div class="grabber"></div>${html}</div>`;
     bd.addEventListener('click',e=>{if(e.target===bd)this.close()});document.body.appendChild(bd);
     const sh=bd.firstElementChild;let y0=null,dy=0;   // aşağı kaydırarak kapatma
-    sh.addEventListener('touchstart',e=>{if(sh.scrollTop<=0&&!e.target.closest('input,select,textarea'))y0=e.touches[0].clientY},{passive:true});
+    sh.addEventListener('touchstart',e=>{if(sh.scrollTop<=0&&!e.target.closest('input,select,textarea,.seg'))y0=e.touches[0].clientY},{passive:true});
     sh.addEventListener('touchmove',e=>{if(y0===null)return;dy=Math.max(0,e.touches[0].clientY-y0);if(dy>0){sh.style.transform=`translateY(${dy}px)`;sh.style.transition='none'}},{passive:true});
     sh.addEventListener('touchend',()=>{if(y0===null)return;sh.style.transition='transform .35s var(--ease)';if(dy>110)this.close();else sh.style.transform='';y0=null;dy=0});
     if(old)sh.scrollTop=top;   // aynı pencere yenilenince kayma animasyonu ve kaydırma konumu korunur
@@ -3000,6 +3187,71 @@ const Install={deferred:null,
       <button class="btn pressable" onclick="Rates.fetch(true).then(()=>SettingsSheet.open('rates'))">${C.ic('flip')}Kurları şimdi güncelle</button>
       <button class="btn pressable" onclick="ICSSheet.open()">${C.ic('calendar')}Takvime hatırlatma ekle</button></div>`}};
 
+/* ---------- 85_glass.js ---------- */
+
+/* =====================================================================
+   v6 · Liquid Glass etkileşimleri
+   Lens   : alt bar ve bölümlü kontrollerde parmakla sürüklenen cam mercek
+   NavBar : büyük başlık kaybolunca beliren cam gezinme çubuğu (+ durum çubuğu alanı)
+   Dock   : aşağı kaydırınca küçülen alt bar
+   KB     : klavye açıkken alt barı gizle, pencereleri görünür alana sığdır
+   ===================================================================== */
+const Lens={st:null,
+  init(){document.addEventListener('pointerdown',e=>{if(e.button>0)return;const c=e.target.closest&&e.target.closest('#tabbar,.seg');if(c)this.start(c,e)},{passive:true});
+    document.addEventListener('pointermove',e=>this.move(e),{passive:true});
+    document.addEventListener('pointerup',e=>this.end(e));document.addEventListener('pointercancel',()=>this.cancel())},
+  parts(c){const tab=c.id==='tabbar';return{tab,items:[...c.querySelectorAll(tab?'.tab':':scope>button')],ind:c.querySelector(tab?'#tab-ind':'.thumb')}},
+  start(c,e){const p=this.parts(c);if(!p.ind||p.items.length<2)return;
+    this.st={c,...p,x0:e.clientX,y0:e.clientY,drag:false,idx:-1,cr:c.getBoundingClientRect(),
+      rects:p.items.map(b=>{const r=b.getBoundingClientRect();return{l:r.left,w:r.width,cx:r.left+r.width/2}}),
+      cur:p.items.findIndex(b=>p.tab?b.classList.contains('on'):false)}},
+  move(e){const st=this.st;if(!st)return;const dx=e.clientX-st.x0,dy=e.clientY-st.y0;
+    if(!st.drag){if(Math.abs(dx)<7&&Math.abs(dy)<7)return;if(!st.tab&&Math.abs(dy)>Math.abs(dx)){this.st=null;return}
+      st.drag=true;st.c.classList.add('lens-drag');Haptic.tap()}
+    const R=st.rects,first=R[0],last=R[R.length-1];let i=0,best=1e9;R.forEach((r,j)=>{const d=Math.abs(r.cx-e.clientX);if(d<best){best=d;i=j}});
+    if(i!==st.idx){st.items.forEach((b,j)=>b.classList.toggle('hover',j===i));if(st.idx!==-1)Haptic.tap();st.idx=i}
+    const w=R[i].w,x=Math.max(first.l,Math.min(last.l+last.w-w,e.clientX-w/2))-st.cr.left;
+    if(st.tab){st.ind.style.width=w+'px';st.ind.style.transform=`translateX(${x}px) scale(1.14,1.1)`}
+    else{st.ind.style.transform=`translateX(${x-2}px) scale(1.06,1.12)`}},
+  end(e){const st=this.st;this.st=null;if(!st||!st.drag)return;
+    st.c.classList.remove('lens-drag');st.items.forEach(b=>b.classList.remove('hover'));Gesture.blockClick();
+    const b=st.items[st.idx];if(!b)return this.restore(st);
+    if(st.tab){const t=b.dataset.tab;if(t===UI.tab&&!UI.stack.length)this.restore(st);else App.go(t)}
+    else{if(b.onclick)b.onclick.call(b,new MouseEvent('click'));else this.restore(st)}},
+  cancel(){const st=this.st;this.st=null;if(st&&st.drag){st.c.classList.remove('lens-drag');st.items.forEach(b=>b.classList.remove('hover'));this.restore(st)}},
+  restore(st){if(st.tab)App.renderTabbar();else{st.ind.style.transform='';App.render()}}};
+
+const NavBar={el:null,thr:60,
+  init(){this.el=document.getElementById('navbar');if(!this.el)return;
+    this.el.querySelector('.nb-back').onclick=()=>App.back();
+    addEventListener('scroll',()=>{if(!this.raf)this.raf=requestAnimationFrame(()=>{this.raf=0;this.update();Dock.onScroll()})},{passive:true})},
+  sync(){if(!this.el)return;const h=document.querySelector('#screen .page-title,#screen .topbar h1');
+    this.el.querySelector('.nb-title').textContent=h?h.textContent.trim():'';
+    this.el.querySelector('.nb-back').classList.toggle('hide',!UI.stack.length);
+    const top=parseFloat(getComputedStyle(this.el).paddingTop)||0;
+    this.thr=h?Math.max(20,h.getBoundingClientRect().bottom+scrollY-top-8):1e9;this.update()},
+  update(){if(this.el)this.el.classList.toggle('show',scrollY>this.thr&&!document.body.classList.contains('onboarding'))}};
+
+const Dock={last:0,
+  onScroll(){const y=scrollY,d=y-this.last,dock=document.getElementById('dock');if(!dock)return;
+    if(Math.abs(d)<10)return;
+    const atEnd=innerHeight+y>=document.documentElement.scrollHeight-40;
+    dock.classList.toggle('mini',d>0&&y>140&&!atEnd);this.last=y}};
+
+const KB={init(){const vv=window.visualViewport,root=document.documentElement;
+    const f=()=>{if(!vv||Math.abs((vv.scale||1)-1)>.01)return;const kb=Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop));
+      root.style.setProperty('--kb',kb+'px');root.style.setProperty('--vvt',Math.round(vv.offsetTop)+'px');root.style.setProperty('--vvh',Math.round(vv.height)+'px');
+      document.body.classList.toggle('kb',kb>120)};
+    if(vv){vv.addEventListener('resize',f);vv.addEventListener('scroll',f);f()}
+    const isText=el=>el&&el.matches&&el.matches('input:not([type=checkbox]):not([type=file]):not([type=date]),textarea');
+    document.addEventListener('focusin',e=>{if(isText(e.target))document.body.classList.add('typing')});
+    document.addEventListener('focusout',e=>{if(isText(e.target))setTimeout(()=>{if(!isText(document.activeElement))document.body.classList.remove('typing')},60)})}};
+
+/* iPhone durum çubuğu stili: açık temada koyu, koyu temada beyaz yazı (bir sonraki açılışta uygulanır) */
+const StatusBar={apply(){const m=document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]');if(!m)return;
+  const v=Theme.effective()==='light'?'default':'black-translucent';if(m.content!==v)m.content=v;
+  try{localStorage.setItem('cuzdan_sb',v)}catch(e){}}};
+
 /* ---------- 80_app.js ---------- */
 
 /* ===================== ui/interactions · hareketler ve efektler ===================== */
@@ -3094,7 +3346,6 @@ const UI={tab:'home',stack:[],period:'month',seg:null,
   cardTab:'stmts',openStmt:null,matrixAcc:null,walletSel:null,flipped:{},ob:0,obd:null};
 const TABS=[['home','Ana Sayfa','<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>'],
   ['txs','İşlemler','<path d="M4 6h16M4 12h16M4 18h10"/>'],
-  ['add'],
   ['plan','Planla','<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'],
   ['reports','Raporlar','<path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/>']];
 
@@ -3113,7 +3364,7 @@ const App={
     if(top&&top.name==='tx'){const t=D.tx(s,top.params.id);if(t&&t.attachmentId)this.loadAttachment(t.attachmentId)}
     Gesture.open=null;Ctx.close();Count.run(scr);this.ambient(s,top);
     document.body.classList.toggle('onboarding',!s.accounts.length&&UI.tab==='home'&&!top);
-    this.renderTabbar()},
+    this.renderTabbar();NavBar.sync()},
   ambient(s,top){const r=document.documentElement;let g=null;
     if(top&&['card','account'].includes(top.name)){const a=D.account(s,top.params.id);if(a)g=GRADIENTS[(a.color||0)%GRADIENTS.length]}
     else if(!top&&UI.tab==='home'){const cards=s.accounts.filter(a=>a.type==='credit'),f=cards.find(a=>a.id===UI.walletSel)||cards[cards.length-1];if(f)g=GRADIENTS[(f.color||0)%GRADIENTS.length]}
@@ -3128,18 +3379,18 @@ const App={
     catch(e){box.innerHTML='<p class="muted sm">Belge yüklenemedi.</p>'}},
   async openPdf(id){const d=await Attach.get(id);if(!d)return;const b=await (await fetch(d)).blob();window.open(URL.createObjectURL(b),'_blank')},
   renderTabbar(){const nav=document.getElementById('tabbar');
-    if(!nav.dataset.ready){nav.innerHTML='<span class="tab-ind" id="tab-ind"></span>'+TABS.map(t=>t[0]==='add'
-      ?`<button class="tab-add pressable" onclick="App.openAdd()" aria-label="Ekle">${C.ic('plus')}</button>`
-      :`<button class="tab pressable" data-tab="${t[0]}" onclick="App.go('${t[0]}')"><svg viewBox="0 0 24 24">${t[2]}</svg>${t[1]}</button>`).join('');nav.dataset.ready=1}
+    if(!nav.dataset.ready){nav.innerHTML='<span class="tab-ind" id="tab-ind"></span>'+TABS.map(t=>`<button class="tab" data-tab="${t[0]}" onclick="App.go('${t[0]}')" aria-label="${t[1]}"><svg viewBox="0 0 24 24">${t[2]}</svg><span>${t[1]}</span></button>`).join('');
+      nav.dataset.ready=1;const add=document.getElementById('dock-add');if(add)add.innerHTML=C.ic('plus')}
     nav.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===UI.tab));
     requestAnimationFrame(()=>{const on=nav.querySelector('.tab.on'),ind=document.getElementById('tab-ind');if(on&&ind){ind.style.width=on.offsetWidth+'px';ind.style.transform=`translateX(${on.offsetLeft}px)`}})},
   /* navigasyon: sekmeler + detay sayfa yığını (Android geri hareketi / tarayıcı geri tuşu desteklenir) */
   go(tab,sub){const same=UI.tab===tab&&!UI.stack.length;if(sub&&tab==='plan')UI.planTab=sub;
     if(same&&!sub){window.scrollTo({top:0,behavior:'smooth'});return}
-    UI.tab=tab;UI.stack=[];UI.seg=null;try{history.replaceState({d:0},'')}catch(e){}Haptic.tap();window.scrollTo(0,0);this.render('fade')},
+    UI.tab=tab;UI.stack=[];UI.seg=null;try{history.replaceState({d:0},'')}catch(e){}Haptic.tap();window.scrollTo(0,0);this.unmini();this.render('fade')},
+  unmini(){const d=document.getElementById('dock');if(d)d.classList.remove('mini');Dock.last=0},
   push(name,params){const cur=this.current();if(cur)cur.scroll=window.scrollY;else UI.tabScroll=window.scrollY;
     if(name==='card'){UI.cardTab='stmts';UI.openStmt=null}if(name==='matrix')UI.matrixAcc=params&&params.acc!=null?params.acc:null;
-    UI.stack.push({name,params:params||{}});try{history.pushState({d:UI.stack.length},'')}catch(e){}Haptic.tap();this.render('push');window.scrollTo(0,0)},
+    UI.stack.push({name,params:params||{}});this.unmini();try{history.pushState({d:UI.stack.length},'')}catch(e){}Haptic.tap();this.render('push');window.scrollTo(0,0)},
   back(force){if(!UI.stack.length)return;if(!force&&history.state&&history.state.d===UI.stack.length){history.back();return}this.pop()},
   pop(){UI.stack.pop();this.render('pop');const cur=this.current();window.scrollTo(0,cur?cur.scroll||0:UI.tabScroll||0)},
   onPop(e){const d=(e.state&&e.state.d)||0;if(document.getElementById('sheet')){Sheet.close();try{history.pushState({d:UI.stack.length},'')}catch(x){}return}
@@ -3188,12 +3439,12 @@ const App={
     rd.onload=()=>{try{const d=JSON.parse(rd.result);if(!Array.isArray(d.accounts)||!Array.isArray(d.transactions))throw 0;
       if(!confirm('Mevcut verilerin yerine bu yedek yüklensin mi?'))return;Store.dispatch({type:'state/replace',payload:Persist.migrate(d)});Sheet.close();UI.stack=[];Toast.show('✓ Yedek yüklendi')}
       catch(e){Toast.show('⚠️ Geçerli bir yedek dosyası değil')}};rd.readAsText(f)},
-  init(){Store.init(Persist.load());Theme.apply();Appearance.apply();PRIVACY=!!Store.get().settings.privacy;
-    Gesture.init();Scrub.init();Tilt.init();
+  init(){Store.init(Persist.load());Theme.apply();Appearance.apply();StatusBar.apply();PRIVACY=!!Store.get().settings.privacy;
+    Gesture.init();Scrub.init();Tilt.init();Lens.init();NavBar.init();KB.init();
     document.addEventListener('scroll',e=>{const el=e.target;if(!el.classList||!el.classList.contains('strip'))return;const d=document.getElementById('dots-'+el.dataset.dots);if(!d)return;
       const w=el.firstElementChild?el.firstElementChild.offsetWidth+10:1,i=Math.round(el.scrollLeft/w);d.querySelectorAll('i').forEach((x,j)=>x.classList.toggle('on',j===i))},true);
     Theme.mq&&Theme.mq.addEventListener&&Theme.mq.addEventListener('change',()=>{Theme.apply();this.render()});
-    Store.subscribe((s,a)=>{if(a.type==='settings/update'){Theme.apply();Appearance.apply()}this.render(a.type==='state/replace'?'fade':null)});
+    Store.subscribe((s,a)=>{if(a.type==='settings/update'){Theme.apply();Appearance.apply();StatusBar.apply()}this.render(a.type==='state/replace'?'fade':null)});
     window.addEventListener('popstate',e=>this.onPop(e));try{history.replaceState({d:0},'')}catch(e){}
     this.render('fade');
     if(Store.get()._migrated){Toast.show('📥 Taksitlerim verilerin taşındı');const s={...Store.get()};delete s._migrated;Store.dispatch({type:'state/replace',payload:s})}
