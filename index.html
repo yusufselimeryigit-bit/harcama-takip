@@ -1123,6 +1123,62 @@ button.stat{text-align:left;font:inherit;color:inherit;width:100%;display:block}
 .sw-l{display:flex;align-items:center;gap:10px;min-width:0}.sw-f{font-size:30px;line-height:1}
 .sw-l b{display:block;font-size:20px;font-weight:800}.sw-l small{display:block;font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sw-b{grid-column:1/-1;font-size:12.5px;color:var(--text2)}
+
+/* ===================== v9 · alt bar sabitleme, Ziraat modülü, bulut ===================== */
+/* Alt bar: her zaman ekranın altına sabit, kaydırmada boyut/konum değişmez; içerik altında yumuşakça kaybolur */
+body{min-height:100dvh;padding-bottom:calc(var(--sab) + var(--dock-h) + 44px)}
+.dock{bottom:0;padding:0 14px calc(var(--sab) + 10px);transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0);will-change:transform;contain:layout style;
+  transition:transform .35s var(--ease),opacity .25s}
+.dock::before{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(100% + 26px);z-index:-1;pointer-events:none;
+  background:linear-gradient(to top,var(--bg) 0%,color-mix(in srgb,var(--bg) 82%,transparent) 45%,transparent 100%)}
+html.wide .dock::before{display:none}
+.tabbar,.dock-add{transform:translateZ(0)}
+@supports not (height:100dvh){body{min-height:100vh}}
+
+/* Ziraat hazır kurulum */
+.zr-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.zr-p{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border-radius:18px;font-size:12px;font-weight:600;line-height:1.2;text-align:center;min-height:86px}
+.zr-p .zr-ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#e30a17,#7a0010)}
+.zr-p .zr-ic .i{width:19px;height:19px}
+.zr-p.on{box-shadow:inset 0 0 0 2px #e30a17}
+.zr-lh{text-align:left;color:var(--blue)}
+.zr-links{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 2px}
+.zr-links .chip{display:inline-flex;align-items:center;gap:6px}.zr-links .chip .i{width:15px;height:15px}
+.zr-sub{color:var(--text2)}
+
+/* Ekstre özeti */
+.fut-hero .hero-amount{margin:4px 0 2px}
+.fut-bars{display:flex;align-items:flex-end;gap:6px;height:110px;margin-top:14px}
+.fut-b{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;font-size:10.5px;color:var(--text2);padding:0}
+.fut-b i{width:100%;max-width:30px;border-radius:7px 7px 4px 4px;background:color-mix(in srgb,var(--blue) 55%,transparent);display:block;transition:height .5s var(--ease)}
+.fut-b.now i{background:var(--blue)}.fut-b.due i{background:var(--orange)}
+.fut-m{margin-top:10px}
+.fut-cards{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:12.5px;color:var(--text2)}
+.fut-cards span{display:inline-flex;align-items:center;gap:6px}.fut-cards i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.fut-cards b{color:var(--text)}
+
+/* Bulut durumu */
+.cloud-st{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;white-space:nowrap;flex-shrink:0}
+.cloud-st i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.fut-m .stmt-top b.num{white-space:nowrap}.fut-m .stmt-top>div:first-child{min-width:0}
+
+/* ===================== v10 ===================== */
+.recon-line{display:flex;justify-content:space-between;align-items:center;width:100%;margin:10px 0 2px;padding:8px 12px;border-radius:12px;font-size:12.5px;font-weight:600;text-align:left}
+.recon-line.ok{background:rgba(48,209,88,.12);color:var(--green)}.recon-line.warn{background:rgba(255,159,10,.14);color:var(--orange)}
+.recon-line span{opacity:.8;font-weight:500;white-space:nowrap}
+.pts-hero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:22px}
+.pts-ic{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:26px;font-weight:800;color:#fff;background:linear-gradient(135deg,#30d158,#0a7d32);flex-shrink:0}
+.pts-n{font-size:28px;font-weight:800;letter-spacing:-.4px}
+.pts-chip{color:var(--green)}
+.fx-toggle{display:flex;align-items:center;justify-content:center;gap:6px;margin:6px auto 0;font-size:13px;font-weight:600;color:var(--blue);padding:6px 12px;border-radius:14px;background:color-mix(in srgb,var(--blue) 12%,transparent)}
+.fx-toggle .i{width:16px;height:16px}
+.fx-in{padding:10px 12px 12px;border-radius:18px;margin-top:10px}
+.grid3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:8px}.grid3 .field{min-width:0}.grid3 .input{min-width:0;width:100%}
+.dcard .cc-foot span:last-child{letter-spacing:2px;font-weight:700;opacity:.8}
+.debit-tile .ic{border-radius:9px}
+.fx-toggle{min-height:36px;padding:8px 14px}
+.fx-in .link.xs{min-height:34px;padding:8px 4px;display:inline-flex;align-items:center}
+.recon-list .mid span{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.35}.recon-list .end{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 </style>
 </head>
 <body>
@@ -2627,7 +2683,7 @@ const Pages={
     const rows=[['Tür',KINDS[t.kind]],['Tarih',U.fmtDate(t.date,'y')],a?['Hesap',U.esc(a.name)]:t.kind==='payment'?['Kaynak','Dış hesap']:null,
       t.toAccountId?['Hedef hesap',U.esc(D.account(s,t.toAccountId)?.name||'—')]:null,['expense','income','refund'].includes(t.kind)?['Kategori',cat(t.category).icon+' '+cat(t.category).name]:null,
       t.toAmount!=null&&t.toAmount!==t.amount?['Alınan tutar',U.money(t.toAmount,{cur:D.account(s,t.toAccountId)?.currency})]:null,
-      t.installments>1?['Taksit',t.installments+' × '+U.money(t.amount/t.installments)]:null,t.note?['Not',U.esc(t.note)]:null,
+      t.installments>1?['Taksit',t.installments+' × '+U.money(t.amount/t.installments)]:null,t.fx&&t.fx.amount?['Döviz',U.money(t.fx.amount,{cur:t.fx.cur})+' × '+String(t.fx.rate).replace('.',',')+' ₺']:null,t.note?['Not',U.esc(t.note)]:null,
       ['Kaynak',{ocr:'Fiş tarama (Gemini)',import:'Ekstre içe aktarma',manual:'Elle girildi'}[t.source]||'Elle girildi']].filter(Boolean);
     let warr='';if(t.kind==='expense'&&(t.warrantyMonths||t.source==='ocr')){const ret=14+U.daysUntil(t.date),w=t.warrantyMonths?U.daysUntil(U.addMonths(t.date,t.warrantyMonths)):null;
       warr=C.section('Garanti & iade','',`<div class="countdown">${ret>=0&&!refunds.length?`<div><span class="muted xs">İade hakkı</span><b>${ret} gün</b><span class="faint xs">14 gün varsayımı</span></div>`:''}
@@ -2843,16 +2899,17 @@ const AccForm={draft:null,
     Object.entries(map).forEach(([q,k])=>{if(Sheet.el(q))d.credit[k]=v(q)});if(Sheet.el('#ac-open'))d.opening=v('#ac-open');if(Sheet.el('#ac-od'))d.overdraft=v('#ac-od')},
   set(k,v){this.sync();const d=this.draft;if(k==='sharedWith')d.credit.sharedWith=v;else d[k]=v;if(k==='type')d.currency=v==='fx'?'USD':'TRY';Haptic.tap();this.render()},
   setColor(i){this.set('color',i)},
-  save(){this.sync();const d=this.draft,cr=d.type==='credit';
-    if(!d.name.trim()){Toast.show('Hesaba bir ad ver');return}
+  save(keepOpen){this.sync();const d=this.draft,cr=d.type==='credit';
+    if(!d.name.trim()){Toast.show('Hesaba bir ad ver');return false}
     const out={id:d.id||U.uid(),type:d.type,name:d.name.trim(),bank:d.bank.trim(),color:d.color,style:cr?(d.style||'aurora'):undefined,currency:cr?'TRY':d.currency,opening:cr?0:U.r2(U.parseNum(d.opening)||0)};
     if(d.type==='checking')out.overdraft=U.r2(U.parseNum(d.overdraft)||0);
     if(cr){const c=d.credit,cut=parseInt(c.cutDay),due=parseInt(c.dueDay),lim=c.sharedWith?0:U.parseNum(c.limit);
-      if(!(cut>=1&&cut<=31&&due>=1&&due<=31)){Toast.show('Günler 1–31 arasında olmalı');return}
-      if(!c.sharedWith&&!(lim>=0)){Toast.show('Geçerli bir limit gir');return}
+      if(!(cut>=1&&cut<=31&&due>=1&&due<=31)){Toast.show('Günler 1–31 arasında olmalı');return false}
+      if(!c.sharedWith&&!(lim>=0)){Toast.show('Geçerli bir limit gir');return false}
       const pr=v=>{const n=U.parseNum(v);return n>0?n:''};
       out.credit={limit:U.r2(lim||0),cutDay:cut,dueDay:due,sharedWith:c.sharedWith||'',minRate:Math.min(100,Math.max(0,U.parseNum(c.minRate)||20)),contractRate:pr(c.contractRate),lateRate:pr(c.lateRate)}}
-    Store.dispatch({type:'upsert',col:'accounts',item:out});Haptic.success();Sheet.close();Toast.show(d.id?'✓ Hesap güncellendi':'✓ Hesap eklendi')},
+    const isEdit=!!d.id,item=this.postSave?this.postSave(out,d):out;d.id=item.id;
+    Store.dispatch({type:'upsert',col:'accounts',item});Haptic.success();if(keepOpen===true)return true;Sheet.close();Toast.show(isEdit?'✓ Hesap güncellendi':'✓ Hesap eklendi');return true},
   remove(){const n=Store.get().transactions.filter(t=>t.accountId===this.draft.id).length;
     if(!confirm(n?`Bu hesaba ait ${n} işlem de silinecek. Emin misin?`:'Hesap silinsin mi?'))return;
     Store.dispatch({type:'remove',col:'accounts',id:this.draft.id});Sheet.close();App.back(true);Toast.show('Hesap silindi')}
@@ -3068,6 +3125,7 @@ const SettingsSheet={
         <div class="set-row"><div>Duruma göre renk<small>Arka plan finansal durumuna göre değişir</small></div><label class="switch"><input type="checkbox" ${s.settings.moodColors!==false?'checked':''} onchange="SettingsSheet.look('moodColors',this.checked)"><span></span></label></div>
         <div class="set-row"><div>Saydamlığı azalt<small>Cam yerine mat yüzeyler · okunabilirlik ve pil</small></div><label class="switch"><input type="checkbox" ${document.documentElement.classList.contains('solid')?'checked':''} onchange="SettingsSheet.look('solid',this.checked)"><span></span></label></div>
         <div class="set-row"><div>Yüksek kontrast<small>Daha belirgin yazı ve kenarlar</small></div><label class="switch"><input type="checkbox" ${document.documentElement.classList.contains('hc')?'checked':''} onchange="SettingsSheet.look('contrast',this.checked)"><span></span></label></div>
+        <div class="set-row"><div>Kaydırınca alt barı küçült<small>Kapalıyken alt bar her zaman aynı boyutta sabit kalır</small></div><label class="switch"><input type="checkbox" ${s.settings.dockMini===true?'checked':''} onchange="SettingsSheet.look('dockMini',this.checked)"><span></span></label></div>
         <div class="set-row"><div>Hareket efektleri<small>Kartlarda eğim ve ışık yansıması</small></div><label class="switch"><input type="checkbox" ${s.settings.motion!==false?'checked':''} onchange="SettingsSheet.motion(this.checked)"><span></span></label></div>
         <div class="field"><span>Uygulama simgesi · ana ekrana eklerken kullanılır</span><div class="appicon-pick">${APP_ICONS.map(([k,l])=>`<button class="pressable ${(s.settings.appIcon||'aurora')===k?'on':''}" onclick="SettingsSheet.look('appIcon','${k}')"><img src="${AppIcon.render(k,120)}" alt="">${l}</button>`).join('')}</div></div>
         <button class="btn pressable" onclick="HomeEdit.open()">${C.ic('layout')}Ana Sayfa widget'larını düzenle</button>
@@ -3107,6 +3165,7 @@ const SettingsSheet={
 
       <div class="field"><span>Veri</span></div>
       <div class="glass list action-list" style="padding:0 12px">
+        ${Cloud.row()}
         <button class="row pressable" onclick="BackupSheet.open()">${C.icb('lock','#0a84ff')}<div class="mid"><b>Yedekle</b><span>Şifreli yedek · ${s.settings.lastBackup?'son '+U.fmtDate(U.iso(new Date(s.settings.lastBackup))):'henüz alınmadı'}</span></div><span class="faint">${C.ic('chev')}</span></button>
         <label class="row pressable">${C.icb('upload','#30d158')}<div class="mid"><b>Yedekten yükle</b><span>Önceki yedeği geri al</span></div><input type="file" accept=".cuzdan,.json,application/json,application/octet-stream" hidden onchange="App.importJSON(this)"></label>
         <button class="row pressable" onclick="Exporter.csv(Store.get(),D.filterTx(Store.get(),{}))">${C.icb('bars','#30d158')}<div class="mid"><b>İşlemleri CSV olarak indir</b><span>Excel / Numbers</span></div></button>
@@ -3180,7 +3239,7 @@ const AddMenu={open(){Sheet.open(Sheet.head('Ekle',{left:'Kapat',right:''})+
   `<div class="action-list">${[['expense','minus','Harcama','Kart, nakit veya hesaptan','#ff375f'],['income','plus','Gelir','Harçlık, maaş, iade','#30d158'],['transfer','transfer','Transfer','Hesaplar arası, döviz alım','#64d2ff'],
     ['pay','send','Kart borcu öde','Ekstre, asgari veya tüm borç','#0a84ff'],['scan','camera','Fiş / Fatura Tara','Gemini ile otomatik doldurma','#bf5af2'],['import','inbox','Ekstre içe aktar','Banka PDF\'inden toplu ekleme','#5e5ce6'],
     ['voice','voice','Sesle ekle','"Migros\'ta 450 lira harcadım"','#ff9f0a'],['clip','copy','Apple Pay ödemesini ekle','Kestirmeler ile panoya kopyalanan','#30d158'],['chat','chat','Asistana sor','Verilerin hakkında soru sor','#5e5ce6'],['debt','people','Borç / alacak','Arkadaşına verdiğin, aldığın','#30d158'],
-    ['whatif','up','Alabilir miyim?','Ekstre, limit ve 6 aylık nakit etkisi','#ff9f0a'],['pesin','scissors','Taksit mi, peşin mi?','Hangisi gerçekten ucuz?','#32ade6'],['minpay','alert','Asgari ödeme tuzağı','Sadece asgari ödersen ne olur?','#ff453a'],['ics','calendar','Takvime hatırlatma','Ödeme günleri telefon takvimine','#ff375f'],
+    ['whatif','up','Alabilir miyim?','Ekstre, limit ve 6 aylık nakit etkisi','#ff9f0a'],['future','calendar','Ekstre özeti','Bu ay ve gelecek aylara sarkan borç','#e30a17'],['pesin','scissors','Taksit mi, peşin mi?','Hangisi gerçekten ucuz?','#32ade6'],['minpay','alert','Asgari ödeme tuzağı','Sadece asgari ödersen ne olur?','#ff453a'],['ics','calendar','Takvime hatırlatma','Ödeme günleri telefon takvimine','#ff375f'],
     ['account','bank','Hesap / Kart','Kredi kartı, vadesiz, nakit, döviz','#0a84ff'],['loan','doc','Kredi','İhtiyaç, taşıt, eğitim kredisi','#8e8e93'],['goal','piggy','Kumbara','Birikim hedefi','#ff9f0a'],['rec','repeat','Düzenli ödeme','Abonelik, fatura, kira, harçlık','#ff375f']]
     .map(([k,ic,t,sub,c])=>`<button class="row pressable" onclick="App.quick('${k}')">${C.icb(ic,c)}<div class="mid"><b>${t}</b><span>${sub}</span></div><span class="faint">${C.ic('chev')}</span></button>`).join('')}</div>`)}};
 
@@ -3478,6 +3537,7 @@ const NavBar={el:null,thr:60,
 
 const Dock={last:0,
   onScroll(){const y=scrollY,d=y-this.last,dock=document.getElementById('dock');if(!dock)return;
+    if(Store.get().settings.dockMini!==true){if(dock.classList.contains('mini'))dock.classList.remove('mini');this.last=y;return}
     if(Math.abs(d)<10)return;
     const atEnd=innerHeight+y>=document.documentElement.scrollHeight-40;
     dock.classList.toggle('mini',d>0&&y>140&&!atEnd);this.last=y}};
@@ -4269,10 +4329,11 @@ const PayCapture={pending:null,
     const acc=s.accounts.find(a=>words.some(w=>U.lc(a.name+' '+(a.bank||'')).includes(w)))||s.accounts.find(a=>a.type==='credit')||s.accounts[0];
     merchant=String(merchant||'').replace(/\s+/g,' ').trim();const rec=merchant&&D.recallMerchant(s,merchant,'expense');
     return{amount,merchant,category:rec?.category||this.guess(merchant),accountId:rec?.accountId&&!card?rec.accountId:acc?.id}},
-  GUESS:[[/migros|a101|bim|şok|sok market|carrefour|getir|file market|macrocenter|metro|market/,'market'],[/starbucks|kahve|coffee|cafe|kafe|burger|pizza|yemeksepeti|döner|restoran|simit|mcdonald/,'food'],
+  GUESS:[[/migros|a101|bim|şok|sok market|carrefour|getir|file market|macrocenter|metro|market/,'market'],[/starbucks|kahve|coffee|cafe|kafe|burger|pizza|yemeksepeti|döner|doner|restoran|simit|mcdonald/,'food'],
     [/netflix|spotify|youtube|disney|icloud|apple\.com|amazon prime|exxen|blutv|tod|gain|chatgpt|openai/,'subscription'],[/shell|opet|petrol ofisi|\bbp\b|total|aytemiz/,'fuel'],
     [/uber|bitaksi|marti|istanbulkart|metro istanbul|iett|thy|pegasus|bilet/,'transport'],[/eczane|hastane|klinik/,'health'],[/zara|lc waikiki|koton|defacto|h&m|mavi|nike|adidas/,'clothing'],[/mediamarkt|teknosa|vatan|apple store|hepsiburada|trendyol|amazon/,'electronics']],
-  guess(m){const k=U.lc(m);if(!k)return 'other';const g=this.GUESS.find(([re])=>re.test(k));return g?g[1]:'other'},
+  guess(m){const k=U.lc(m);if(!k)return 'other';const f=String(m).replace(/[Iİ]/g,'i').toLowerCase().replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c');
+    const g=this.GUESS.find(([re])=>re.test(k)||re.test(f));return g?g[1]:'other'},
   open(r,src){if(!r||!(r.amount>0)){Toast.show('Ödeme bilgisi okunamadı');return}
     if(!Security.unlocked){this.pending=[r,src];return}
     Haptic.success();TxForm.open(null,{type:'expense',prefill:{amount:r.amount,merchant:r.merchant,category:r.category,accountId:r.accountId,installments:1,date:U.today(),note:src==='applepay'?'Apple Pay':'',source:'manual'}})},
@@ -4441,6 +4502,605 @@ WIDGET_DEFAULT.splice(WIDGET_DEFAULT.findIndex(x=>x[0]==='insights')+1,0,['strea
   const s=Store.get(),w=s.settings.widgets;if(Array.isArray(w)&&!s.settings.v8w){const i=w.findIndex(x=>x[0]==='insights');
     Store.dispatch({type:'settings/update',payload:{v8w:true,widgets:w.some(x=>x[0]==='streak')?w:[...w.slice(0,i+1),['streak','m'],...w.slice(i+1)]}})}
   else if(!s.settings.v8w)Store.dispatch({type:'settings/update',payload:{v8w:true}})}}
+
+/* ---------- 89_ziraat.js ---------- */
+
+/* =====================================================================
+   v9 · Ziraat modülü: kart türleri, sanal kart özel limiti, limit geçmişi,
+        AI'sız ekstre okuyucu (metin + PDF), gelecek dönem ekstre özeti
+   ===================================================================== */
+GRADIENTS.push(['#e30a17','#7a0010']);
+const ZIRAAT_COLOR=GRADIENTS.length-1;
+
+/* ---------- Limit geçmişi ----------
+   credit.limitHistory = [{from:'YYYY-MM-DD', limit}] (artan tarih). credit.limit her zaman bugünkü limit. */
+D.limitHist=acc=>{const c=acc?.credit;if(!c)return[];const h=Array.isArray(c.limitHistory)?c.limitHistory.filter(x=>x&&x.from&&+x.limit>=0):[];
+  return h.length?[...h].sort((a,b)=>a.from.localeCompare(b.from)):[{from:'2000-01-01',limit:+c.limit||0}]};
+D.limitAt=(acc,date)=>{const h=D.limitHist(acc);let v=h[0]?.limit||0;for(const x of h){if(x.from<=date)v=+x.limit;else break}return v};
+const Limits={
+  add(acc,from,limit){const h=D.limitHist(acc).filter(x=>x.from!==from);h.push({from,limit:U.r2(limit)});h.sort((a,b)=>a.from.localeCompare(b.from));
+    const c={...acc.credit,limitHistory:h};c.limit=D.limitAt({credit:c},U.today());return{...acc,credit:c}},
+  remove(acc,from){let h=D.limitHist(acc).filter(x=>x.from!==from);if(!h.length)h=[{from:'2000-01-01',limit:+acc.credit.limit||0}];
+    const c={...acc.credit,limitHistory:h};c.limit=D.limitAt({credit:c},U.today());return{...acc,credit:c}}};
+
+/* Kart özeti: bugünkü limit geçmişten gelir; sanal kartın özel (alt) limiti uygulanır */
+{const _cs=D.cardSummary;D.cardSummary=U.memo((s,accId)=>{const r=_cs(s,accId),acc=D.account(s,accId);
+  let out=r;const lim=D.limitAt(r.root,U.today());
+  if(Math.abs(lim-r.limit)>0.009){const d=lim-r.limit;out={...r,limit:lim,available:U.r2(r.available+d),usage:lim?Math.max(0,r.used)/lim:0}}
+  const sub=+acc.credit?.subLimit;
+  if(r.shared&&sub>0){const usedOwn=Math.max(0,U.r2(r.own-D.statements(s,accId).credit)),subAv=U.r2(sub-usedOwn);
+    out={...out,rootAvailable:out.available,rootLimit:out.limit,subLimit:sub,usedOwn,limit:sub,available:U.r2(Math.min(out.available,subAv)),usage:usedOwn/sub}}
+  return out})}
+{const _st=C.statement;C.statement=(s,acc,st,open)=>{const h=_st(s,acc,st,open),root=D.limitRoot(s,acc);
+  if(D.limitHist(root).length<2)return h;const lim=D.limitAt(root,st.cut);
+  return h.replace('</div></div><div style="text-align:right">',` · limit ${U.money(lim,{dec:false})}</div></div><div style="text-align:right">`)}}
+
+/* ---------- Ziraat hazır kart türleri (yeni hesap formu) ---------- */
+const ZIRAAT_PRESETS=[
+  ['zk','Ziraat Asıl Kredi Kartı','card',{type:'credit',name:'Ziraat Bankkart',credit:{cutDay:15,dueDay:25,minRate:20}}],
+  ['zb','Ziraat Banka Kartı (Vadesiz)','bank',{type:'checking',name:'Ziraat Banka Kartı',debitCard:true}],
+  ['zv','Ziraat Sanal Kart','phone',{type:'credit',name:'Ziraat Sanal Kart',virtual:true}]];
+{const _r=AccForm.render.bind(AccForm);
+  AccForm.render=function(){_r();const d=this.draft,s=Store.get(),sh=Sheet.el('.sheet');if(!sh)return;
+    if(!d.id){const box=document.createElement('div');box.className='field';box.innerHTML=`<span>Ziraat Bankası · hızlı kurulum</span><div class="zr-presets">${ZIRAAT_PRESETS.map(([k,l,ic])=>`<button class="zr-p glass pressable ${d._preset===k?'on':''}" onclick="AccForm.preset('${k}')"><span class="zr-ic">${C.ic(ic)}</span>${l}</button>`).join('')}</div>`;
+      const head=sh.querySelector('.sheet-head');head&&head.after(box)}
+    if(d.type==='credit'){const c=d.credit;
+      if(c.sharedWith){const lim=Sheet.el('#ac-shared')?.closest('.field');if(lim){const f=document.createElement('label');f.className='field';
+        f.innerHTML=`<span>Sanal kart özel limiti (₺) · boş bırakırsan ana kartın tüm limitini kullanır</span><input class="input" id="ac-sub" inputmode="decimal" value="${F.money(c.subLimit||'')}" placeholder="ör. 3.000">`;lim.after(f)}}
+      else if(d.id){const li=Sheet.el('#ac-limit')?.closest('.field');if(li){const f=document.createElement('div');f.className='grid2';
+        f.innerHTML=`<label class="field"><span>Limit değişiklik tarihi</span><input class="input" id="ac-lfrom" type="date" value="${d._lfrom||U.today()}"></label><div class="field"><span>Geçmiş</span><button class="input pressable zr-lh" onclick="if(AccForm.save(true))LimitSheet.open('${d.id}')">${D.limitHist(D.account(s,d.id)||d).length} kayıt ›</button></div>`;
+        li.after(f);const p=document.createElement('p');p.className='muted xs';p.style.margin='2px 4px 0';p.textContent='Limitini değiştirirsen eski limit geçmiş ekstrelerde kalır; yenisi seçtiğin tarihten itibaren geçerli olur.';f.after(p)}}}};
+  const _sync=AccForm.sync.bind(AccForm);AccForm.sync=function(){_sync();const d=this.draft;if(!d)return;if(Sheet.el('#ac-sub'))d.credit.subLimit=Sheet.val('#ac-sub');if(Sheet.el('#ac-lfrom'))d._lfrom=Sheet.val('#ac-lfrom')};
+  AccForm.preset=function(k){this.sync();const p=ZIRAAT_PRESETS.find(x=>x[0]===k);if(!p)return;const o=p[3],d=this.draft,s=Store.get();
+    d._preset=k;d.type=o.type;d.name=o.name;d.bank='Ziraat Bankası';d.color=ZIRAAT_COLOR;d.currency='TRY';d.debitCard=!!o.debitCard;
+    if(o.type==='credit'){d.credit={...d.credit,...(o.credit||{})};
+      if(o.virtual){const root=s.accounts.find(a=>a.type==='credit'&&!a.credit.sharedWith&&/ziraat|bankkart/i.test(a.name+' '+(a.bank||'')))||s.accounts.find(a=>a.type==='credit'&&!a.credit.sharedWith);
+        if(root){d.credit.sharedWith=root.id;d.credit.cutDay=root.credit.cutDay;d.credit.dueDay=root.credit.dueDay;d.credit.minRate=root.credit.minRate||20}
+        else Toast.show('Önce ana Ziraat kredi kartını ekle; sanal kart ona bağlanır');d.style='glass'}}
+    Haptic.tap();this.render()};
+  /* kaydet: limit geçmişi, özel limit ve banka kartı bayrağı korunur */
+  AccForm.postSave=function(out,d){const prev=d.id&&D.account(Store.get(),d.id);let item={...out};
+    if(item.type==='checking'&&(d.debitCard||prev?.debitCard))item.debitCard=true;
+    if(item.type==='credit'){const pc=prev?.credit||{},sub=U.parseNum(d.credit.subLimit);
+      item.credit={...item.credit,subLimit:item.credit.sharedWith&&sub>0?U.r2(sub):''};if(pc.limitHistory)item.credit.limitHistory=pc.limitHistory;
+      if(!item.credit.sharedWith&&prev){const newLim=item.credit.limit,curLim=D.limitAt(prev,U.today());
+        if(Math.abs(newLim-curLim)>0.009){const from=/^\d{4}-\d{2}-\d{2}$/.test(d._lfrom||'')?d._lfrom:U.today();
+          item=Limits.add({...item,credit:{...item.credit,limitHistory:D.limitHist(prev)}},from,newLim)}
+        else item.credit.limit=curLim}}
+    return item}}
+
+/* ---------- Limit geçmişi sayfası ---------- */
+const LimitSheet={
+  open(id){const s=Store.get(),a0=D.account(s,id),a=a0&&D.limitRoot(s,a0);if(!a)return;const h=D.limitHist(a).slice().reverse(),T=U.today();
+    Sheet.open(Sheet.head('Limit geçmişi',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<p class="muted sm" style="margin:0 4px 10px">${U.esc(a.name)}${a0.id!==a.id?' (sanal kart bu limiti paylaşıyor)':''}. Geçmiş ekstreler o tarihteki limite, güncel harcamalar bugünkü limite göre hesaplanır.</p>
+      <div class="glass list">${h.map((x,i)=>`<div class="row"><span class="ic" style="background:${i===h.findIndex(y=>y.from<=T)?'var(--green)':'var(--fill)'}22">${C.ic('card')}</span><div class="mid"><b class="num">${U.money(x.limit,{dec:false})}</b><span>${x.from<='2000-01-02'?'başlangıç limiti':U.fmtDate(x.from,'y')+' itibarıyla'}${x.from>T?' · ileri tarihli':''}</span></div>
+        ${h.length>1?`<button class="mini-btn" style="color:var(--red);background:rgba(255,69,58,.12)" onclick="LimitSheet.del('${a.id}','${x.from}')">Sil</button>`:''}</div>`).join('')}</div>
+      <div class="field"><span>Yeni limit kaydı</span></div>
+      <div class="grid2"><label class="field"><span>Limit (₺)</span><input class="input num" id="lh-l" inputmode="decimal" placeholder="ör. 15.000"></label><label class="field"><span>Geçerlilik tarihi</span><input class="input" id="lh-d" type="date" value="${T}"></label></div>
+      <button class="btn primary pressable" onclick="LimitSheet.save('${a.id}')">${C.ic('plus')}Limiti kaydet</button>`)},
+  save(id){const l=U.parseNum(Sheet.val('#lh-l')),d=Sheet.val('#lh-d');if(!(l>=0)||!/^\d{4}-\d{2}-\d{2}$/.test(d)){Toast.show('Limit ve tarih gir');return}
+    const a=D.account(Store.get(),id);Store.dispatch({type:'upsert',col:'accounts',item:Limits.add(a,d,l)});Haptic.success();Toast.show('✓ Limit kaydedildi');this.open(id)},
+  del(id,from){const a=D.account(Store.get(),id);Store.dispatch({type:'upsert',col:'accounts',item:Limits.remove(a,from)});this.open(id)}};
+
+/* ---------- Ziraat ekstre ayrıştırıcı (yapay zekâsız) ----------
+   Çıktı Gemini'nin ekstre şemasıyla aynıdır → StatementImport.normalize ile kontrol ekranına gider. */
+const ZParse={
+  AMT:/-?\d{1,3}(?:\.\d{3})*,\d{2}|-?\d+,\d{2}/g,
+  DATE:/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})\b/,
+  iso(d,m,y){y=+y;if(y<100)y+=2000;d=+d;m=+m;if(!(m>=1&&m<=12&&d>=1&&d<=31))return null;return `${y}-${U.p2(m)}-${U.p2(d)}`},
+  num(s){return U.r2(parseFloat(String(s).replace(/\./g,'').replace(',','.')))},
+  low:s=>String(s).replace(/İ/g,'i').replace(/I/g,'ı').toLocaleLowerCase('tr'),
+  ascii:s=>ZParse.low(s).replace(/[ıi]/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c'),
+  pretty(s){s=String(s).replace(/\s{2,}/g,' ').trim();let p;do{p=s;s=s.replace(/\s+(TR|TUR|TURKEY|TÜRKİYE|TURKIYE|ISTANBUL|İSTANBUL|ANKARA|IZMIR|İZMİR|BURSA|ANTALYA|KOCAELI|KOCAELİ)$/i,'').trim()}while(s!==p);
+    if(s!==s.toUpperCase())return s;return s.split(' ').map(w=>{const l=w.replace(/İ/g,'i').toLowerCase();return l.charAt(0).toLocaleUpperCase('tr')+l.slice(1)}).join(' ')},
+  head(text,keys){const a=this.ascii(text);for(const k of keys){const re=new RegExp('(?<!kullanilabilir\\s)'+k+'[^\\n\\d-]{0,40}?((?:\\d{1,2}[./-]\\d{1,2}[./-]\\d{2,4})|(?:-?\\d{1,3}(?:\\.\\d{3})*,\\d{2}))');const m=a.match(re);if(m)return m[1]}return null},
+  parse(raw){const text=String(raw||'').replace(/ /g,' ').replace(/\r/g,'');const A=this.ascii(text);
+    const toDate=v=>{if(!v)return null;const m=v.match(/(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})/);return m?this.iso(m[1],m[2],m[3]):null};
+    const toAmt=v=>v?this.num(v.replace('-','')):null;
+    const cut=toDate(this.head(text,['hesap kesim tarihi','kesim tarihi','ekstre tarihi'])),due=toDate(this.head(text,['son odeme tarihi']));
+    const total=toAmt(this.head(text,['donem borcu','ekstre borcu','hesap ozeti borcu','toplam borc','odenecek tutar']));
+    const min=toAmt(this.head(text,['asgari odeme tutari','asgari odeme']));
+    const limit=toAmt(this.head(text,['toplam kart limiti','kart limiti','kredi karti limiti','toplam limit']));
+    const tx=[];let section='main';
+    for(let line of text.split('\n')){line=line.replace(/\s+/g,' ').trim();if(!line)continue;const al=this.ascii(line);
+      if(!this.DATE.test(line)){if(/sanal\s*kart|internet\s*kart/.test(al))section='virtual';else if(/asil\s*kart|ana\s*kart|kart\s*sahibi|ek\s*kart/.test(al))section=/ek\s*kart/.test(al)?'extra':'main';continue}
+      const dm=line.match(this.DATE),date=this.iso(dm[1],dm[2],dm[3]);if(!date)continue;let rest=line.slice(dm[0].length).trim();
+      rest=rest.replace(/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})\s+/,'');                    // ikinci tarih sütunu (valör)
+      const amts=[...rest.matchAll(this.AMT)];if(!amts.length)continue;
+      const lastA=amts[amts.length-1],after=rest.slice(lastA.index+lastA[0].length);
+      let desc=rest.slice(0,amts[0].index);
+      let inst=null;const ix=desc.match(/(\d{1,2})\s*\/\s*(\d{1,2})/)||after.match(/(\d{1,2})\s*\/\s*(\d{1,2})/);
+      if(ix){const k=+ix[1],n=+ix[2];if(n>=2&&n<=36&&k>=1&&k<=n){inst={k,n};desc=desc.replace(ix[0],' ')}}
+      desc=desc.replace(/\b(taks[iİı]t(li)?|tks|tutar[iı]?)\b/gi,' ').replace(/\d{4}\s*\*{2,}[\s*]*\d{0,4}|\*{2,}\d{0,4}/g,' ').replace(/[()]/g,' ');
+      const af=this.ascii(after).trim(),credit=/^-/.test(lastA[0])||/^(tl|try|₺)?\s*(-|\(a\)|a\b|alacak|cr\b)/.test(af);
+      const amount=this.num(lastA[0].replace('-',''));if(!(amount>0))continue;
+      const ad=this.ascii(desc);let kind='purchase';
+      if(/odemeniz|tahsilat|kredi karti odeme|kart odeme|otomatik odeme|hesaptan odeme|internet.{0,12}odeme|odeme.{0,6}(tesekkur|alindi)/.test(ad)||(credit&&/odeme|havale|eft/.test(ad)))kind='payment';
+      else if(/iade|iptal/.test(ad)||credit)kind=/odeme|tahsilat/.test(ad)?'payment':'refund';
+      else if(/faiz/.test(ad))kind='interest';else if(/kkdf|bsmv|ucret|aidat|komisyon|gecikme|masraf/.test(ad))kind='fee';
+      if(/onceki donem|devreden|donem borcu|asgari|toplam|kullanilabilir|bankkart lira|puan|bonus kazan/.test(ad)&&!inst)continue;
+      let fx=null;const fm=rest.match(/(\d{1,3}(?:\.\d{3})*,\d{2}|\d+,\d{2})\s*(USD|EUR|GBP|\$|€|£)|(USD|EUR|GBP|\$|€|£)\s*(\d{1,3}(?:\.\d{3})*,\d{2}|\d+,\d{2})/i);
+      if(fm&&amts.length>=2){const fa=this.num(fm[1]||fm[4]);if(fa>0&&Math.abs(fa-amount)>0.009)fx={cur:{'$':'USD','€':'EUR','£':'GBP'}[fm[2]||fm[3]]||(fm[2]||fm[3]).toUpperCase(),amount:fa}}
+      if(fx)desc=desc.replace(/\b(USD|EUR|GBP)\s*$/i,'');
+      const item={date,description:this.pretty(desc.replace(/\s+/g,' ').trim())||'İşlem',amount,kind,section,category:typeof PayCapture!=='undefined'?PayCapture.guess(desc):'other'};if(fx)item.fx=fx;
+      if(inst){item.installment_no=inst.k;item.installment_total=inst.n;if(amts.length>=2&&!fx){const first=this.num(amts[0][0].replace('-',''));if(first>amount*1.5)item.original_total=first}}
+      tx.push(item)}
+    return{is_statement:tx.length>0,card_name:/bankkart/.test(A)?'Bankkart':null,cut_date:cut,due_date:due,statement_total:total,min_payment:min,limit,transactions:tx}},
+  /* pdf.js ile metin çıkarma (taranmış PDF'te metin olmaz → Gemini'ye düşer) */
+  async pdfText(file){if(!window.pdfjsLib){await new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';sc.onload=ok;sc.onerror=()=>no(new Error('pdf.js yüklenemedi (internet?)'));document.head.appendChild(sc)});
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}
+    const doc=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let out=[];
+    for(let p=1;p<=Math.min(doc.numPages,30);p++){const pg=await doc.getPage(p),tc=await pg.getTextContent(),rows=[];
+      tc.items.forEach(it=>{if(!it.str||!it.str.trim())return;const y=it.transform[5],x=it.transform[4];let r=rows.find(r=>Math.abs(r.y-y)<2.5);if(!r){r={y,items:[]};rows.push(r)}r.items.push({x,s:it.str,w:it.width||0})});
+      rows.sort((a,b)=>b.y-a.y).forEach(r=>{r.items.sort((a,b)=>a.x-b.x);let line='',end=null;r.items.forEach(it=>{if(end!==null)line+=it.x-end>12?'   ':' ';line+=it.s;end=it.x+it.w});out.push(line)})}
+    return out.join('\n')}};
+
+/* ---------- Akıllı ekstre içe aktarma ekranı ---------- */
+Object.assign(ImportSheet,{mode:'pdf',
+  open(accId){const cards=F.credit();if(!cards.length){Toast.show('Önce bir kredi kartı ekle');return AccForm.open()}
+    const roots=cards.filter(a=>!a.credit.sharedWith);this.accId=accId?(D.limitRoot(Store.get(),D.account(Store.get(),accId))||{}).id||accId:(roots[0]||cards[0]).id;this.rows=[];
+    Sheet.open(Sheet.head('Akıllı Ekstre İçe Aktar',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<p class="muted sm" style="margin:0 2px 6px">Ziraat (ve diğer bankaların) kredi kartı ekstresini yükle ya da metnini yapıştır. Harcamalar, taksitler (3/9 gibi), ödemeler, dönem limiti ve tarihler otomatik okunur; eklemeden önce kontrol edersin.</p>
+      <label class="field"><span>Ana kart</span><select class="input" id="im-acc" onchange="ImportSheet.accId=this.value">${F.accOpts(roots.length?roots:cards,this.accId)}</select></label>
+      <div style="margin-top:12px">${C.segmented([['pdf','PDF / görsel'],['text','Metin yapıştır']],this.mode,'ImportSheet.setMode')}</div>
+      <div id="im-in">${this.input()}</div><div id="im-body"></div>`)},
+  input(){return this.mode==='text'?`<label class="field"><span>Ekstre metni</span><textarea class="input" id="im-text" rows="8" style="resize:vertical;font-size:13px" placeholder="İnternet şubesindeki ekstre sayfasını ya da PDF'teki metni seçip kopyala, buraya yapıştır."></textarea></label>
+      <button class="btn primary pressable" onclick="ImportSheet.fromText()">${C.ic('sparkles')}Ekstreyi oku</button><p class="muted xs" style="margin:8px 4px 0">Bu yöntem yapay zekâ kullanmaz; internetsiz de çalışır.</p>`
+    :`<label class="scan-btn glass pressable" style="margin-top:12px"><span class="e">${C.ic('doc')}</span>Ekstre dosyasını seç<input type="file" accept="application/pdf,image/*" hidden onchange="ImportSheet.pick(this)"></label>
+      <p class="muted xs" style="margin:8px 4px 0">PDF önce telefonda okunur. Okunamazsa (taranmış PDF, ekran görüntüsü) ${Secrets.get()?'Gemini devreye girer.':'Gemini gerekir; Ayarlar\'dan bağlayabilirsin.'}</p>`},
+  setMode(m){this.mode=m;const s=Sheet.el('.seg');const box=Sheet.el('#im-in');if(box)box.innerHTML=this.input();
+    if(s){const b=[...s.querySelectorAll(':scope>button')];const i=m==='pdf'?0:1;b.forEach((x,j)=>x.classList.toggle('on',j===i));const th=s.querySelector('.thumb');if(th)th.style.transform=`translateX(${i*100}%)`}},
+  err(msg){const b=Sheet.el('#im-body');if(b)b.innerHTML=`<div class="err-box" style="margin-top:14px">${msg}</div>`},
+  local(r,via){this.accId=Sheet.val('#im-acc')||this.accId;const s=Store.get(),res=StatementImport.normalize(r,s,this.accId);if(!res.ok){this.err('🤔 '+U.esc(res.reason));return false}
+    const virt=s.accounts.filter(a=>a.type==='credit'&&a.credit.sharedWith===this.accId);
+    res.rows.forEach((row,i)=>{const sec=row.raw&&row.raw.section;if(sec==='virtual'&&virt[0])row.accId=virt[0].id});
+    this.rows=res.rows;this.meta={...res.meta,limit:r.limit||null,via,virt:virt[0]?.id||null};
+    const acc=D.account(s,this.accId);this.meta.limitNew=r.limit&&r.cut_date?Math.abs(D.limitAt(acc,r.cut_date)-r.limit)>0.009:false;this.meta.saveLimit=this.meta.limitNew;
+    Haptic.success();this.review();return true},
+  fromText(){const t=Sheet.val('#im-text');if(t.trim().length<20){Toast.show('Ekstre metnini yapıştır');return}const r=ZParse.parse(t);
+    if(!r.transactions.length){this.err('🤔 Metinde tarihli işlem satırı bulunamadı. Satırlar "15.09.2026 MİGROS … 250,00" biçiminde olmalı.');return}this.local(r,'text')},
+  async pick(inp){const f=inp.files&&inp.files[0];inp.value='';if(!f)return;this.accId=Sheet.val('#im-acc')||this.accId;
+    if(f.type==='application/pdf'||/\.pdf$/i.test(f.name)){const b=Sheet.el('#im-body');if(b)b.innerHTML='<p class="muted sm" style="text-align:center;margin-top:16px">📄 PDF okunuyor…</p>';
+      try{const text=await ZParse.pdfText(f),r=ZParse.parse(text);if(r.transactions.length>=1&&this.local(r,'pdf'))return}catch(e){console.warn(e)}}
+    if(!Secrets.get()){this.err('Bu dosya telefonda okunamadı (taranmış PDF ya da görsel olabilir). <b>Metin yapıştır</b> sekmesini dene ya da Ayarlar\'dan Gemini\'yi bağla.');return}
+    try{const r=await AIActions.statement(f,this.accId);if(!r.ok){this.err('🤔 '+U.esc(r.reason));return}this.rows=r.rows;this.meta={...r.meta,via:'ai'};Haptic.success();this.review()}
+    catch(e){this.err('⚠️ '+U.esc(AI.human(e)))}},
+  review(){const s=Store.get(),a=D.account(s,this.accId),m=this.meta||{},sel=this.rows.filter(r=>r.sel),inst=this.rows.filter(r=>r.installments>1).length;
+    Sheet.open(Sheet.head('Kontrol et',{left:'Vazgeç',right:`Ekle (${sel.length})`,onRight:'ImportSheet.commit()'})+'<i data-full hidden></i>'+
+      `<div class="preview"><b>${U.esc(a.name)}</b>${m.cut?' · kesim '+U.fmtDate(m.cut,'y'):''}${m.due?' · son ödeme '+U.fmtDate(m.due,'y'):''}${m.total?'<br>Dönem borcu <b>'+U.money(m.total,{raw:true})+'</b>':''}${m.min?' · asgari '+U.money(m.min,{raw:true}):''}
+        <br>${this.rows.length} satır okundu${inst?' · '+inst+' taksitli':''}${this.rows.some(r=>r.dup)?' · <b>'+this.rows.filter(r=>r.dup).length+' tanesi zaten kayıtlı görünüyor</b> (işaretsiz)':''}${m.via==='ai'?' · Gemini':m.via?' · yapay zekâsız okundu':''}.</div>
+      ${m.limit?`<label class="imp-row" style="margin-top:8px"><input type="checkbox" ${m.saveLimit?'checked':''} onchange="ImportSheet.meta.saveLimit=this.checked"><span>${C.ic('card')}</span><div class="mid"><b>Dönem limiti ${U.money(m.limit,{dec:false})}</b><span>${m.limitNew?'Limit geçmişine '+U.fmtDate(m.cut,'y')+' itibarıyla kaydet':'Kayıtlı limitle aynı'}</span></div></label>`:''}
+      <div style="margin-top:8px">${this.rows.map(r=>`<label class="imp-row"><input type="checkbox" ${r.sel?'checked':''} onchange="ImportSheet.toggle('${r.id}',this.checked)">
+        <span style="color:${cat(r.category).color}">${C.ic(r.type==='payment'?'send':r.type==='refund'?'refund':cat(r.category).icon)}</span>
+        <div class="mid"><b>${U.esc(r.desc)}</b><span>${U.fmtDate(r.date)} · ${U.esc(r.label)}${r.accId&&r.accId!==this.accId?' · <b>'+U.esc(D.account(s,r.accId).name)+'</b>':''}${r.dup?' · ⚠️ mükerrer olabilir':''}</span></div>
+        <div class="end num ${r.type!=='expense'?'pos':''}">${r.type!=='expense'?'+':''}${U.money(r.lineAmount||r.amount,{raw:true})}</div></label>`).join('')}</div>
+      <p class="muted xs" style="margin-top:10px">Taksitli satırlar toplam tutar ve taksit sayısıyla tek alışveriş olarak eklenir; geçmiş ve gelecek taksitler kendi ekstrelerine yerleşir.</p>`)},
+  commit(){const sel=this.rows.filter(r=>r.sel),acts=StatementImport.toActions(this.rows,this.accId);
+    acts.forEach((a,i)=>{const r=sel[i];if(r&&r.accId&&a.item){if(a.item.kind==='payment')a.item.toAccountId=r.accId;else a.item.accountId=r.accId}});
+    const m=this.meta||{};if(m.limit&&m.saveLimit&&m.cut){const acc=D.account(Store.get(),this.accId),c=acc.credit,idx=D.stmtIdx(c,m.cut);
+      acts.push({type:'upsert',col:'accounts',item:Limits.add(acc,U.addDays(D.cutDate(c,idx-1),1),m.limit)})}
+    if(!acts.length){Toast.show('Seçili satır yok');return}
+    Store.dispatch({type:'batch',actions:acts});Haptic.success();Sheet.close();Toast.show(`✓ ${sel.length} işlem içe aktarıldı`)}});
+
+/* ---------- Gelecek dönem ekstre özeti ---------- */
+D.future=U.memo((s,accId='')=>{const cards=s.accounts.filter(a=>a.type==='credit'&&(!accId||a.id===accId||a.credit.sharedWith===accId));if(!cards.length)return null;
+  const months={};let maxIdx=-1;
+  cards.forEach(a=>{const st=D.statements(s,a.id),o=st.open;
+    st.list.filter(x=>x.idx>=o-1).forEach(x=>{if(x.idx===o-1&&x.remaining<=0.009)return;const key=x.idx-o;const m=months[key]=months[key]||{rel:key,idx:x.idx,total:0,cards:[],lines:[],due:x.due};
+      const amt=x.idx<o?x.remaining:Math.max(0,x.total);if(amt<=0.009)return;m.total=U.r2(m.total+amt);m.cards.push({acc:a,amount:amt,status:x.status});
+      x.lines.filter(l=>l.kind==='inst').forEach(l=>m.lines.push({...l,acc:a}));if(x.idx>maxIdx)maxIdx=x.idx})});
+  const list=Object.values(months).filter(m=>m.total>0).sort((a,b)=>a.rel-b.rel);
+  const future=list.filter(m=>m.rel>0),beyond=U.r2(future.reduce((a,m)=>a+m.total,0)),instBeyond=U.r2(future.reduce((a,m)=>a+m.lines.filter(l=>l.n>1).reduce((x,l)=>x+l.amount,0),0));
+  return{list,beyond,instBeyond,cards,max:Math.max(1,...list.map(m=>m.total))}});
+Pages.future=(s,ui,p)=>{const accId=ui.futAcc??p.acc??'',F0=D.future(s,accId),cards=s.accounts.filter(a=>a.type==='credit'&&!a.credit.sharedWith);
+  const head=C.pageHead('Ekstre özeti','Bu ay, gelecek aylar ve taksitler');if(!F0)return head+C.empty('💳','Kredi kartı yok.');
+  const chips=cards.length>1?C.chips([['','Tüm kartlar'],...cards.map(a=>[a.id,a.name])],accId,'App.futAcc'):'';
+  const label=m=>m.rel<0?'Ödenecek ekstre':m.rel===0?'Açık dönem (bu ay)':'';
+  return head+chips+`<section class="glass hero fut-hero"><div class="hero-label">Gelecek aylara sarkan borç</div><div class="hero-amount">${U.bigMoney(F0.beyond)}</div>
+      <div class="muted sm">${F0.instBeyond>0?U.money(F0.instBeyond,{dec:false})+' taksit · ':''}${F0.list.filter(m=>m.rel>0).length} ay</div>
+      <div class="fut-bars">${F0.list.map(m=>`<button class="fut-b ${m.rel<0?'due':m.rel===0?'now':''} pressable" onclick="App.futOpen(${m.idx})" aria-label="${D.stmtName(m.idx)} ${U.money(m.total,{raw:true})}"><i style="height:${Math.max(6,m.total/F0.max*100)}%"></i><span>${U.mon(D.ym(m.idx)[1])}</span></button>`).join('')}</div></section>`+
+    (F0.list.length?F0.list.map(m=>{const open=ui.futOpen===m.idx,inst=m.lines.filter(l=>l.n>1);
+      return `<div class="glass stmt fut-m ${open?'open':''}"><div class="stmt-top pressable" onclick="App.futOpen(${m.idx})"><div><b>${D.stmtName(m.idx)} ekstresi</b><div class="muted xs">${label(m)?label(m)+' · ':''}son ödeme ${U.fmtDate(m.due)}${inst.length?' · '+inst.length+' taksit':''}</div></div>
+        <div style="text-align:right"><b class="num ${m.rel<0?'warn':''}">${U.money(m.total)}</b><div class="faint xs" style="margin-top:4px">${open?'▲ gizle':'▼ detay'}</div></div></div>
+        ${m.cards.length>1?`<div class="fut-cards">${m.cards.map(c=>`<span><i style="background:${gcol(c.acc.color)}"></i>${U.esc(c.acc.name)} <b class="num">${U.money(c.amount,{dec:false})}</b></span>`).join('')}</div>`:''}
+        ${open?`<div class="stmt-lines">${inst.length?inst.map(l=>`<div class="sline pressable" onclick="App.push('tx',{id:'${l.tx.id}'})"><span>${U.esc(l.tx.merchant||cat(l.tx.category).name)} <span class="tag">${l.k+1}/${l.n}</span>${m.cards.length>1||F0.cards.length>1?' <span class="faint xs">'+U.esc(l.acc.name)+'</span>':''}</span><span class="num">${U.money(l.amount)}</span></div>`).join(''):''}
+          ${m.lines.length>inst.length?`<div class="sline"><span class="muted">Tek çekim harcamalar</span><span class="num">${U.money(m.lines.filter(l=>l.n<=1).reduce((a,l)=>a+l.amount,0))}</span></div>`:''}
+          ${m.rel<=0?`<div class="btn-row"><button class="btn primary pressable" onclick="PaySheet.open('${m.cards[0].acc.id}',${m.idx})">Öde</button></div>`:''}</div>`:''}</div>`}).join(''):C.empty('🎉','Ödenecek ya da gelecek ekstre yok.'))+
+    `<p class="overflow-note">Gelecek ekstreler, şimdiye kadar kaydettiğin taksitlerden hesaplanır; yeni harcamalar eklendikçe artar. Ayrıntılı tablo için <a class="link" onclick="App.push('matrix',{acc:'${accId}'})">Taksit Matrix'i</a>.</p>`};
+{const _p=App.push.bind(App);App.push=(name,params,noAnim)=>{if(name==='future'){UI.futAcc=null;UI.futOpen=null}return _p(name,params,noAnim)}}
+Object.assign(App,{futAcc(v){UI.futAcc=v;UI.futOpen=null;this.render()},futOpen(i){UI.futOpen=UI.futOpen===i?null:i;Haptic.tap();this.render()}});
+
+/* kart sayfasına kısayollar */
+{const _card=Pages.card;Pages.card=(s,ui,p)=>{const h=_card(s,ui,p);if(!h)return h;const a=D.account(s,p.id),root=D.limitRoot(s,a),m=D.cardSummary(s,a.id);
+  const links=`<div class="zr-links"><button class="chip pressable" onclick="App.push('future',{acc:'${root.id}'})">${C.ic('calendar')}Ekstre özeti ›</button><button class="chip pressable" onclick="LimitSheet.open('${a.id}')">${C.ic('card')}Limit geçmişi ›</button>${m.subLimit?`<span class="chip zr-sub">Sanal limit ${U.money(m.usedOwn,{dec:false})} / ${U.money(m.subLimit,{dec:false})}</span>`:''}</div>`;
+  return h.replace('<div class="actions">',links+'<div class="actions">')}}
+{const _q=App.quick;App.quick=k=>{if(k==='future'){Sheet.close(true);setTimeout(()=>App.push('future',{}),60);return}return _q(k)}}
+WIDGETS.future={name:'Gelecek ekstreler',icon:'calendar',sizes:['s'],r:s=>{const f=D.future(s);if(!f)return '';
+  return WT.tile({icon:'calendar',color:'#e30a17',label:'Gelecek aylar',value:U.money(f.beyond,{dec:false}),sub:`${f.list.filter(m=>m.rel>0).length} ekstreye yayılmış`,on:"App.push('future',{})"})}};
+
+/* ---------- 90_cloud.js ---------- */
+
+/* =====================================================================
+   v9 · Firebase bulut senkronizasyonu (yerel öncelikli)
+   - Uygulama her zaman telefondaki kopyayla çalışır (internetsiz de).
+   - Giriş yapılınca her değişiklik ~2 sn içinde Firestore'a yazılır;
+     başka cihazdaki değişiklik anında gelir.
+   - Yapı: users/{uid}/cuzdan/meta  +  users/{uid}/cuzdan/c0..cN (JSON parçaları)
+   - PIN / Face ID ve Gemini anahtarı cihaza özeldir, buluta gitmez.
+   ===================================================================== */
+const FB_VER='10.12.2';
+const FirebaseAdapter={
+  sdk:null,
+  async init(cfg){const b=`https://www.gstatic.com/firebasejs/${FB_VER}/`;
+    const [A,Au,Fs]=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);
+    const app=A.getApps().find(a=>a.name==='cuzdan')||A.initializeApp(cfg,'cuzdan');
+    const auth=Au.getAuth(app);try{await Au.setPersistence(auth,Au.browserLocalPersistence)}catch(e){}
+    this.sdk={Au,Fs,auth,db:Fs.getFirestore(app)}},
+  onAuth(cb){const{Au,auth}=this.sdk;return Au.onAuthStateChanged(auth,u=>cb(u?{uid:u.uid,email:u.email}:null))},
+  signIn(e,p){return this.sdk.Au.signInWithEmailAndPassword(this.sdk.auth,e,p)},
+  signUp(e,p){return this.sdk.Au.createUserWithEmailAndPassword(this.sdk.auth,e,p)},
+  reset(e){return this.sdk.Au.sendPasswordResetEmail(this.sdk.auth,e)},
+  signOut(){return this.sdk.Au.signOut(this.sdk.auth)},
+  ref(uid,id){const{Fs,db}=this.sdk;return Fs.doc(db,'users',uid,'cuzdan',id)},
+  async readMeta(uid){const d=await this.sdk.Fs.getDoc(this.ref(uid,'meta'));return d.exists()?d.data():null},
+  async readAll(uid,meta){const parts=await Promise.all(Array.from({length:meta.chunks},(_,i)=>this.sdk.Fs.getDoc(this.ref(uid,'c'+i))));
+    return parts.map(d=>{if(!d.exists())throw Object.assign(new Error('eksik parça'),{code:'cuzdan/partial'});return d.data().d}).join('')},
+  async write(uid,chunks,meta,oldCount){const{Fs,db}=this.sdk,b=Fs.writeBatch(db);
+    chunks.forEach((d,i)=>b.set(this.ref(uid,'c'+i),{d}));for(let i=chunks.length;i<(oldCount||0);i++)b.delete(this.ref(uid,'c'+i));
+    b.set(this.ref(uid,'meta'),{...meta,updatedAt:Fs.serverTimestamp()});await b.commit()},
+  watch(uid,cb){return this.sdk.Fs.onSnapshot(this.ref(uid,'meta'),d=>cb(d.exists()?d.data():null),e=>cb(null,e))},
+  fref(uid,id){const{Fs,db}=this.sdk;return Fs.doc(db,'users',uid,'files',id)},
+  async putFile(uid,id,chunks){const{Fs,db}=this.sdk,b=Fs.writeBatch(db);chunks.forEach((d,i)=>b.set(this.fref(uid,id+'_'+i),{d}));b.set(this.fref(uid,id),{n:chunks.length});await b.commit()},
+  async getFile(uid,id){const m=await this.sdk.Fs.getDoc(this.fref(uid,id));if(!m.exists())return null;const n=m.data().n||0;
+    const parts=await Promise.all(Array.from({length:n},(_,i)=>this.sdk.Fs.getDoc(this.fref(uid,id+'_'+i))));return parts.map(d=>d.exists()?d.data().d:'').join('')}};
+
+const Cloud={CFG:'cuzdan_fb_cfg',SYNC:'cuzdan_sync',DEV:'cuzdan_dev',CHUNK:300000,
+  api:null,user:null,status:'off',err:'',ready:false,applying:false,timer:null,unwatch:null,remote:null,
+  /* ---- ayarlar ---- */
+  cfg(){try{return JSON.parse(localStorage.getItem(this.CFG))}catch(e){return null}},
+  parseCfg(txt){txt=String(txt||'').trim();let o=null;try{o=JSON.parse(txt)}catch(e){}
+    if(!o){o={};['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId'].forEach(k=>{const m=txt.match(new RegExp(k+'\\s*:\\s*["\']([^"\']+)["\']'));if(m)o[k]=m[1]})}
+    return o&&o.apiKey&&o.projectId&&o.appId?{apiKey:o.apiKey,authDomain:o.authDomain||o.projectId+'.firebaseapp.com',projectId:o.projectId,storageBucket:o.storageBucket||'',messagingSenderId:o.messagingSenderId||'',appId:o.appId}:null},
+  meta(){try{return{base:0,dirty:false,at:0,...JSON.parse(localStorage.getItem(this.SYNC))}}catch(e){return{base:0,dirty:false,at:0}}},
+  setMeta(p){const m={...this.meta(),...p};try{localStorage.setItem(this.SYNC,JSON.stringify(m))}catch(e){}return m},
+  dev(){let d;try{d=localStorage.getItem(this.DEV);if(!d){d=U.uid()+U.uid();localStorage.setItem(this.DEV,d)}}catch(e){d='x'}return d},
+  /* ---- veri dönüşümü ---- */
+  PASS:'cuzdan_fb_pass',FILES:'cuzdan_sync_files',
+  pass(){try{return localStorage.getItem(this.PASS)||''}catch(e){return ''}},
+  setPass(p){try{p?localStorage.setItem(this.PASS,p):localStorage.removeItem(this.PASS);localStorage.removeItem(this.FILES)}catch(e){}},
+  async pack(s){const o={...s};delete o.security;o.ai={...(s.ai||{}),pending:{}};const pw=this.pass();return pw?JSON.stringify(await Backup.encrypt(o,pw)):JSON.stringify(o)},
+  async unpack(txt){let d=JSON.parse(txt);const cur=Store.get();
+    if(d&&d.cuzdan==='enc'){const pw=this.pass();if(!pw)throw{code:'cuzdan/needpass'};try{d=await Backup.decrypt(d,pw)}catch(e){throw{code:'cuzdan/badpass'}}}
+    return{...Persist.migrate(d),security:cur.security}},
+  merge(a,b){const o={...b,...a,settings:{...b.settings,...a.settings},paidStatements:{...(b.paidStatements||{}),...(a.paidStatements||{})}};
+    ['accounts','transactions','budgets','recurring','loans','goals','templates','categories','debts'].forEach(k=>{const m=new Map();(b[k]||[]).forEach(x=>m.set(x.id,x));(a[k]||[]).forEach(x=>m.set(x.id,x));o[k]=[...m.values()]});
+    return o},
+  async syncFiles(){if(!this.user||!this.api.putFile)return;let done;try{done=new Set(JSON.parse(localStorage.getItem(this.FILES)||'[]'))}catch(e){done=new Set()}
+    const ids=[...new Set(Store.get().transactions.map(t=>t.attachmentId).filter(Boolean))].filter(id=>!done.has(id)),pw=this.pass();
+    for(const id of ids.slice(0,8)){let d=null;try{d=await this.localFile(id)}catch(e){}if(!d)continue;
+      const payload=pw?JSON.stringify(await Backup.encrypt({d},pw)):d;try{await this.api.putFile(this.user.uid,id,this.split(payload));done.add(id)}catch(e){break}}
+    try{localStorage.setItem(this.FILES,JSON.stringify([...done]))}catch(e){}if(ids.length>8)setTimeout(()=>this.syncFiles(),3000)},
+  async cloudFile(id){if(!this.user||!this.api?.getFile)return null;let p=await this.api.getFile(this.user.uid,id);if(!p)return null;
+    if(p.charAt(0)==='{'){const e=JSON.parse(p);if(e.cuzdan==='enc')p=(await Backup.decrypt(e,this.pass())).d}return p},
+  split(str){const out=[];for(let i=0;i<str.length;i+=this.CHUNK)out.push(str.slice(i,i+this.CHUNK));return out.length?out:['']},
+  set(status,err=''){this.status=status;this.err=err;const el=document.getElementById('cloud-st');if(el)el.outerHTML=this.badge();document.documentElement.dataset.cloud=status},
+  /* ---- başlatma ---- */
+  async init(){Store.subscribe((s,a)=>this.onChange(a));
+    addEventListener('online',()=>{if(this.user&&this.meta().dirty)this.schedule(300)});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden&&this.user)this.check()});
+    if(this.cfg())this.connect()},
+  async connect(){const cfg=this.cfg();if(!cfg){this.set('off');return}this.set('loading');
+    try{this.api=window.__cloudMock||FirebaseAdapter;await this.api.init(cfg);this.ready=true}
+    catch(e){this.set('error',navigator.onLine?'Firebase yüklenemedi: '+(e.message||e):'İnternet yok · veriler telefonda güvende');return}
+    this.api.onAuth(u=>{this.user=u;if(this.unwatch){this.unwatch();this.unwatch=null}
+      if(!u){this.set('signedout');return}this.set('syncing');this.first().catch(e=>this.fail(e));
+      this.unwatch=this.api.watch(u.uid,(m,err)=>{if(err)return this.fail(err);this.remote=m;this.onRemote(m)})})},
+  fail(e){const c=e&&(e.code||'');this.set(navigator.onLine?'error':'offline',navigator.onLine?this.human(e):'İnternet yok · değişiklikler bağlanınca gönderilecek')},
+  human(e){const c=(e&&e.code)||'';return({'auth/invalid-credential':'E-posta ya da şifre yanlış','auth/wrong-password':'E-posta ya da şifre yanlış','auth/user-not-found':'Bu e-postayla hesap yok',
+    'auth/email-already-in-use':'Bu e-postayla zaten hesap var; giriş yap','auth/weak-password':'Şifre en az 6 karakter olmalı','auth/invalid-email':'E-posta adresi geçersiz',
+    'auth/operation-not-allowed':'Firebase konsolunda E-posta/Şifre girişini etkinleştir (Authentication → Sign-in method)','auth/too-many-requests':'Çok fazla deneme; biraz bekle',
+    'auth/network-request-failed':'İnternet bağlantısı yok','permission-denied':'Firestore kuralları erişime izin vermiyor (kuralları kurulum rehberindeki gibi yaz)',
+    'auth/api-key-not-valid.-please-pass-a-valid-api-key.':'Firebase yapılandırmasındaki apiKey geçersiz','unavailable':'Firebase\'e ulaşılamıyor',
+    'cuzdan/partial':'Buluttaki veri yarım görünüyor; tekrar eşitle'})[c]||(e&&e.message)||'Bilinmeyen hata'},
+  /* ---- ilk eşitleme: kim kazanır? ---- */
+  async first(){const uid=this.user.uid,rm=await this.api.readMeta(uid),lm=this.meta();this.remote=rm;
+    if(!rm){await this.push(true);return}
+    if(lm.base===rm.rev&&lm.uid===uid){if(lm.dirty)await this.push();else this.set('ok');return}
+    const s=Store.get(),localEmpty=!s.accounts.length&&!s.transactions.length;
+    if(localEmpty||(lm.uid===uid&&!lm.dirty&&rm.rev>lm.base)){await this.pull(rm,lm.uid===uid&&lm.base?'☁️ Diğer cihazdaki değişiklikler alındı':'☁️ Buluttaki verilerin yüklendi');return}
+    this.conflict(rm)},
+  onChange(a){if(this.applying||!a)return;if(/^ai\//.test(a.type))return;if(a.type==='security/update')return;
+    this.setMeta({dirty:true,at:Date.now()});if(this.user)this.schedule()},
+  schedule(ms=2000){clearTimeout(this.timer);this.timer=setTimeout(()=>this.push().catch(e=>this.fail(e)),ms)},
+  async check(){if(!this.user)return;try{const rm=await this.api.readMeta(this.user.uid);this.remote=rm;this.onRemote(rm);if(this.meta().dirty)this.schedule(200)}catch(e){this.fail(e)}},
+  onRemote(rm){if(!rm||!this.user)return;const lm=this.meta();if(rm.rev<=lm.base||rm.device===this.dev())return;
+    if(this.status==='locked')return;if(lm.dirty&&!this.empty())this.conflict(rm);else this.pull(rm,'☁️ Diğer cihazdaki değişiklikler alındı').catch(e=>this.fail(e))},
+  async pull(rm,msg){this.set('syncing');const txt=await this.api.readAll(this.user.uid,rm);let st;
+    try{st=await this.unpack(txt)}catch(e){if(e&&(e.code==='cuzdan/needpass'||e.code==='cuzdan/badpass')){this.set('locked',e.code==='cuzdan/badpass'?'Şifreleme parolası yanlış':'Bulut verilerin şifreli');CloudSheet.askPass(rm,msg,e.code==='cuzdan/badpass');return}throw e}
+    this.applying=true;try{Store.dispatch({type:'state/replace',payload:st})}finally{this.applying=false}
+    this.setMeta({base:rm.rev,dirty:false,uid:this.user.uid,last:Date.now()});this.set('ok');if(msg)Toast.show(msg)},
+  empty(){const s=Store.get();return !s.accounts.length&&!s.transactions.length},
+  async push(force){if(this.status==='locked'&&!force)return;if(!this.user||this.busy){if(this.busy)this.schedule(1500);return}this.busy=true;
+    try{const uid=this.user.uid,lm=this.meta();this.set('syncing');
+      const rm=await this.api.readMeta(uid);
+      if(rm&&!force&&rm.rev>lm.base&&rm.device!==this.dev()){this.busy=false;if(lm.dirty&&!this.empty())return this.conflict(rm);return this.pull(rm,'☁️ Buluttaki verilerin yüklendi')}
+      const str=await this.pack(Store.get()),chunks=this.split(str),rev=Math.max(rm?.rev||0,lm.base)+1;
+      await this.api.write(uid,chunks,{rev,chunks:chunks.length,size:str.length,device:this.dev(),app:'cuzdan',v:SCHEMA_VERSION,
+        enc:!!this.pass(),counts:{tx:Store.get().transactions.length,acc:Store.get().accounts.length}},rm?.chunks||0);
+      const changed=this.meta().at>lm.at;this.setMeta({base:rev,dirty:changed,uid,last:Date.now()});this.set('ok');if(changed)this.schedule(800);setTimeout(()=>this.syncFiles().catch(()=>{}),500)}
+    finally{this.busy=false}},
+  /* ---- çakışma ---- */
+  conflict(rm){if(document.getElementById('cloud-conf'))return;this.set('conflict');const s=Store.get(),c=rm.counts||{};
+    const when=rm.updatedAt&&rm.updatedAt.toDate?U.fmtDate(U.iso(rm.updatedAt.toDate()),'y'):'';
+    Sheet.open(Sheet.head('Hangi veriler kalsın?',{left:'Sonra',right:''})+`<i id="cloud-conf" hidden></i>
+      <p class="muted sm" style="margin:0 4px 12px;line-height:1.5">Bu telefonda ve bulutta farklı değişiklikler var. Birini seç; diğeri onun üzerine yazılır. Emin değilsen önce Ayarlar → Yedekle ile bu telefonun yedeğini al.</p>
+      <div class="glass list action-list" style="padding:0 12px">
+        <button class="row pressable" onclick="Cloud.resolve('cloud')">${C.icb('download','#0a84ff')}<div class="mid"><b>Buluttakini kullan</b><span>${c.tx??'?'} işlem · ${c.acc??'?'} hesap${when?' · '+when:''}</span></div></button>
+        <button class="row pressable" onclick="Cloud.resolve('local')">${C.icb('upload','#30d158')}<div class="mid"><b>Bu telefondakini kullan</b><span>${s.transactions.length} işlem · ${s.accounts.length} hesap</span></div></button>
+        <button class="row pressable" onclick="Cloud.resolve('merge')">${C.icb('transfer','#bf5af2')}<div class="mid"><b>İkisini birleştir</b><span>Her iki taraftaki kayıtlar korunur; aynı kayıtta bu telefondaki geçerli olur. Bir tarafta silinen kayıt geri gelebilir.</span></div></button></div>`)},
+  async resolve(which){Sheet.close();try{if(which==='merge'){const rm=await this.api.readMeta(this.user.uid);let remote;
+      try{remote=await this.unpack(await this.api.readAll(this.user.uid,rm))}catch(e){if(e&&e.code&&String(e.code).startsWith('cuzdan/'))return CloudSheet.askPass(rm,null,e.code==='cuzdan/badpass');throw e}
+      const merged={...this.merge(Store.get(),remote),security:Store.get().security};this.applying=true;try{Store.dispatch({type:'state/replace',payload:merged})}finally{this.applying=false}
+      await this.push(true);Toast.show('☁️ Veriler birleştirildi');return}
+    if(which==='cloud'){const rm=await this.api.readMeta(this.user.uid);await this.pull(rm,'☁️ Buluttaki veriler yüklendi')}else{await this.push(true);Toast.show('☁️ Bu telefondaki veriler buluta yazıldı')}}catch(e){this.fail(e)}},
+  /* ---- arayüz ---- */
+  badge(){const m={off:['Kapalı','var(--text3)'],loading:['Bağlanıyor…','var(--orange)'],signedout:['Giriş yapılmadı','var(--orange)'],syncing:['Eşitleniyor…','var(--blue)'],
+      ok:['Eşitlendi','var(--green)'],locked:['Parola gerekli','var(--orange)'],offline:['Çevrimdışı','var(--orange)'],error:['Hata','var(--red)'],conflict:['Seçim bekliyor','var(--orange)']}[this.status]||['—','var(--text3)'];
+    return `<span id="cloud-st" class="cloud-st" style="color:${m[1]}"><i style="background:${m[1]}"></i>${m[0]}</span>`},
+  row(){const lm=this.meta();return `<button class="row pressable" onclick="CloudSheet.open()">${C.icb('upload','#0a84ff')}<div class="mid"><b>Bulut eşitleme · Firebase</b><span>${this.user?U.esc(this.user.email||''):this.cfg()?'Giriş yap':'Kurulmadı'}${lm.last?' · son '+new Date(lm.last).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}):''}</span></div>${this.badge()}</button>`}};
+
+const CloudSheet={
+  open(){const c=Cloud.cfg();if(!c)return this.setup();
+    if(!Cloud.user)return this.login();
+    const lm=Cloud.meta();
+    Sheet.open(Sheet.head('Bulut eşitleme',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<div class="glass" style="padding:14px"><div class="set-row" style="padding-top:0"><div>${U.esc(Cloud.user.email||'')}<small>Proje: ${U.esc(c.projectId)}</small></div>${Cloud.badge()}</div>
+        <p class="muted xs" style="line-height:1.5">${lm.last?'Son eşitleme: '+new Date(lm.last).toLocaleString('tr-TR'):'Henüz eşitlenmedi'}${lm.dirty?' · gönderilmeyi bekleyen değişiklik var':''}${Cloud.err?'<br><span style="color:var(--red)">'+U.esc(Cloud.err)+'</span>':''}</p></div>
+      <div class="glass" style="padding:2px 14px;margin-top:12px"><div class="set-row"><div>Uçtan uca şifreleme<small>${Cloud.pass()?'Açık · Firebase verini okuyamaz':'Kapalı · veriler Firebase kurallarıyla korunuyor'}</small></div>
+        <label class="switch"><input type="checkbox" ${Cloud.pass()?'checked':''} onchange="this.checked?CloudSheet.encOn():CloudSheet.encOff()"><span></span></label></div></div>
+      <button class="btn primary pressable" style="margin-top:12px" onclick="Cloud.push().then(()=>{Toast.show('☁️ Eşitlendi');CloudSheet.open()}).catch(e=>{Cloud.fail(e);CloudSheet.open()})">${C.ic('upload')}Şimdi eşitle</button>
+      <button class="btn pressable" style="margin-top:8px" onclick="CloudSheet.logout()">Çıkış yap</button>
+      <p class="muted xs" style="margin:12px 4px 0;line-height:1.5">Veriler bu telefonda da kalır; internet yokken uygulama çalışmaya devam eder ve bağlanınca gönderir. PIN, Face ID ve Gemini anahtarı buluta gönderilmez.</p>`)},
+  encOn(){Sheet.open(Sheet.head('Uçtan uca şifreleme',{left:'Vazgeç',right:''})+
+      `<p class="muted sm" style="margin:0 4px 10px;line-height:1.5">Veriler telefonda şifrelenip öyle gönderilir. Diğer cihazlarında da bu parolayı bir kez girmen gerekir. <b>Parolayı unutursan buluttaki veri açılamaz</b> (telefondaki veri etkilenmez).</p>
+      <label class="field"><span>Şifreleme parolası</span><input class="input" id="ep1" type="password" autocomplete="new-password" placeholder="en az 8 karakter"></label>
+      <label class="field"><span>Parola (tekrar)</span><input class="input" id="ep2" type="password" autocomplete="new-password"></label>
+      <button class="btn primary pressable" onclick="CloudSheet.encSave()">${C.ic('lock')}Şifrelemeyi aç</button>`)},
+  async encSave(){const a=Sheet.val('#ep1'),b=Sheet.val('#ep2');if(a.length<8){Toast.show('Parola en az 8 karakter olmalı');return}if(a!==b){Toast.show('Parolalar aynı değil');return}
+    Cloud.setPass(a);try{await Cloud.push(true);Toast.show('🔒 Bulut verilerin artık şifreli')}catch(e){Cloud.fail(e)}this.open()},
+  async encOff(){if(!confirm('Şifreleme kapatılsın mı? Veriler buluta şifresiz yazılır.')){this.open();return}Cloud.setPass('');try{await Cloud.push(true)}catch(e){Cloud.fail(e)}this.open()},
+  askPass(rm,msg,bad){Sheet.open(Sheet.head('Bulut parolası',{left:'Sonra',right:''})+
+      `<p class="muted sm" style="margin:0 4px 10px">${bad?'<b style="color:var(--red)">Parola yanlış.</b> ':''}Buluttaki verilerin şifreli. Şifrelemeyi açtığın parolayı gir.</p>
+      <label class="field"><span>Şifreleme parolası</span><input class="input" id="ap" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')CloudSheet.passGo()"></label>
+      <button class="btn primary pressable" onclick="CloudSheet.passGo()">${C.ic('lock')}Aç</button>`);this._rm=rm},
+  async passGo(){const p=Sheet.val('#ap');if(!p)return;Cloud.setPass(p);Sheet.close();try{await Cloud.first()}catch(e){Cloud.fail(e)}},
+  setup(){Sheet.open(Sheet.head('Firebase kurulumu',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<ol class="steps glass">
+        <li><a class="link" href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a> adresinde yeni proje aç (ör. <b>cuzdan</b>).</li>
+        <li><b>Build → Authentication → Sign-in method</b>: <b>E-posta/Şifre</b>'yi etkinleştir.</li>
+        <li><b>Build → Firestore Database</b> oluştur (bölge: <b>eur3</b>), sonra <b>Rules</b> sekmesine şunu yapıştırıp yayınla:<div class="code" style="display:block;white-space:pre;overflow-x:auto">rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /users/{uid}/{doc=**} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == uid;
+    }
+  }
+}</div></li>
+        <li><b>Proje ayarları → Genel → Uygulamalarınız → Web (&lt;/&gt;)</b> ile uygulama ekle; gösterilen <b>firebaseConfig</b> bloğunu kopyala.</li></ol>
+      <label class="field"><span>firebaseConfig</span><textarea class="input" id="fb-cfg" rows="6" style="font-size:12.5px;font-family:ui-monospace,monospace" placeholder="const firebaseConfig = {\n  apiKey: &quot;AIza…&quot;,\n  authDomain: &quot;…&quot;,\n  projectId: &quot;…&quot;,\n  …\n};" autocapitalize="off" spellcheck="false"></textarea></label>
+      <button class="btn primary pressable" onclick="CloudSheet.saveCfg()">${C.ic('check')}Kaydet ve devam et</button>
+      <p class="muted xs" style="margin:10px 4px 0;line-height:1.5">firebaseConfig gizli değildir; verilerini koruyan şey yukarıdaki kurallardır. Kurallar olmadan veritabanını herkes okuyabilir.</p>`)},
+  saveCfg(){const c=Cloud.parseCfg(Sheet.val('#fb-cfg'));if(!c){Toast.show('apiKey, projectId ve appId bulunamadı');Haptic.error();return}
+    try{localStorage.setItem(Cloud.CFG,JSON.stringify(c))}catch(e){}Cloud.connect();this.login()},
+  login(mode='in'){this.mode=mode;
+    Sheet.open(Sheet.head(mode==='up'?'Hesap oluştur':'Buluta giriş',{left:'Kapat',right:''})+
+      `<p class="muted sm" style="margin:0 4px 10px">${mode==='up'?'Bu e-posta ve şifreyle diğer cihazlarından da verine ulaşırsın.':'Firebase hesabınla giriş yap; verilerin bu telefonla eşitlensin.'}</p>
+      <label class="field"><span>E-posta</span><input class="input" id="fb-e" type="email" autocomplete="email" autocapitalize="off" inputmode="email"></label>
+      <label class="field"><span>Şifre</span><input class="input" id="fb-p" type="password" autocomplete="${mode==='up'?'new-password':'current-password'}" onkeydown="if(event.key==='Enter')CloudSheet.go()"></label>
+      <div id="fb-err"></div>
+      <button class="btn primary pressable" onclick="CloudSheet.go()">${mode==='up'?'Hesap oluştur':'Giriş yap'}</button>
+      <div class="btn-row" style="margin-top:8px"><button class="btn pressable" onclick="CloudSheet.login('${mode==='up'?'in':'up'}')">${mode==='up'?'Hesabım var':'Yeni hesap'}</button>${mode==='in'?'<button class="btn pressable" onclick="CloudSheet.forgot()">Şifremi unuttum</button>':''}</div>
+      <button class="btn pressable" style="margin-top:8px;color:var(--text2)" onclick="CloudSheet.forget()">Firebase ayarını kaldır</button>`)},
+  async go(){const e=Sheet.val('#fb-e').trim(),p=Sheet.val('#fb-p'),box=Sheet.el('#fb-err');if(!e||!p){Toast.show('E-posta ve şifre gir');return}
+    if(!Cloud.ready){await Cloud.connect();if(!Cloud.ready){if(box)box.innerHTML=`<div class="err-box">${U.esc(Cloud.err)}</div>`;return}}
+    const b=Sheet.el('.btn.primary');if(b){b.disabled=true;b.textContent='Bekle…'}
+    try{await(this.mode==='up'?Cloud.api.signUp(e,p):Cloud.api.signIn(e,p));Haptic.success();Sheet.close();Toast.show('☁️ Giriş yapıldı, eşitleniyor…')}
+    catch(err){Haptic.error();if(box)box.innerHTML=`<div class="err-box" style="margin-bottom:10px">${U.esc(Cloud.human(err))}</div>`;if(b){b.disabled=false;b.textContent=this.mode==='up'?'Hesap oluştur':'Giriş yap'}}},
+  async forgot(){const e=Sheet.val('#fb-e').trim();if(!e){Toast.show('Önce e-postanı yaz');return}try{if(!Cloud.ready)await Cloud.connect();await Cloud.api.reset(e);Toast.show('✉️ Şifre sıfırlama e-postası gönderildi')}catch(err){Toast.show(Cloud.human(err))}},
+  async logout(){if(!confirm('Buluttan çıkılsın mı? Veriler bu telefonda kalır.'))return;try{await Cloud.api.signOut()}catch(e){}Cloud.setMeta({uid:null,base:0});Sheet.close();Toast.show('Çıkış yapıldı')},
+  forget(){if(!confirm('Firebase ayarı bu telefondan kaldırılsın mı?'))return;try{Cloud.api&&Cloud.api.signOut&&Cloud.api.signOut()}catch(e){}try{localStorage.removeItem(Cloud.CFG)}catch(e){}
+    Cloud.user=null;Cloud.ready=false;Cloud.set('off');Sheet.close();Toast.show('Firebase ayarı kaldırıldı')}};
+
+Cloud.localFile=Attach.get.bind(Attach);
+Attach.get=async function(id){let v=null;try{v=await Cloud.localFile(id)}catch(e){}if(v||!Cloud.user)return v;
+  try{const p=await Cloud.cloudFile(id);if(p){await Attach.put(id,p);try{const s=new Set(JSON.parse(localStorage.getItem(Cloud.FILES)||'[]'));s.add(id);localStorage.setItem(Cloud.FILES,JSON.stringify([...s]))}catch(e){}}return p}catch(e){return null}};
+{const _i=App.init.bind(App);App.init=()=>{_i();Cloud.init()}}
+
+/* ---------- 91_v10.js ---------- */
+
+/* =====================================================================
+   v10 · Ekstre karşılaştırma, Bankkart Lira, dövizli kart harcaması
+         + düzeltmeler: sanal kart günleri ve özel limit geçmişi, banka kartı görseli
+   ===================================================================== */
+
+/* ---------- Sanal kart: kesim/son ödeme günü ana kartı izler ---------- */
+const VCard={busy:false,
+  fix(){if(this.busy)return;const s=Store.get(),acts=[];
+    s.accounts.forEach(a=>{if(a.type!=='credit'||!a.credit.sharedWith)return;const r=D.account(s,a.credit.sharedWith);if(!r||r.type!=='credit')return;
+      if(a.credit.cutDay!==r.credit.cutDay||a.credit.dueDay!==r.credit.dueDay)acts.push({type:'upsert',col:'accounts',item:{...a,credit:{...a.credit,cutDay:r.credit.cutDay,dueDay:r.credit.dueDay}}})});
+    if(acts.length){this.busy=true;try{Store.dispatch({type:'batch',actions:acts})}finally{this.busy=false}}},
+  init(){Store.subscribe((s,a)=>{if(a.type==='upsert'&&a.col==='accounts'||a.type==='state/replace')setTimeout(()=>this.fix(),0)});this.fix()}};
+{const _r=AccForm.render;AccForm.render=function(){_r.call(this);const d=this.draft;if(d.type!=='credit'||!d.credit.sharedWith)return;
+  const cut=Sheet.el('#ac-cut');const g=cut&&cut.closest('.grid2');if(g){const p=document.createElement('p');p.className='muted xs';p.style.margin='8px 4px 0';
+    const r=D.account(Store.get(),d.credit.sharedWith);p.innerHTML=`Kesim (${r?.credit.cutDay}) ve son ödeme (${r?.credit.dueDay}) günü ana kartla aynıdır; ana kartı değiştirince bu kart da güncellenir.`;g.replaceWith(p)}
+  const sub=Sheet.el('#ac-sub');if(sub&&d.id){const f=document.createElement('label');f.className='field';f.innerHTML=`<span>Özel limit değişiklik tarihi</span><input class="input" id="ac-lfrom" type="date" value="${d._lfrom||U.today()}">`;sub.closest('.field').after(f)}}}
+
+/* ---------- Sanal kart özel limiti için tarih geçmişi ---------- */
+D.subHist=acc=>{const c=acc?.credit;if(!c)return[];const h=Array.isArray(c.subLimitHistory)?c.subLimitHistory.filter(x=>x&&x.from):[];
+  return h.length?[...h].sort((a,b)=>a.from.localeCompare(b.from)):(+c.subLimit>0?[{from:'2000-01-01',limit:+c.subLimit}]:[])};
+D.subAt=(acc,date)=>{const h=D.subHist(acc);let v=h[0]?h[0].limit:0;for(const x of h){if(x.from<=date)v=+x.limit;else break}return +v||0};
+Limits.addSub=(acc,from,limit)=>{const h=D.subHist(acc).filter(x=>x.from!==from);h.push({from,limit:U.r2(limit)});h.sort((a,b)=>a.from.localeCompare(b.from));
+  const c={...acc.credit,subLimitHistory:h};c.subLimit=D.subAt({credit:c},U.today())||'';return{...acc,credit:c}};
+Limits.removeSub=(acc,from)=>{const h=D.subHist(acc).filter(x=>x.from!==from);const c={...acc.credit,subLimitHistory:h};c.subLimit=D.subAt({credit:c},U.today())||'';return{...acc,credit:c}};
+{const _cs=D.cardSummary;D.cardSummary=U.memo((s,accId)=>{const acc=D.account(s,accId),sub=D.subAt(acc,U.today());
+  if(!acc?.credit?.sharedWith||+acc.credit.subLimit===sub)return _cs(s,accId);
+  return _cs({...s,accounts:s.accounts.map(a=>a.id===accId?{...a,credit:{...a.credit,subLimit:sub}}:a)},accId)})}
+{const _ps=AccForm.postSave;AccForm.postSave=function(out,d){let item=_ps.call(this,out,d);const prev=d.id&&D.account(Store.get(),d.id);
+  if(item.type==='credit'&&item.credit.sharedWith){const pc=prev?.credit||{};if(pc.subLimitHistory)item.credit.subLimitHistory=pc.subLimitHistory;
+    const nv=+item.credit.subLimit||0,cv=prev?D.subAt(prev,U.today()):0;
+    if(prev&&Math.abs(nv-cv)>0.009&&(pc.subLimitHistory||cv>0)){const from=/^\d{4}-\d{2}-\d{2}$/.test(d._lfrom||'')?d._lfrom:U.today();
+      item=Limits.addSub({...item,credit:{...item.credit,subLimitHistory:D.subHist(prev)}},from,nv)}}
+  return item}}
+{const _o=LimitSheet.open.bind(LimitSheet);LimitSheet.open=function(id){_o(id);const s=Store.get(),a=D.account(s,id);if(!a?.credit?.sharedWith)return;const sh=Sheet.el('.sheet');if(!sh)return;
+  const h=D.subHist(a).slice().reverse(),T=U.today(),box=document.createElement('div');
+  box.innerHTML=`<div class="field"><span>${U.esc(a.name)} · özel limit geçmişi</span></div>
+    ${h.length?`<div class="glass list">${h.map(x=>`<div class="row"><span class="ic">${C.ic('phone')}</span><div class="mid"><b class="num">${x.limit>0?U.money(x.limit,{dec:false}):'Sınırsız (ana kart limiti)'}</b><span>${x.from<='2000-01-02'?'başlangıç':U.fmtDate(x.from,'y')+' itibarıyla'}</span></div>
+      <button class="mini-btn" style="color:var(--red);background:rgba(255,69,58,.12)" onclick="LimitSheet.delSub('${a.id}','${x.from}')">Sil</button></div>`).join('')}</div>`:'<p class="muted sm" style="margin:0 4px">Özel limit yok; sanal kart ana kartın tüm limitini kullanır.</p>'}
+    <div class="grid2"><label class="field"><span>Özel limit (₺, 0 = sınırsız)</span><input class="input num" id="sl-l" inputmode="decimal"></label><label class="field"><span>Geçerlilik tarihi</span><input class="input" id="sl-d" type="date" value="${T}"></label></div>
+    <button class="btn pressable" onclick="LimitSheet.saveSub('${a.id}')">${C.ic('plus')}Özel limiti kaydet</button>`;sh.appendChild(box)};
+  LimitSheet.saveSub=function(id){const l=U.parseNum(Sheet.val('#sl-l')),d=Sheet.val('#sl-d');if(!(l>=0)||!/^\d{4}-\d{2}-\d{2}$/.test(d)){Toast.show('Limit ve tarih gir');return}
+    Store.dispatch({type:'upsert',col:'accounts',item:Limits.addSub(D.account(Store.get(),id),d,l)});Haptic.success();this.open(id)};
+  LimitSheet.delSub=function(id,from){Store.dispatch({type:'upsert',col:'accounts',item:Limits.removeSub(D.account(Store.get(),id),from)});this.open(id)}}
+
+/* ---------- Banka kartı (vadesiz) görseli ---------- */
+C.debitCard=(s,a)=>{const b=D.balance(s,a.id);return `<div class="ccard dcard cs-${a.style||'aurora'}" style="${C.ccStyle(a)}"><span class="sheen"></span>
+  <div class="cc-top"><div><div class="cc-name">${U.esc(a.name)}</div><div class="cc-bank">${U.esc(a.bank||'Banka')} · Banka Kartı</div></div><div class="chip"></div></div>
+  <div><div class="cc-lbl">Vadesiz bakiye</div><div class="cc-amt num">${U.money(b)}</div>
+    <div class="cc-foot"><span>${+a.overdraft>0?'KMH '+U.money(a.overdraft,{dec:false}):'Harcamalar hesaptan anında düşer'}</span><span>DEBIT</span></div></div></div>`};
+{const _t=C.accTile;C.accTile=(s,a)=>{const h=_t(s,a);return a.debitCard?h.replace('acc-tile glass pressable','acc-tile glass pressable debit-tile').replace(`<div class="muted xs">${ACCOUNT_TYPES[a.type].name}</div>`,'<div class="muted xs">Banka kartı · vadesiz</div>'):h}}
+{const _a=Pages.account;Pages.account=(s,ui,p)=>{const h=_a(s,ui,p),a=D.account(s,p.id);if(!h||!a?.debitCard)return h;
+  return h.replace('<section class="glass hero acc-hero">',`<div class="page-flip" style="margin:10px 0 14px">${C.debitCard(s,a)}</div><section class="glass hero acc-hero">`)}}
+
+/* ---------- Döviz satırı okuma (ayrıştırıcıya ek) ---------- */
+{const _p=ZParse.parse.bind(ZParse);ZParse.parse=function(raw){const r=_p(raw),text=String(raw||'').replace(/ /g,' ').replace(/\r/g,''),A=this.ascii(text);
+  const lines=text.split('\n').map(l=>l.replace(/\s+/g,' ').trim());
+  /* iki satıra bölünmüş açıklama: tarihsiz, tutarsız, kısa büyük harfli satır bir önceki işleme eklenir */
+  for(let i=1;i<lines.length;i++){const l=lines[i],prev=lines[i-1];if(!l||this.DATE.test(l)||this.AMT.test(l)){this.AMT.lastIndex=0;continue}this.AMT.lastIndex=0;
+    if(l.length>32||l!==l.toUpperCase()||!/[A-ZÇĞİÖŞÜ]{3}/.test(l)||/KART|TOPLAM|BORÇ|BORC|LİMİT|LIMIT|ÖDEME|ODEME|SAYFA|TARİH|TARIH|AÇIKLAMA|ACIKLAMA|ÖZET|OZET|HESAP|BANKASI|BANKKART|TUTAR|PUAN/.test(l))continue;
+    const pm=prev.match(this.DATE);if(!pm)continue;const d=this.iso(pm[1],pm[2],pm[3]);const t=[...r.transactions].reverse().find(x=>x.date===d);if(t&&t.description.length<40)t.description=this.pretty(t.description+' '+this.pretty(l))}
+  /* Bankkart Lira */
+  const num=v=>v?this.num(v.replace('-','')):null;
+  const bal=num(this.head(text,['bankkart lira bakiyesi','toplam bankkart lira','kullanilabilir bankkart lira','bankkart lira bakiye']));
+  const earned=num(this.head(text,['kazanilan bankkart lira','donem ici kazanilan bankkart lira','bankkart lira kazanimi','bankkart lira kazanci']));
+  const used=num(this.head(text,['kullanilan bankkart lira','harcanan bankkart lira']));
+  if(bal!=null||earned!=null||used!=null)r.points={balance:bal,earned,used};
+  return r}}
+
+/* ---------- Bankkart Lira (puan) ---------- */
+const Points={
+  name:a=>/ziraat|bankkart/i.test((a?.bank||'')+' '+(a?.name||''))?'Bankkart Lira':'Puan',
+  of:a=>a?.points||{balance:0,log:[]},
+  apply(acc,p){const cur=this.of(acc),bal=p.balance!=null?U.r2(p.balance):U.r2((+cur.balance||0)+(+p.earned||0)-(+p.used||0));
+    return{...acc,points:{balance:bal,at:p.date||U.today(),log:[{date:p.date||U.today(),type:p.type||'stmt',earned:p.earned??null,used:p.used??null,amount:p.amount??null,balance:bal,note:p.note||''},...(cur.log||[])].slice(0,60)}}},
+  open(id){const s=Store.get(),a0=D.account(s,id),a=D.limitRoot(s,a0)||a0,p=this.of(a),nm=this.name(a);
+    Sheet.open(Sheet.head(nm,{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<div class="glass pts-hero"><span class="pts-ic">₺</span><div><div class="muted sm">${U.esc(a.name)} · kullanılabilir</div><div class="pts-n num">${U.money(p.balance||0)}</div><div class="faint xs">${p.at?'Son güncelleme '+U.fmtDate(p.at,'y'):'Ekstre içe aktarınca otomatik güncellenir'}</div></div></div>
+      <div class="grid2" style="margin-top:12px"><label class="field"><span>${nm} ile ödediğim tutar</span><input class="input num" id="pt-use" inputmode="decimal" placeholder="0"></label>
+        <label class="field"><span>Ne aldın?</span><input class="input" id="pt-m" placeholder="ör. Migros"></label></div>
+      <button class="btn primary pressable" onclick="Points.use('${a.id}')">${C.ic('refund')}${nm} ile ödedim</button>
+      <p class="muted xs" style="margin:6px 4px 0">Kart borcundan düşer ve ${nm} bakiyesinden eksilir.</p>
+      <div class="grid2" style="margin-top:12px"><label class="field"><span>Bakiyeyi elle düzelt</span><input class="input num" id="pt-set" inputmode="decimal" placeholder="${F.money(p.balance||0)}"></label>
+        <div class="field"><span>&nbsp;</span><button class="btn pressable" style="margin:0" onclick="Points.set('${a.id}')">Kaydet</button></div></div>
+      ${(p.log||[]).length?`<div class="field"><span>Geçmiş</span></div><div class="glass list">${p.log.map(x=>`<div class="row"><span class="ic" style="color:${x.type==='use'?'var(--orange)':'var(--green)'}">${C.ic(x.type==='use'?'refund':x.type==='adjust'?'edit':'sparkles')}</span>
+        <div class="mid"><b>${{stmt:'Ekstreden',use:'Harcandı',adjust:'Elle düzeltildi'}[x.type]||'Kayıt'}${x.note?' · '+U.esc(x.note):''}</b><span>${U.fmtDate(x.date,'y')}${x.earned?' · +'+U.money(x.earned)+' kazanıldı':''}${x.used?' · −'+U.money(x.used)+' kullanıldı':''}${x.amount&&x.type==='use'?' · −'+U.money(x.amount):''}</span></div><div class="end num">${U.money(x.balance)}</div></div>`).join('')}</div>`:''}`)},
+  use(id){const a=D.account(Store.get(),id),amt=U.parseNum(Sheet.val('#pt-use')),m=Sheet.val('#pt-m').trim(),nm=this.name(a),bal=+this.of(a).balance||0;
+    if(!(amt>0)){Toast.show('Tutar gir');return}if(amt>bal+0.009&&!confirm(`${nm} bakiyen ${U.money(bal)}; yine de kaydedilsin mi?`))return;
+    Store.dispatch({type:'batch',actions:[{type:'upsert',col:'transactions',item:{id:U.uid(),kind:'refund',accountId:a.id,amount:U.r2(amt),date:U.today(),merchant:nm+' ile ödeme'+(m?' · '+m:''),category:'other',source:'manual',note:nm}},
+      {type:'upsert',col:'accounts',item:this.apply(a,{type:'use',amount:amt,used:amt,note:m})}]});Haptic.success();Toast.show(`✓ ${U.money(amt)} ${nm} kullanıldı`);this.open(id)},
+  set(id){const a=D.account(Store.get(),id),v=U.parseNum(Sheet.val('#pt-set'));if(!(v>=0)){Toast.show('Bakiye gir');return}
+    Store.dispatch({type:'upsert',col:'accounts',item:this.apply(a,{type:'adjust',balance:v})});Toast.show('✓ Bakiye güncellendi');this.open(id)}};
+
+/* ---------- Ekstre karşılaştırma (mutabakat) ---------- */
+D.bankStmt=(s,rootId,idx)=>(s.settings.stmtBank||{})[rootId+'|'+idx]||null;
+D.recon=U.memo((s,accId,idx)=>{const a=D.account(s,accId),root=D.limitRoot(s,a)||a,B=D.bankStmt(s,root.id,idx);if(!B)return null;
+  const group=s.accounts.filter(x=>x.type==='credit'&&(x.id===root.id||x.credit.sharedWith===root.id)).map(x=>x.id);
+  const app=D.cardLines(s).filter(l=>group.includes(l.accId)&&l.idx===idx).map((l,i)=>({i,amount:U.r2(l.amount),date:l.tx.date,desc:l.tx.merchant||cat(l.tx.category).name,tx:l.tx,k:l.k,n:l.n,fx:l.tx.fx||null,acc:l.accId}));
+  const bank=(B.rows||[]).filter(r=>r.type!=='payment').map((r,i)=>({i,amount:U.r2(r.type==='refund'?-r.amount:(r.lineAmount||r.amount)),date:r.date,desc:r.desc,row:r}));
+  const used=new Set(),pairs=[],fxd=[];
+  const dd=(x,y)=>Math.abs(U.daysUntil(x)-U.daysUntil(y));
+  bank.forEach(b=>{let best=null;app.forEach(l=>{if(used.has(l.i)||Math.abs(l.amount-b.amount)>0.01)return;if(!best||dd(l.date,b.date)<dd(best.date,b.date))best=l});if(best){used.add(best.i);b.m=best;pairs.push([b,best])}});
+  bank.filter(b=>!b.m).forEach(b=>{const l=app.find(l=>!used.has(l.i)&&l.fx&&b.amount>0&&Math.abs(l.amount-b.amount)/b.amount<0.12);if(l){used.add(l.i);b.m=l;fxd.push({bank:b,line:l,diff:U.r2(b.amount-l.amount)})}});
+  const missing=bank.filter(b=>!b.m),extra=app.filter(l=>!used.has(l.i));
+  const bankTotal=U.r2(bank.reduce((x,b)=>x+b.amount,0)),appTotal=U.r2(app.reduce((x,l)=>x+l.amount,0)),diff=U.r2(bankTotal-appTotal);
+  return{root,idx,B,bankTotal,appTotal,diff,missing,extra,fxd,ok:Math.abs(diff)<0.01&&!missing.length&&!extra.length&&!fxd.length}});
+const Recon={
+  save(rootId,idx,meta,rows){const s=Store.get(),all={...(s.settings.stmtBank||{})};
+    all[rootId+'|'+idx]={at:Date.now(),cut:meta.cut||null,due:meta.due||null,total:meta.total||null,min:meta.min||null,limit:meta.limit||null,points:meta.points||null,
+      rows:rows.map(r=>({id:r.id,type:r.type,amount:r.amount,lineAmount:r.lineAmount||null,date:r.date,desc:r.desc,category:r.category,installments:r.installments||1,label:r.label,accId:r.accId||null,fx:r.raw?.fx||null}))};
+    const keys=Object.keys(all).sort((x,y)=>all[y].at-all[x].at);keys.slice(36).forEach(k=>delete all[k]);   // en fazla 36 ekstre saklanır
+    return{type:'settings/update',payload:{stmtBank:all}}},
+  open(accId,idx){const s=Store.get(),R=D.recon(s,accId,idx);if(!R){Toast.show('Bu dönem için banka ekstresi içe aktarılmamış');return}const B=R.B;
+    Sheet.open(Sheet.head(D.stmtName(idx)+' · karşılaştırma',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
+      `<div class="verdict" style="background:${R.ok?'rgba(48,209,88,.12)':'rgba(255,159,10,.13)'};color:${R.ok?'var(--green)':'var(--orange)'}">${R.ok?'✓ Banka ekstresiyle birebir uyumlu.':Math.abs(R.diff)<0.01?'Toplamlar tutuyor ama eşleşmeyen satırlar var.':`Bankayla ${U.money(Math.abs(R.diff))} fark var: Cüzdan'da ${R.diff>0?'eksik':'fazla'} kayıt olabilir.`}</div>
+      <div class="glass wi-card"><div class="wi-kv"><span>Bankanın ekstresindeki işlemler</span><b class="num">${U.money(R.bankTotal)}</b></div><div class="wi-kv"><span>Cüzdan'daki ${D.stmtName(idx)} ekstresi</span><b class="num">${U.money(R.appTotal)}</b></div>
+        ${B.total!=null?`<div class="wi-kv"><span>Bankanın dönem borcu (devreden dahil)</span><b class="num">${U.money(B.total)}</b></div>`:''}</div>
+      ${R.missing.length?`<div class="field"><span>Bankada var, Cüzdan'da yok · ${R.missing.length}</span></div><div class="glass list recon-list">${R.missing.map(b=>`<div class="row"><span class="ic" style="color:var(--orange)">${C.ic('alert')}</span><div class="mid"><b>${U.esc(b.desc)}</b><span>${U.fmtDate(b.date)} · ${U.esc(b.row.label||'')}</span></div><div class="end"><b class="num">${U.money(b.amount)}</b><button class="mini-btn" onclick="Recon.add('${accId}',${idx},'${b.row.id}')">Ekle</button></div></div>`).join('')}</div>`:''}
+      ${R.extra.length?`<div class="field"><span>Cüzdan'da var, bu ekstrede yok · ${R.extra.length}</span></div><div class="glass list recon-list">${R.extra.map(l=>`<button class="row pressable" onclick="Sheet.close(true);App.push('tx',{id:'${l.tx.id}'})"><span class="ic" style="color:var(--blue)">${C.ic('info')}</span><div class="mid"><b>${U.esc(l.desc)}${l.n>1?' · '+(l.k+1)+'/'+l.n:''}</b><span>${U.fmtDate(l.date)} · tarihi yanlış girilmiş ya da sonraki ekstreye kalmış olabilir</span></div><div class="end num">${U.money(l.amount)}</div></button>`).join('')}</div>`:''}
+      ${R.fxd.length?`<div class="field"><span>Kur farkı · ${R.fxd.length}</span></div><div class="glass list recon-list">${R.fxd.map(x=>`<div class="row"><span class="ic" style="color:var(--purple,#bf5af2)">${C.ic('fx')}</span><div class="mid"><b>${U.esc(x.line.desc)}</b><span>${U.money(x.line.fx.amount,{cur:x.line.fx.cur})} · tahmin ${U.money(x.line.amount)} → banka ${U.money(x.bank.amount)} (${x.diff>0?'+':''}${U.money(x.diff)})</span></div>${x.line.n>1?'':`<button class="mini-btn" onclick="Recon.fx('${accId}',${idx},'${x.line.tx.id}',${x.bank.amount})">Düzelt</button>`}</div>`).join('')}</div>`:''}
+      <p class="muted xs" style="margin:12px 4px 0;line-height:1.5">Karşılaştırma, ${U.fmtDate(U.iso(new Date(B.at)),'y')} tarihinde içe aktardığın banka ekstresindeki harcama, taksit, iade ve kesinti satırlarıyla yapılır; ödemeler hariçtir. Tutarı ve tarihi (±3 gün) uyan satırlar eşleşmiş sayılır.</p>`)},
+  add(accId,idx,rowId){const s=Store.get(),R=D.recon(s,accId,idx),b=R&&R.missing.find(x=>x.row.id===rowId);if(!b)return;const r=b.row;
+    const acts=StatementImport.toActions([{...r,sel:true}],r.accId||R.root.id);if(r.fx&&acts[0])acts[0].item.fx={cur:r.fx.cur,amount:r.fx.amount,rate:U.r2(r.amount/r.fx.amount*10000)/10000};
+    Store.dispatch({type:'batch',actions:acts});Haptic.success();Toast.show('✓ Eklendi');this.open(accId,idx)},
+  fx(accId,idx,txId,bankAmt){const t=D.tx(Store.get(),txId);if(!t)return;Store.dispatch({type:'upsert',col:'transactions',item:{...t,amount:U.r2(bankAmt),fx:t.fx?{...t.fx,rate:U.r2(bankAmt/t.fx.amount*10000)/10000}:t.fx}});
+    Toast.show('✓ Tutar bankadaki kurla güncellendi');this.open(accId,idx)}};
+{const _st=C.statement;C.statement=(s,acc,st,open)=>{const h=_st(s,acc,st,open),R=D.recon(s,acc.id,st.idx);if(!R)return h;
+  const line=`<button class="recon-line pressable ${R.ok?'ok':'warn'}" onclick="event.stopPropagation();Recon.open('${acc.id}',${st.idx})">${R.ok?'✓ Banka ekstresiyle uyumlu':'⚠️ Bankayla '+(Math.abs(R.diff)>=0.01?U.money(Math.abs(R.diff))+' fark':(R.missing.length+R.extra.length+R.fxd.length)+' eşleşmeyen satır')}<span>incele ›</span></button>`;
+  return h.replace('<div class="stmt-nums">',line+'<div class="stmt-nums">')}}
+
+/* ---------- İçe aktarma: ekstre kaydı + puan + döviz ---------- */
+{const _local=ImportSheet.local;ImportSheet.local=function(r,via){const ok=_local.call(this,r,via);if(!ok||!this.meta)return ok;
+  this.meta.points=r.points||null;this.meta.savePoints=!!r.points;const st=Store.get(),root=this.accId,grp=st.accounts.filter(a=>a.id===root||a.credit?.sharedWith===root).map(a=>a.id);
+  this.rows.forEach(row=>{const fx=row.raw&&row.raw.fx;if(!fx||row.dup)return;
+    const t=st.transactions.find(t=>grp.includes(t.accountId)&&t.fx&&t.fx.cur===fx.cur&&Math.abs(t.fx.amount-fx.amount)<0.01&&Math.abs(U.daysUntil(t.date)-U.daysUntil(row.date))<=3);
+    if(t){row.dup=true;row.sel=false}});
+  this.review();return ok}}
+{const _rv=ImportSheet.review;ImportSheet.review=function(){_rv.call(this);const m=this.meta||{},a=D.account(Store.get(),this.accId);if(!m.points)return;const box=Sheet.el('.preview');if(!box)return;
+  const nm=Points.name(a),p=m.points,el=document.createElement('label');el.className='imp-row';el.style.marginTop='8px';
+  el.innerHTML=`<input type="checkbox" ${m.savePoints?'checked':''} onchange="ImportSheet.meta.savePoints=this.checked"><span style="color:#30d158">₺</span><div class="mid"><b>${nm}${p.balance!=null?' bakiyesi '+U.money(p.balance):''}</b><span>${p.earned!=null?'Bu dönem +'+U.money(p.earned)+' kazanıldı':''}${p.used?' · '+U.money(p.used)+' kullanıldı':''} · karta kaydet</span></div>`;box.after(el)}}
+{const _c=ImportSheet.commit;ImportSheet.commit=function(){const s=Store.get(),m=this.meta||{},rows=this.rows.slice(),acc=D.account(s,this.accId),c=acc.credit;
+  const dates=rows.map(r=>r.date).filter(Boolean).sort(),idx=m.cut?D.stmtIdx(c,m.cut):dates.length?D.stmtIdx(c,dates[dates.length-1]):null;
+  const sel=rows.filter(r=>r.sel),realDispatch=Store.dispatch;let batch=null;
+  Store.dispatch=a=>{if(a.type==='batch'&&!batch){batch=a;return}return realDispatch(a)};try{_c.call(this)}finally{Store.dispatch=realDispatch}
+  if(!batch)return;const acts=batch.actions;
+  acts.forEach((a,i)=>{const r=sel[i];if(r&&r.raw&&r.raw.fx&&a.item&&a.type==='upsert'&&a.col==='transactions')a.item.fx={cur:r.raw.fx.cur,amount:r.raw.fx.amount,rate:U.r2((r.lineAmount||r.amount)/r.raw.fx.amount*10000)/10000}});
+  if(idx!=null)acts.push(Recon.save(acc.id,idx,{...m,points:m.points},rows));
+  if(m.points&&m.savePoints){const li=acts.findIndex(a=>a.type==='upsert'&&a.col==='accounts'&&a.item.id===acc.id);const base=li>=0?acts[li].item:acc;
+    const upd=Points.apply(base,{...m.points,type:'stmt',date:m.cut||U.today()});if(li>=0)acts[li]={...acts[li],item:upd};else acts.push({type:'upsert',col:'accounts',item:upd})}
+  realDispatch({type:'batch',actions:acts});
+  if(idx!=null){const R=D.recon(Store.get(),acc.id,idx);if(R&&!R.ok)setTimeout(()=>Toast.show(`⚠️ ${D.stmtName(idx)} ekstresi bankayla tam uyuşmuyor`,5000,{label:'İncele',fn:()=>Recon.open(acc.id,idx)}),900);
+    else if(R)setTimeout(()=>Toast.show('✓ Ekstre bankayla birebir uyumlu'),900)}}}
+
+/* ---------- Dövizli harcama (harcama formu) ---------- */
+const FX_CURS=[['USD','$ Dolar'],['EUR','€ Euro'],['GBP','£ Sterlin']];
+{const _r=TxForm.render;TxForm.render=function(){_r.call(this);const d=this.draft,s=Store.get();if(d.kind!=='expense')return;const cur=Sheet.el('.amount-cur');if(!cur)return;
+  const on=!!d.fx,f=d.fx||{},rate=f.rate||s.settings.rates[f.cur||'USD']||'';const box=document.createElement('div');box.className='fx-box';
+  box.innerHTML=on?`<div class="glass fx-in"><div class="grid3"><label class="field"><span>Para birimi</span><select class="input" id="fx-cur" onchange="TxForm.fxCur(this.value)">${FX_CURS.map(([k,l])=>`<option value="${k}" ${f.cur===k?'selected':''}>${l}</option>`).join('')}</select></label>
+      <label class="field"><span>Döviz tutarı</span><input class="input num" id="fx-amt" inputmode="decimal" value="${F.money(f.amount||'')}" placeholder="0" oninput="TxForm.fxSync()"></label>
+      <label class="field"><span>Kur (₺)</span><input class="input num" id="fx-rate" inputmode="decimal" value="${F.money(rate)}" oninput="TxForm.fxSync()"></label></div>
+      <p class="muted xs" style="margin:6px 2px 0">Yukarıdaki TL tutarı otomatik hesaplanır; bankanın kuru ve komisyonu farklı olabilir. Ekstreyi içe aktarınca kur farkı gösterilir.</p>
+      <button class="link xs" style="margin-top:6px" onclick="TxForm.fxOff()">Dövizli değil</button></div>`
+    :`<button class="fx-toggle pressable" onclick="TxForm.fxOn()">${C.ic('fx')}Dövizli harcama ($ / € / £)</button>`;
+  cur.after(box);if(on){cur.textContent='Türk Lirası · '+(f.amount?U.money(f.amount,{cur:f.cur}):f.cur)}}}
+Object.assign(TxForm,{
+  fxOn(){this.sync();const s=Store.get();this.draft.fx={cur:'USD',amount:'',rate:+s.settings.rates.USD||''};this.render();setTimeout(()=>Sheet.el('#fx-amt')?.focus(),420)},
+  fxOff(){this.sync();this.draft.fx=null;this.render()},
+  fxCur(c){this.sync();const s=Store.get(),f=this.draft.fx||{};this.draft.fx={...f,cur:c,rate:+s.settings.rates[c]||f.rate||''};this.render();this.fxSync()},
+  fxSync(){const f=this.draft.fx;if(!f)return;f.amount=U.parseNum(Sheet.val('#fx-amt'))||'';f.rate=U.parseNum(Sheet.val('#fx-rate'))||'';
+    if(f.amount>0&&f.rate>0){const tl=U.r2(f.amount*f.rate),el=Sheet.el('#tx-amount');if(el){el.value=F.money(tl);this.draft.amount=String(tl)}this.preview()}
+    const cur=Sheet.el('.amount-cur');if(cur)cur.textContent='Türk Lirası · '+(f.amount?U.money(f.amount,{cur:f.cur}):f.cur)}});
+{const _s=TxForm.save;TxForm.save=async function(){const f=this.draft.fx;if(f){if(!(U.parseNum(f.amount)>0)){Toast.show('Döviz tutarını gir');return}
+    this.sync();const tl=U.parseNum(this.draft.amount);this.draft.fx={cur:f.cur,amount:U.r2(U.parseNum(f.amount)),rate:tl>0?U.r2(tl/U.parseNum(f.amount)*10000)/10000:f.rate}}
+  else if(this.draft.fx===null)delete this.draft.fx;return _s.call(this)}}
+{const _v=C.txVis;C.txVis=(s,t,ctx)=>{const v=_v(s,t,ctx);if(t.fx&&t.fx.amount)v.sub=(v.sub||'')+' · '+U.money(t.fx.amount,{cur:t.fx.cur});return v}}
+
+/* ---------- Kart sayfası: puan çipi ---------- */
+{const _card=Pages.card;Pages.card=(s,ui,p)=>{const h=_card(s,ui,p);if(!h)return h;const a=D.account(s,p.id),root=D.limitRoot(s,a)||a,pt=Points.of(root),nm=Points.name(root);
+  if(!(pt.balance>0||pt.log?.length||nm==='Bankkart Lira'))return h;
+  return h.replace('<div class="zr-links">',`<div class="zr-links"><button class="chip pressable pts-chip" onclick="Points.open('${a.id}')">₺ ${nm} ${U.money(pt.balance||0)} ›</button>`)}}
+
+{const _i=App.init.bind(App);App.init=()=>{_i();VCard.init()}}
 
 /* ---------- 99_boot.js ---------- */
 App.init();
