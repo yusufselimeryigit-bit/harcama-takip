@@ -8425,25 +8425,45 @@ const CzInbox={unsub:null,
     const a=s.accounts.find(a=>a.debitCard)||s.accounts.find(a=>a.type==='checking')||s.accounts[0];return a?a.id:''},
   attach(u){if(this.unsub){try{this.unsub()}catch(e){}this.unsub=null}
     const sdk=FirebaseAdapter.sdk;if(!u||!sdk)return;const{Fs,db}=sdk;
+    this.pub();if(!this._sub){this._sub=1;Store.subscribe(()=>this.pub())}
     this.unsub=Fs.onSnapshot(Fs.collection(db,'users',u.uid,'inbox'),snap=>{if(snap.size)this.take(u.uid,snap.docs.map(d=>d.ref))},e=>console.warn('inbox',e))},
-  async take(uid,refs){const{Fs,db}=FirebaseAdapter.sdk,got=[];
+  async take(uid,refs){const{Fs,db}=FirebaseAdapter.sdk;let got=[];
     for(const ref of refs){try{const d=await Fs.runTransaction(db,async tr=>{const x=await tr.get(ref);if(!x.exists())return null;tr.delete(ref);return x.data()});if(d)got.push([ref.id,d])}catch(e){console.warn(e)}}
-    if(!got.length)return;const s=Store.get(),acc=this.acc(s);if(!acc)return;let n=0,last='';
-    got.forEach(([id,d])=>{const amount=U.r2(U.parseNum(String(d.amount??'')));if(!(amount>0)||s.transactions.some(t=>t.inboxId===id))return;
-      const merchant=String(d.merchant||'').trim().slice(0,60)||'Harcama',learned=D.recallMerchant(s,merchant,'expense'),
-        date=/^\d{4}-\d{2}-\d{2}$/.test(d.date||'')&&d.date<=U.today()?d.date:U.today(),
-        cat=learned?.category||(expenseCats().includes(d.category)?d.category:'other');
-      Store.dispatch({type:'upsert',col:'transactions',item:{id:U.uid(),kind:'expense',accountId:learned?.accountId&&D.account(Store.get(),learned.accountId)?learned.accountId:acc,amount,date,merchant,category:cat,installments:1,note:'',source:'siri',inboxId:id}});
-      n++;last=`${merchant} ${U.money(amount,{raw:true})}`});
-    if(n){Haptic.success&&Haptic.success();Toast.show(n===1?`🎙️ Siri'den eklendi: ${last}`:`🎙️ Siri'den ${n} harcama eklendi`)}},
+    if(!got.length)return;let n=0,last='';const s=Store.get(),acc=this.acc(s);if(!acc)return;
+    got.sort((a,b)=>String(a[1].at||'').localeCompare(String(b[1].at||'')));let un=0;
+    got.forEach(([id,d])=>{try{
+      if(d.kind==='undo'){const t=[...Store.get().transactions].reverse().find(t=>t.source==='siri');if(t){Store.dispatch({type:'remove',col:'transactions',id:t.id});un++;n=Math.max(0,n-1);last=`${t.merchant||''} ${U.money(t.amount,{raw:true})}`}return}
+      const amount=U.r2(U.parseNum(String(d.amount??'')));if(!(amount>0)||Store.get().transactions.some(t=>t.inboxId===id))return;
+      const date=/^\d{4}-\d{2}-\d{2}$/.test(d.date||'')&&d.date<=U.today()?d.date:U.today();
+      if(d.kind==='income'){Store.dispatch({type:'upsert',col:'transactions',item:{id:U.uid(),kind:'income',accountId:acc,amount,date,merchant:String(d.merchant||'').trim().slice(0,60)||'Gelir',category:'income',note:'',source:'siri',inboxId:id}});n++;last=`+${U.money(amount,{raw:true})}`;return}
+      const cn=U.norm(String(d.category||'')),ck=expenseCats().find(k=>k===d.category||U.norm(cat(k).name)===cn||(cn&&U.norm(cat(k).name).startsWith(cn)));if(ck)d.category=ck;
+      const merchant=String(d.merchant||'').trim().slice(0,60)||(d.category&&expenseCats().includes(d.category)?cat(d.category).name:'Harcama'),learned=D.recallMerchant(s,merchant,'expense'),
+        ctg=expenseCats().includes(d.category)?d.category:(learned?.category||'other');
+      Store.dispatch({type:'upsert',col:'transactions',item:{id:U.uid(),kind:'expense',accountId:learned?.accountId&&D.account(Store.get(),learned.accountId)?learned.accountId:acc,amount,date,merchant,category:ctg,installments:1,note:'',source:'siri',inboxId:id}});
+      n++;last=`${merchant} ${U.money(amount,{raw:true})}`}catch(e){console.warn('inbox',e)}});
+    if(un&&!n)Toast.show(`↩︎ Siri kaydı geri alındı: ${last}`);
+    else if(n){Haptic.success&&Haptic.success();Toast.show(n===1&&!un?`🎙️ Siri'den eklendi: ${last}`:`🎙️ Siri'den ${n} kayıt eklendi${un?' · '+un+' geri alındı':''}`)}},
+  /* Siri'nin okuyacağı kısa özet: users/{uid}/summary/now (sadece okunabilir cümleler) */
+  sumText(s){const m=x=>U.money(x,{dec:false}),out={};
+    const accs=s.accounts.filter(a=>!a.archived&&a.type!=='credit'&&a.type!=='fx');const cards=s.accounts.filter(a=>a.type==='credit'&&!a.archived&&D.limitRoot(s,a).id===a.id);
+    out.durum=[accs.map(a=>`${a.name} ${m(D.balance(s,a.id))}`).join(', '),...cards.map(a=>{const c=D.cardSummary(s,a.id);return `${a.name} borcu ${m(c.used)}, kullanılabilir limit ${m(c.available)}`+(c.lastRemaining>0.009?`, ödenecek ekstre ${m(c.lastRemaining)} son ödeme ${U.fmtDate(c.lastDue)}`:'')})].filter(Boolean).join('. ')+'.';
+    const mc=D.monthCompare(s),top=Object.entries(mc.curBy||{}).sort((a,b)=>b[1]-a[1]).slice(0,3),mo=U.MONTHS[new Date().getMonth()];
+    const ch=mc.prev>0?Math.round((mc.cur-mc.prev)/mc.prev*100):null;
+    out.ay=`${mo} ayında şu ana kadar ${m(mc.cur)} harcadın`+(ch!=null?`, geçen ay bu zamana göre %${Math.abs(ch)} ${ch>=0?'fazla':'az'}`:'')+'.'+(top.length?` En çok: ${top.map(([k,v])=>`${cat(k).name} ${m(v)}`).join(', ')}.`:'');
+    const bs=D.budgetStatus(s);if(bs.length)out.ay+=' Bütçeler: '+bs.map(b=>`${cat(b.category).name} ${b.over?`${m(-b.left)} aşıldı`:`${m(b.left)} kaldı`}`).join(', ')+'.';
+    const up=D.upcoming(s,30).filter(x=>!x.income).slice(0,5);
+    out.odemeler=up.length?'Yaklaşan ödemeler: '+up.map(x=>`${U.fmtDate(x.date)} ${x.title} ${m(x.amount)}`).join('; ')+'.':'Önümüzdeki 30 günde ödeme görünmüyor.';
+    return out},
+  pub(){clearTimeout(this._pt);this._pt=setTimeout(()=>{const u=FirebaseAdapter.sdk?.auth?.currentUser;if(!u)return;const{Fs,db}=FirebaseAdapter.sdk;
+    try{Fs.setDoc(Fs.doc(db,'users',u.uid,'summary','now'),{...this.sumText(Store.get()),at:Date.now()}).catch(e=>console.warn('summary',e))}catch(e){console.warn(e)}},2500)},
   async copyKey(){const u=FirebaseAdapter.sdk?.auth?.currentUser;if(!u){Toast.show('Önce Bulut eşitleme · Firebase hesabınla giriş yap');return}
     try{await navigator.clipboard.writeText(u.refreshToken);Haptic.success&&Haptic.success();Toast.show('✓ Kestirme anahtarı kopyalandı · kestirmeyi eklerken yapıştır',4500)}
     catch(e){Toast.show('Kopyalanamadı')}},
   row(){const s=Store.get(),acc=this.acc(s),signed=!!FirebaseAdapter.sdk?.auth?.currentUser;
-    return `<div class="row cz-siri cz-inbox"><span class="ic" style="background:#bf5af222;color:#bf5af2">${C.ic('voice')}</span><div class="mid"><b>Siri ile harcama ekle</b>
-      <span>“Hey Siri, harcama ekle” → tutar ve yeri söylersin, Cüzdan açılmadan buluta kaydedilir; uygulama açılınca harcamalara eklenir.</span>
+    return `<div class="row cz-siri cz-inbox"><span class="ic" style="background:#bf5af222;color:#bf5af2">${C.ic('voice')}</span><div class="mid"><b>Siri · Cüzdan kestirmesi</b>
+      <span>“Hey Siri, Cüzdan” → ne yapmak istediğini sorar: harcama / gelir ekle, durumum, bu ay ne kadar harcadım, yaklaşan ödemeler, geri al. Cüzdan açılmadan çalışır.</span>
       <label class="field" style="margin:8px 0 6px"><span>Harcamalar şu hesaba yazılsın</span><select class="input" onchange="Store.dispatch({type:'settings/update',payload:{siriAcc:this.value}});Toast.show('✓ Siri harcamaları bu hesaba yazılacak')">${s.accounts.map(a=>`<option value="${a.id}" ${a.id===acc?'selected':''}>${U.esc(a.name)}</option>`).join('')}</select></label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><a class="mini-btn" href="Harcama-ekle.shortcut" download style="text-decoration:none">1 · Kestirmeyi indir</a><button class="mini-btn" onclick="CzInbox.copyKey()" ${signed?'':'disabled'}>2 · Anahtarı kopyala</button></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><a class="mini-btn" href="Cuzdan.shortcut" download style="text-decoration:none">1 · Kestirmeyi indir</a><button class="mini-btn" onclick="CzInbox.copyKey()" ${signed?'':'disabled'}>2 · Anahtarı kopyala</button></div>
       ${signed?'':'<span class="muted xs" style="display:block;margin-top:6px">Anahtar için önce Bulut eşitleme · Firebase hesabınla giriş yap.</span>'}</div></div>`}};
 {const _oa=FirebaseAdapter.onAuth;FirebaseAdapter.onAuth=function(cb){return _oa.call(this,u=>{cb(u);try{CzInbox.attach(u)}catch(e){console.warn(e)}})}}
 {const _o=SettingsSheet.open;SettingsSheet.open=function(){const r=_o.apply(this,arguments);try{const old=document.querySelector('#sheet .cz-siri');if(old)old.outerHTML=CzInbox.row()}catch(e){console.warn(e)}return r}}
