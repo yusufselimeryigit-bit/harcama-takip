@@ -8,6 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>try{var sb=localStorage.getItem("cuzdan_sb");if(sb)document.querySelector("meta[name=apple-mobile-web-app-status-bar-style]").content=sb}catch(e){}</script>
+<script id="cz-ios-early">try{var cz_ds=(localStorage.getItem("cuzdan_ds")||"").split(":"),cz_r=document.documentElement;if(cz_ds[0]==="ios"){cz_r.classList.add("ds-ios");cz_r.dataset.theme=cz_ds[1]==="dark"?"dark":"light";if(cz_ds[2]==="lg")cz_r.classList.add("ios-liquid")}}catch(e){}</script>
 <meta name="apple-mobile-web-app-title" content="Cüzdan">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -2555,6 +2556,336 @@ html.wide #screen>#wgrid.grouped>.hg[data-g=more] .hg-body>.w-l{grid-column:1/-1
   [data-theme=dark] .cd-tabs .seg{background:color-mix(in srgb,#2a1f17 70%,transparent)}
 }
 html.wide .cd-actions .act{font-size:12.5px;gap:6px;padding:0 4px}
+</style>
+<style id="cz-ios">
+/* =====================================================================
+   Saf iOS tasarımı (Ayarlar → Görünüm → Tasarım). Yalnızca html.ds-ios altında geçerli; Cam tasarımına dokunmaz.
+   iOS sistem renkleri: gruplu arka plan, düz hücreler, büyük başlıklar, iOS 26 yüzen sekme çubuğu
+   ===================================================================== */
+html.ds-ios[data-theme=light]{
+  --background:#f2f2f7;--foreground:#000;--muted-foreground:#5f5f64;--faint:#66666b;
+  --primary-def:#005fc4;--primary-foreground:#fff;--primary-fill:var(--primary);--chart-inc:var(--primary);
+  --card:#fff;--secondary:#e5e5ea;--muted:#d1d1d6;--border:rgba(60,60,67,.16);--popover:#f2f2f7;--surface:#fff;--gw-panel:#fff;
+  --green:#1e7b34;--red:#d70015;--orange:#c93400;--purple:#8944ab;--indigo:#3634a3;--pink:#d30f45;--teal:#0071a4;--yellow:#a05a00;
+  --fill:rgba(120,120,128,.12);--fill2:rgba(120,120,128,.2);--sep:rgba(60,60,67,.18);--hi:#fff;--drop:rgba(0,0,0,.22);
+  --cell:#fff;--cell2:#f2f2f7;--seg-on:#fff;--ios-mat:rgba(255,255,255,.74);--ios-line:rgba(0,0,0,.07);--ios-label3:#8a8a8e;
+  --czh-other:rgba(60,60,67,.3);--czh-track:rgba(120,120,128,.16);
+}
+html.ds-ios[data-theme=dark]{
+  --background:#000;--foreground:#fff;--muted-foreground:#a1a1a8;--faint:#929298;
+  --primary-def:#409cff;--primary-foreground:#fff;--primary-fill:color-mix(in srgb,var(--primary) 74%,#000);--chart-inc:var(--primary);
+  --card:#1c1c1e;--secondary:#2c2c2e;--muted:#3a3a3c;--border:rgba(84,84,88,.6);--popover:#1c1c1e;--surface:#1c1c1e;--gw-panel:#1c1c1e;
+  --green:#30d158;--red:#ff6961;--orange:#ff9f0a;--purple:#bf5af2;--indigo:#7d7aff;--pink:#ff6482;--teal:#5ac8f5;--yellow:#ffd60a;
+  --fill:rgba(118,118,128,.24);--fill2:rgba(118,118,128,.32);--sep:rgba(84,84,88,.6);--hi:rgba(255,255,255,.1);--drop:rgba(0,0,0,.6);
+  --cell:#1c1c1e;--cell2:#2c2c2e;--seg-on:#636366;--ios-mat:rgba(37,37,40,.72);--ios-line:rgba(255,255,255,.09);--ios-label3:#8e8e93;
+  --czh-other:rgba(235,235,245,.3);--czh-track:rgba(118,118,128,.28);
+}
+html.ds-ios[data-theme]{
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",system-ui,sans-serif;
+  --cz-round:-apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;
+  --glass:var(--cell);--glass-2:var(--fill);--glass-strong:var(--ios-mat);--sheet:var(--popover);--toast:var(--ios-mat);
+  --glass-border:var(--border);--glass-hi:var(--seg-on);--lens:var(--fill);--solid:var(--cell);
+  --gw-tint-l:transparent;--gw-ring:inset 0 0 0 .5px var(--ios-line);--gw-card-ring:0 0 0 transparent;
+  --shadow:0 10px 30px rgba(0,0,0,.14);--shadow-sm:none;--g-shadow:none;
+  --r-xl:22px;--r-lg:20px;--r-md:14px;--r-sm:10px;
+  --ios-blur:blur(22px) saturate(190%);
+  background:var(--background);color-scheme:light;
+}
+html.ds-ios[data-theme=dark]{color-scheme:dark}
+html.ds-ios[data-theme] body{font-family:var(--font);letter-spacing:-.008em;background:var(--background)}
+html.ds-ios[data-theme] ::selection{background:color-mix(in srgb,var(--primary) 22%,transparent)}
+
+/* Fotoğraf, ortam ışıkları ve ana cam panel yok */
+html.ds-ios[data-theme] .gw-bg,html.ds-ios[data-theme] #gw-photo,html.ds-ios[data-theme] .ambient{display:none!important}
+html.ds-ios[data-theme] #screen::before{background:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}
+html.ds-ios[data-theme] #screen{padding-left:16px;padding-right:16px}
+html.ds-ios[data-theme] #sbar{background:linear-gradient(var(--background) 0%,color-mix(in srgb,var(--background) 78%,transparent) var(--sat),transparent);-webkit-backdrop-filter:none;backdrop-filter:none}
+
+/* Düz hücreler: bulanıklık yok, gölge yok */
+html.ds-ios[data-theme] #screen :is(.glass,.gw-panel,.hero,.wt,.chip:not(.on)),
+html.ds-ios[data-theme] .cd .glass,html.ds-ios[data-theme] .cd-body .glass,html.ds-ios[data-theme] .sheet .glass{background:var(--cell);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
+html.ds-ios[data-theme] #screen :is(.glass,.gw-panel,.hero,.wt) :is(.glass,.seg):not(.icon-btn),html.ds-ios[data-theme] .cd-body .glass .glass{background:var(--fill)}
+html.ds-ios[data-theme] .gw-panel,html.ds-ios[data-theme] .hero,html.ds-ios[data-theme] .wt,html.ds-ios[data-theme] .glass{border-radius:20px}
+html.ds-ios[data-theme] .list{border-radius:20px}
+html.ds-ios[data-theme] .gw-panel,html.ds-ios[data-theme] .hero,html.ds-ios[data-theme] .wt{padding:18px 16px}
+html.ds-ios[data-theme] .pay-panel{padding:4px 0}
+html.ds-ios[data-theme] .pay-panel .list{border-radius:0}
+
+/* Tipografi: büyük başlık 34/700, bölüm başlığı 22/700, hücre 17 */
+html.ds-ios[data-theme] #screen :is(.topbar,.page-head,.section-head,.cal-nav,.sumbar,.day-h,.tx-period,.cz-lead,.czy-lead,.cz-note,.czy-nokey){text-shadow:none}
+html.ds-ios[data-theme] .topbar{margin-bottom:16px;align-items:center}
+@media (max-width:699px){
+  html.ds-ios[data-theme] .topbar:has(.top-actions>:nth-child(3)){display:grid;grid-template-columns:minmax(0,1fr);row-gap:0}
+  html.ds-ios[data-theme] .topbar:has(.top-actions>:nth-child(3))>.top-actions{order:-1;justify-self:end;margin:0 -2px 2px}
+}
+html.ds-ios[data-theme] .accent-pick button:first-child{background:var(--primary-def)!important}
+html.ds-ios[data-theme] .ds-opt{background:var(--cell)}
+html.ds-ios[data-theme] .topbar h1,html.ds-ios[data-theme] .page-title{font-size:34px;font-weight:700;letter-spacing:.004em;line-height:1.12}
+html.ds-ios[data-theme] .topbar .t-sub{font-size:15px;color:var(--text2);margin-bottom:0}
+html.ds-ios[data-theme] .section-head h2,html.ds-ios[data-theme] .hg>.section-head h2{font-size:22px;font-weight:700;letter-spacing:-.012em;color:var(--text)}
+html.ds-ios[data-theme] .section-head button{font-size:15px;font-weight:400;color:var(--primary)}
+html.ds-ios[data-theme] .hg+.hg{margin-top:26px}
+html.ds-ios[data-theme] .gw-title h2{font-size:13px;font-weight:400;color:var(--text2);letter-spacing:0}
+html.ds-ios[data-theme] .gw-title>button{font-weight:400}
+html.ds-ios[data-theme] .row .mid b{font-weight:600;font-size:16px;letter-spacing:-.012em}
+html.ds-ios[data-theme] .row .mid span{font-size:13px}
+html.ds-ios[data-theme] .row .end b{font-weight:500;font-size:16px}
+html.ds-ios[data-theme] .row+.row::before,html.ds-ios[data-theme] .swipe+.swipe::before{height:.5px;background:var(--sep)}
+html.ds-ios[data-theme] .muted{color:var(--text2)}
+html.ds-ios[data-theme] .pos{color:var(--green)}
+html.ds-ios[data-theme] .tp-sum .pos{color:var(--green)}
+html.ds-ios[data-theme] .hero-amount,html.ds-ios[data-theme] .czh-amt{font-weight:700;letter-spacing:-.03em}
+html.ds-ios[data-theme] .hero-amount .dec,html.ds-ios[data-theme] .czh-amt .dec{font-weight:600;color:var(--text)}
+html.ds-ios[data-theme] .hero-label,html.ds-ios[data-theme] .czh-lab{font-weight:400;font-size:15px}
+html.ds-ios[data-theme] .gw-sum b,html.ds-ios[data-theme] .gw-stat .v,html.ds-ios[data-theme] .stat .v,html.ds-ios[data-theme] .wt-v,html.ds-ios[data-theme] .acc-tile .v{font-weight:700;letter-spacing:-.025em}
+html.ds-ios[data-theme] .gw-foot b,html.ds-ios[data-theme] .tp-foot b{font-weight:600}
+
+/* Üst simgeler: yuvarlak cam düğmeler (iOS 26) */
+html.ds-ios[data-theme] .icon-btn,html.ds-ios[data-theme] .gw-btn{background:var(--ios-mat)!important;border:.5px solid var(--ios-line);box-shadow:0 4px 14px rgba(0,0,0,.08)!important;
+  -webkit-backdrop-filter:var(--ios-blur);backdrop-filter:var(--ios-blur);color:var(--text)}
+html.ds-ios[data-theme=dark] .icon-btn,html.ds-ios[data-theme=dark] .gw-btn{background:#1c1c1e!important;box-shadow:none!important}
+html.ds-ios[data-theme] .gw-av-m,html.ds-ios[data-theme] .gw-av{font:600 16px/1 var(--font)!important;color:#fff!important;background:linear-gradient(160deg,#6e6e73,#48484a)!important;border:0}
+html.ds-ios[data-theme] .avatar{background:linear-gradient(160deg,#6e6e73,#48484a);box-shadow:none;font-weight:600}
+html.ds-ios[data-theme] .gw-dot{background:var(--red)}
+
+/* Sekme çubuğu: iOS 26 yüzen cam kapsül + ayrı yuvarlak + */
+html.ds-ios[data-theme] .tabbar,html.ds-ios[data-theme] .dock-add{background:var(--ios-mat)!important;-webkit-backdrop-filter:var(--ios-blur)!important;backdrop-filter:var(--ios-blur)!important;
+  border:.5px solid var(--ios-line);box-shadow:0 10px 30px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.5)!important}
+html.ds-ios[data-theme=dark] .tabbar,html.ds-ios[data-theme=dark] .dock-add{box-shadow:0 10px 30px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.08)!important}
+html.ds-ios[data-theme] .tab{color:var(--text)}
+html.ds-ios[data-theme] .tab.on,html.ds-ios[data-theme] .lens-drag .tab.hover{color:var(--primary)}
+html.ds-ios[data-theme] .tab svg{stroke-width:1.9}
+html.ds-ios[data-theme] .tab-ind{background:var(--fill)!important;box-shadow:none!important}
+html.ds-ios[data-theme] .lens-drag .tab-ind{background:color-mix(in srgb,var(--cell) 55%,transparent)!important;box-shadow:0 8px 24px rgba(0,0,0,.18),inset 0 0 0 1px rgba(255,255,255,.5)!important}
+html.ds-ios[data-theme] .dock-add{color:var(--primary)}
+html.ds-ios[data-theme] .dock-add svg.i{stroke-width:2.4}
+html.ds-ios[data-theme] .dock::before{background:linear-gradient(to top,var(--background) 20%,color-mix(in srgb,var(--background) 0%,transparent))}
+
+/* Kaydırınca gezinme çubuğu */
+html.ds-ios[data-theme] #navbar{background:color-mix(in srgb,var(--background) 80%,transparent)!important;-webkit-backdrop-filter:blur(20px) saturate(180%)!important;backdrop-filter:blur(20px) saturate(180%)!important;
+  box-shadow:inset 0 -.5px 0 var(--sep)!important}
+html.ds-ios[data-theme] .nb-back,html.ds-ios[data-theme] .back,html.ds-ios[data-theme] .head-btn{color:var(--primary)}
+html.ds-ios[data-theme] .nb-title{font-weight:600}
+
+/* Bölümlü kontrol */
+html.ds-ios[data-theme] .seg,html.ds-ios[data-theme] #screen .seg,html.ds-ios[data-theme] .cd-tabs .seg{background:var(--fill)!important;border-radius:9px;padding:2px;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}
+html.ds-ios[data-theme] .seg button{font-size:13px;font-weight:500;color:var(--text);min-height:30px}
+html.ds-ios[data-theme] .seg button[aria-pressed=true],html.ds-ios[data-theme] .seg button.on{font-weight:600}
+html.ds-ios[data-theme] .seg .thumb,html.ds-ios[data-theme] #screen .seg .thumb{top:2px;bottom:2px;border-radius:7px;background:var(--seg-on)!important;box-shadow:0 3px 8px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04)!important}
+html.ds-ios[data-theme] .gw-seg{background:var(--fill);border-radius:9px;padding:2px;gap:0}
+html.ds-ios[data-theme] .gw-seg button{font-size:13px;font-weight:500;color:var(--text);padding:5px 12px;border-radius:7px}
+html.ds-ios[data-theme] .gw-seg button.on{background:var(--seg-on);box-shadow:0 3px 8px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04);font-weight:600}
+html.ds-ios[data-theme] .tx-seg .seg button{min-height:32px}
+
+/* Arama */
+html.ds-ios[data-theme] .search,html.ds-ios[data-theme] #screen .search{background:var(--fill)!important;box-shadow:none!important;border-radius:12px;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.ds-ios[data-theme] .search input{font-size:17px}
+html.ds-ios[data-theme] .search input::placeholder{color:var(--text2)}
+
+/* Çipler */
+html.ds-ios[data-theme] .chip,html.ds-ios[data-theme] #screen .chip:not(.on){background:var(--fill);box-shadow:none;color:var(--text);font-weight:500}
+html.ds-ios[data-theme] .chip.on{background:var(--primary-fill);color:#fff;box-shadow:none}
+html.ds-ios[data-theme] .sheet .chip:not(.on){background:var(--cell)}
+html.ds-ios[data-theme] .fchip{background:color-mix(in srgb,var(--primary) 12%,transparent);color:var(--primary)}
+html.ds-ios[data-theme] .gw-pill.ok{color:var(--green);background:color-mix(in srgb,var(--green) 13%,transparent)}
+html.ds-ios[data-theme] .gw-chg{color:var(--green);background:color-mix(in srgb,var(--green) 13%,transparent)}
+html.ds-ios[data-theme] .gw-chg.down{color:var(--red);background:color-mix(in srgb,var(--red) 12%,transparent)}
+html.ds-ios[data-theme] .gw-chg.flat{color:var(--text2);background:var(--fill)}
+
+/* Açık temada renkli hap yazıları bir ton koyu (AA) */
+html.ds-ios[data-theme=light] .gw-chg,html.ds-ios[data-theme=light] .badge.green,html.ds-ios[data-theme=light] .delta.down,html.ds-ios[data-theme=light] .gw-pill.ok{color:#196a2c}
+html.ds-ios[data-theme=light] .badge.red,html.ds-ios[data-theme=light] .gw-chg.down,html.ds-ios[data-theme=light] .delta.up{color:#b20012}
+html.ds-ios[data-theme=light] .badge.orange{color:#a32a00}
+html.ds-ios[data-theme=dark] .tab.on,html.ds-ios[data-theme=dark] .lens-drag .tab.hover{color:#5aaaff}
+/* Düğmeler: dolu / renkli iOS stilleri */
+html.ds-ios[data-theme] .btn{background:var(--cell);box-shadow:none;border-radius:14px;font-weight:600;color:var(--primary)}
+html.ds-ios[data-theme] .sheet .btn{background:var(--cell)}
+html.ds-ios[data-theme] #screen .glass .btn,html.ds-ios[data-theme] .sheet .glass .btn{background:var(--fill)}
+html.ds-ios[data-theme] .btn.primary,html.ds-ios[data-theme] .sheet .btn.primary,html.ds-ios[data-theme] #screen .glass .btn.primary{background:var(--primary-fill);color:#fff;box-shadow:none}
+html.ds-ios[data-theme] .btn.danger{color:var(--red)}
+html.ds-ios[data-theme] .mini-btn{color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,transparent);border-radius:20px;font-weight:600}
+html.ds-ios[data-theme] .link,html.ds-ios[data-theme] .toast-act,html.ds-ios[data-theme] .sheet-head button,html.ds-ios[data-theme] .zr-lh{color:var(--primary)}
+html.ds-ios[data-theme] .qa .ic,html.ds-ios[data-theme] .act .ic,html.ds-ios[data-theme] .rc-ic,html.ds-ios[data-theme] .ob-feat .ic{color:var(--primary)!important;background:color-mix(in srgb,var(--primary) 12%,transparent)!important}
+html.ds-ios[data-theme] .gw-chip{color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,transparent)}
+html.ds-ios[data-theme] .sev-danger.gw-chip{color:var(--red);background:color-mix(in srgb,var(--red) 12%,transparent)}
+html.ds-ios[data-theme] .sev-warn.gw-chip{color:var(--orange);background:color-mix(in srgb,var(--orange) 13%,transparent)}
+html.ds-ios[data-theme] .sev-good.gw-chip{color:var(--green);background:color-mix(in srgb,var(--green) 13%,transparent)}
+html.ds-ios[data-theme] .gw-box,html.ds-ios[data-theme] .gw-arrow{background:var(--fill)}
+html.ds-ios[data-theme] .gw-track i{background:var(--primary)}
+html.ds-ios[data-theme] .pay-more{font-weight:400;font-size:15px}
+html.ds-ios[data-theme] .cp-add .ic{background:var(--fill)!important}
+html.ds-ios[data-theme] .home-edit button{color:var(--primary);font-weight:500}
+html.ds-ios[data-theme] .switch input:checked+span{background:#34c759}
+html.ds-ios[data-theme] .input{background:var(--cell);border-radius:12px}
+html.ds-ios[data-theme] .sheet .glass .input,html.ds-ios[data-theme] #screen .glass .input{background:var(--fill)}
+html.ds-ios[data-theme] .input:focus{border-color:var(--primary)}
+html.ds-ios[data-theme] .cat-opt{background:var(--cell)}
+html.ds-ios[data-theme] .cat-opt.on{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,var(--cell))}
+html.ds-ios[data-theme] .preview{background:color-mix(in srgb,var(--primary) 10%,var(--cell))}
+html.ds-ios[data-theme] .badge.blue{background:color-mix(in srgb,var(--primary) 14%,transparent);color:var(--primary)}
+html.ds-ios[data-theme] .badge.orange{background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange)}
+html.ds-ios[data-theme] .badge.red{background:color-mix(in srgb,var(--red) 13%,transparent);color:var(--red)}
+html.ds-ios[data-theme] .badge.green{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
+html.ds-ios[data-theme] .delta.up{color:var(--red);background:color-mix(in srgb,var(--red) 12%,transparent)}
+html.ds-ios[data-theme] .delta.down{color:var(--green);background:color-mix(in srgb,var(--green) 13%,transparent)}
+html.ds-ios[data-theme] .score{background:color-mix(in srgb,var(--primary) 12%,transparent);color:var(--primary)}
+html.ds-ios[data-theme] .ai-card::after{display:none}
+html.ds-ios[data-theme] .ai-banner{background:color-mix(in srgb,var(--primary) 8%,var(--cell));border-color:color-mix(in srgb,var(--primary) 22%,transparent)}
+
+/* İşlemler: gün başlıkları gruplu liste başlığı gibi */
+html.ds-ios[data-theme] .tx-days{background:transparent!important;border-radius:0;overflow:visible}
+html.ds-ios[data-theme] .tx-days .day{background:transparent;margin-bottom:10px;position:relative}
+html.ds-ios[data-theme] .tx-days .day-rows{background:var(--cell);border-radius:20px;overflow:clip}
+html.ds-ios[data-theme] .tx-days .day-h,html.ds-ios[data-theme] .tx-days>.day:first-child .day-h{position:relative;top:auto;background:var(--background);-webkit-backdrop-filter:none;backdrop-filter:none;border-top:0;
+  padding:6px 16px 7px;font-size:13px;font-weight:400;color:var(--text2);text-transform:none;letter-spacing:0}
+html.ds-ios[data-theme] .tx-days .day-h b,html.ds-ios[data-theme] .tx-days .day-h span{font-weight:400;color:var(--text2)}
+html.ds-ios[data-theme] .tx-period b{font-size:20px;font-weight:700}
+html.ds-ios[data-theme] .tx-period button{color:var(--primary)}
+
+/* Pencereler (sheet): iOS kartı, gri zemin + beyaz gruplar */
+html.ds-ios[data-theme] .sheet-backdrop{background:rgba(0,0,0,.32)}
+html.ds-ios[data-theme] .sheet{background:var(--popover)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border:0;
+  box-shadow:0 -2px 30px rgba(0,0,0,.18)!important;border-radius:38px}
+html.ds-ios[data-theme] .grabber,html.ds-ios[data-theme] .grab-zone .grabber{width:36px;height:5px;background:color-mix(in srgb,var(--foreground) 22%,transparent)}
+html.ds-ios[data-theme] .sheet-head h3{font-size:17px;font-weight:600}
+html.ds-ios[data-theme] .sheet-head button{font-size:17px;font-weight:400}
+html.ds-ios[data-theme] .sheet-head button:last-child{font-weight:600}
+html.ds-ios[data-theme] .field>span{font-size:13px;font-weight:400;color:var(--text2);margin:0 16px 7px}
+html.ds-ios[data-theme] .sheet .glass,html.ds-ios[data-theme] .sheet .list{background:var(--cell);border-radius:20px}
+html.ds-ios[data-theme] .set-row small{color:var(--text2)}
+html.ds-ios[data-theme] .ctx,html.ds-ios[data-theme] .gw-pop{background:var(--ios-mat)!important;-webkit-backdrop-filter:blur(30px) saturate(190%)!important;backdrop-filter:blur(30px) saturate(190%)!important;
+  box-shadow:0 20px 50px rgba(0,0,0,.22),inset 0 0 0 .5px var(--ios-line)!important}
+html.ds-ios[data-theme] .gw-tb[data-pop=glass]{display:none}
+html.ds-ios[data-theme] .ds-glass-only{display:none!important}
+.ds-note{display:none}
+html.ds-ios[data-theme] .ds-note{display:block;margin:12px 2px 2px;font-size:13px;line-height:1.4;color:var(--text2)}
+
+/* Bildirim: iOS banner */
+html.ds-ios[data-theme] .toast{background:var(--ios-mat)!important;-webkit-backdrop-filter:var(--ios-blur)!important;backdrop-filter:var(--ios-blur)!important;
+  color:var(--text);font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,.16),inset 0 0 0 .5px var(--ios-line)!important;border-radius:24px}
+html.ds-ios[data-theme] .chat-bar,html.ds-ios[data-theme] .w-editbar,html.ds-ios[data-theme] #ptr{background:var(--ios-mat)!important;-webkit-backdrop-filter:var(--ios-blur)!important;backdrop-filter:var(--ios-blur)!important;box-shadow:0 10px 30px rgba(0,0,0,.14),inset 0 0 0 .5px var(--ios-line)!important}
+html.ds-ios[data-theme] .bubble{background:var(--cell);box-shadow:none}
+html.ds-ios[data-theme] .bubble.user{background:var(--primary);color:#fff}
+html.ds-ios[data-theme] .chat-bar .send,html.ds-ios[data-theme] .w-editbar button.done,html.ds-ios[data-theme] .bubble.user,html.ds-ios[data-theme] .fbadge{background:var(--primary-fill);color:#fff}
+html.ds-ios[data-theme] .ai-orb{background:conic-gradient(from 0deg,#0a84ff,#bf5af2,#ff375f,#64d2ff,#0a84ff);box-shadow:none}
+
+/* Grafikler */
+html.ds-ios[data-theme] .gw-plot path.l-inc{stroke:var(--primary)}
+html.ds-ios[data-theme] .gw-pt-dot{background:var(--primary)}
+html.ds-ios[data-theme] .gw-grid i{border-top-color:var(--sep)}
+html.ds-ios[data-theme] .gw-tip{background:var(--cell);box-shadow:0 8px 24px rgba(0,0,0,.14),inset 0 0 0 .5px var(--ios-line)}
+html.ds-ios[data-theme] .dbars span{background:var(--primary)}
+html.ds-ios[data-theme] .bar-stack{background:var(--fill)}
+html.ds-ios[data-theme] .donut circle.track{stroke:var(--fill)}
+html.ds-ios[data-theme] .heat,html.ds-ios[data-theme] .heat-legend{--blue:#003d82}
+html.ds-ios[data-theme=dark] .heat,html.ds-ios[data-theme=dark] .heat-legend{--blue:#0a6cde}
+html.ds-ios[data-theme] .cal .d.today .n{background:#d70015;color:#fff}
+html.ds-ios[data-theme] .cal .d.sel{background:color-mix(in srgb,var(--primary) 10%,transparent);box-shadow:inset 0 0 0 1.5px var(--primary)}
+html.ds-ios[data-theme] .cal-nav button,html.ds-ios[data-theme] #screen .cal-nav button{color:var(--primary);background:var(--fill)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.ds-ios[data-theme] .matrix .now{background:color-mix(in srgb,var(--primary) 12%,transparent)}
+html.ds-ios[data-theme] .matrix td:first-child,html.ds-ios[data-theme] .matrix th:first-child{background:var(--cell)}
+html.ds-ios[data-theme] #screen>.sumbar,html.ds-ios[data-theme] #screen>*>.sumbar{background:var(--cell)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+
+/* Kartlar: banka yüzleri aynı, sadece iOS Wallet gölgesi */
+html.ds-ios[data-theme] .ccard{box-shadow:0 -1px 0 rgba(255,255,255,.18) inset,0 1px 0 rgba(255,255,255,.22) inset,0 6px 18px rgba(0,0,0,.18)}
+html.ds-ios[data-theme=dark] .ccard{box-shadow:0 1px 0 rgba(255,255,255,.16) inset,0 6px 18px rgba(0,0,0,.5)}
+
+/* Onboarding + kilit */
+html.ds-ios[data-theme] .ob-hero,html.ds-ios[data-theme] .mic{background:var(--primary-fill);box-shadow:0 12px 30px -12px color-mix(in srgb,var(--primary) 70%,transparent)}
+html.ds-ios[data-theme] .ob h2{font-weight:700;letter-spacing:-.02em}
+html.ds-ios[data-theme] .ob-dots i.on{background:var(--primary)}
+html.ds-ios[data-theme] #lock{background:var(--background);-webkit-backdrop-filter:none;backdrop-filter:none}
+html.ds-ios[data-theme] #lock .avatar{background:linear-gradient(160deg,#6e6e73,#48484a);color:#fff}
+html.ds-ios[data-theme] .key.glass{background:var(--cell);box-shadow:none}
+
+/* Masaüstü: iPadOS kenar çubuğu + ortalanmış gruplu içerik */
+html.ds-ios[data-theme].wide body{padding:24px 28px 32px}
+html.ds-ios[data-theme].wide .gw-top,html.ds-ios[data-theme].wide .gw-rail{background:var(--ios-mat)!important;-webkit-backdrop-filter:var(--ios-blur)!important;backdrop-filter:var(--ios-blur)!important;
+  box-shadow:0 6px 20px rgba(0,0,0,.08),inset 0 0 0 .5px var(--ios-line)!important}
+html.ds-ios[data-theme].wide .gw-mark{background:var(--primary);color:#fff;box-shadow:none}
+html.ds-ios[data-theme].wide .gw-name{font-weight:700}
+html.ds-ios[data-theme].wide .gw-rb{color:var(--text2)}
+html.ds-ios[data-theme].wide .gw-rb.on{background:var(--fill);color:var(--primary);box-shadow:none}
+html.ds-ios[data-theme].wide .gw-rb.add{color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,transparent)}
+html.ds-ios[data-theme].wide #screen{padding:12px 30px 30px}
+html.ds-ios[data-theme].wide .tx-days .day-h{top:auto}
+
+/* Tasarım seçici (Ayarlar) — her iki tasarımda görünür */
+.ds-pick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ds-opt{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 8px 10px;border-radius:18px;background:var(--fill);text-align:center;box-shadow:inset 0 0 0 2px transparent;transition:box-shadow .2s}
+.ds-opt.on{box-shadow:inset 0 0 0 2px var(--primary)}
+.ds-l{font-size:14px;font-weight:600;color:var(--text);line-height:1.2}
+.ds-l small{display:block;font-size:12px;font-weight:400;color:var(--text2);margin-top:2px}
+.ds-th{position:relative;display:block;width:76px;height:118px;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(0,0,0,.18),0 4px 12px rgba(0,0,0,.12)}
+.ds-th i{position:absolute;left:8px;right:8px;border-radius:7px}
+.ds-th i:nth-child(1){top:14px;height:30px}.ds-th i:nth-child(2){top:50px;height:22px}.ds-th i:nth-child(3){top:78px;height:16px;right:30px}
+.ds-th b{position:absolute;left:8px;right:8px;bottom:6px;height:12px;border-radius:6px}
+.ds-th-glass{background:radial-gradient(90% 70% at 20% 10%,#f0d3ad,transparent 60%),radial-gradient(80% 70% at 100% 100%,#8a5a34,transparent 60%),linear-gradient(160deg,#c9a07a,#6b4429)}
+.ds-th-glass i,.ds-th-glass b{background:rgba(255,248,238,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.6);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.ds-th-ios{background:#f2f2f7}
+.ds-th-ios i{background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.05)}
+.ds-th-ios i:nth-child(1){background:linear-gradient(150deg,#e2232b,#9e0d16)}
+.ds-th-ios b{background:rgba(255,255,255,.9);box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.ds-th-ios b::after{content:"";position:absolute;left:8px;top:4px;width:12px;height:4px;border-radius:2px;background:#0066cc}
+[data-theme=dark] .ds-th-ios{background:#000}
+[data-theme=dark] .ds-th-ios i:not(:nth-child(1)){background:#1c1c1e}
+[data-theme=dark] .ds-th-ios b{background:rgba(60,60,64,.9)}
+[data-theme=dark] .ds-th-ios b::after{background:#409cff}
+
+@media (prefers-reduced-motion:reduce){html.ds-ios[data-theme] *{scroll-behavior:auto}.ds-opt{transition:none}}
+/* Pencere içindeki hücreler koyu temada bir kademe yükseltilmiş gri (#2c2c2e) */
+html.ds-ios[data-theme=dark] .sheet{--cell:#2c2c2e;--seg-on:#636366}
+
+/* ---------- Liquid Glass butonlar (yalnız Saf iOS + ios-liquid) · 21st.dev LiquidButton'ın vanilla CSS karşılığı ----------
+   ::before = kenar ışığı gölge yığını, ::after = cam katmanı (Chromium: SVG #container-glass; Safari/iOS: bulanık cam yedeği) */
+html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add,.tabbar){position:relative;isolation:isolate;
+  background:transparent!important;box-shadow:none!important;border-color:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add){border-radius:999px}
+html.ds-ios.ios-liquid[data-theme] .sheet-head button{min-height:38px;padding:0 15px;margin:3px 0}
+html.ds-ios.ios-liquid[data-theme] .sheet-head button:empty{padding:0;min-width:0}
+html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add,.tabbar,.tab-ind)::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  box-shadow:0 0 6px rgba(0,0,0,.03),0 2px 6px rgba(0,0,0,.08),inset 3px 3px .5px -3px rgba(0,0,0,.9),inset -3px -3px .5px -3px rgba(0,0,0,.85),inset 1px 1px 1px -.5px rgba(0,0,0,.6),inset -1px -1px 1px -.5px rgba(0,0,0,.6),inset 0 0 6px 6px rgba(0,0,0,.12),inset 0 0 2px 2px rgba(0,0,0,.06),0 0 12px rgba(255,255,255,.15)}
+html.ds-ios.ios-liquid[data-theme=dark] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add,.tabbar,.tab-ind)::before{
+  box-shadow:0 0 8px rgba(0,0,0,.03),0 2px 6px rgba(0,0,0,.08),inset 3px 3px .5px -3.5px rgba(255,255,255,.09),inset -3px -3px .5px -3.5px rgba(255,255,255,.85),inset 1px 1px 1px -.5px rgba(255,255,255,.6),inset -1px -1px 1px -.5px rgba(255,255,255,.6),inset 0 0 6px 6px rgba(255,255,255,.12),inset 0 0 2px 2px rgba(255,255,255,.06),0 0 12px rgba(0,0,0,.15)}
+html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add,.tabbar,.tab-ind)::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-2;
+  background:rgba(255,255,255,.34);-webkit-backdrop-filter:blur(10px) saturate(1.6);backdrop-filter:blur(10px) saturate(1.6)}
+html.ds-ios.ios-liquid[data-theme=dark] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add,.tabbar,.tab-ind)::after{background:rgba(255,255,255,.07)}
+html.ds-ios.ios-liquid[data-theme].lg-svg :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add,.tabbar,.tab-ind)::after{backdrop-filter:url(#container-glass);background:rgba(255,255,255,.16)}
+html.ds-ios.ios-liquid[data-theme=dark].lg-svg :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add,.tabbar,.tab-ind)::after{background:rgba(255,255,255,.04)}
+/* yüzen ada: kapsül ve + biraz daha dolu cam, içerik üstünde de okunur */
+html.ds-ios.ios-liquid[data-theme=light] :is(.tabbar,.dock-add)::after{background:rgba(255,255,255,.55)}
+html.ds-ios.ios-liquid[data-theme=dark] :is(.tabbar,.dock-add)::after{background:rgba(30,30,32,.5)}
+html.ds-ios.ios-liquid[data-theme=light].lg-svg :is(.tabbar,.dock-add)::after{background:rgba(255,255,255,.42)}
+html.ds-ios.ios-liquid[data-theme=dark].lg-svg :is(.tabbar,.dock-add)::after{background:rgba(30,30,32,.38)}
+/* metin: ana renk; dolu birincil düğme ve seçili çip renk dolgusunu korur (beyaz yazı AA) */
+html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.sheet-head button,.dock-add){color:var(--primary)}
+html.ds-ios.ios-liquid[data-theme=dark] :is(.btn,.mini-btn,.sheet-head button,.dock-add){color:#5aaaff}
+html.ds-ios.ios-liquid[data-theme] .btn.danger{color:var(--red)}
+html.ds-ios.ios-liquid[data-theme] :is(.btn.primary,.chip.on){background:color-mix(in srgb,var(--primary-fill) 92%,transparent)!important;color:#fff}
+html.ds-ios.ios-liquid[data-theme] :is(.btn.primary,.chip.on)::after{background:transparent}
+html.ds-ios.ios-liquid[data-theme] :is(.icon-btn,.gw-btn,.chip,.act){color:var(--text)}
+html.ds-ios.ios-liquid[data-theme] .chip.on{color:#fff}
+html.ds-ios.ios-liquid[data-theme] .top-actions .icon-btn::before{inset:0}
+html.ds-ios.ios-liquid[data-theme] .top-actions .icon-btn.gw-av-m,html.ds-ios.ios-liquid[data-theme] .gw-tools .gw-tb.gw-av{background:linear-gradient(160deg,#6e6e73,#48484a)!important;color:#fff!important}
+html.ds-ios.ios-liquid[data-theme] .top-actions .icon-btn.gw-av-m::after{display:none}
+/* seçili sekme göstergesi: kayan cam mercek (transform satır içi; geçişler cz-dock'taki gibi kalır) */
+html.ds-ios.ios-liquid[data-theme] .tab-ind{background:transparent!important;box-shadow:none!important}
+html.ds-ios.ios-liquid[data-theme=light] .tab-ind::after{background:rgba(120,120,128,.1)}
+html.ds-ios.ios-liquid[data-theme=light].lg-svg .tab-ind::after{background:rgba(120,120,128,.08)}
+html.ds-ios.ios-liquid[data-theme] .lens-drag .tab-ind::before{box-shadow:0 10px 26px rgba(0,0,0,.2),inset 0 0 0 1.2px rgba(255,255,255,.75),inset 0 2px 8px rgba(255,255,255,.5),inset 0 -2px 8px rgba(0,0,0,.1),
+  inset 3px 3px .5px -3px rgba(0,0,0,.6),inset -3px -3px .5px -3px rgba(0,0,0,.55),inset 0 0 6px 6px rgba(255,255,255,.14)}
+html.ds-ios.ios-liquid[data-theme=dark] .lens-drag .tab-ind::before{box-shadow:0 10px 26px rgba(0,0,0,.45),inset 0 0 0 1.2px rgba(255,255,255,.5),inset 0 2px 8px rgba(255,255,255,.3),inset -3px -3px .5px -3.5px rgba(255,255,255,.9),inset 0 0 6px 6px rgba(255,255,255,.14)}
+html.ds-ios.ios-liquid[data-theme] .lens-drag .tab-ind::after{background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(1.5px) brightness(1.12) saturate(1.7);backdrop-filter:blur(1.5px) brightness(1.12) saturate(1.7)}
+html.ds-ios.ios-liquid[data-theme].lg-svg .lens-drag .tab-ind::after{backdrop-filter:url(#container-glass) brightness(1.12) saturate(1.7)}
+html.ds-ios.ios-liquid[data-theme] .tab.on{color:var(--primary);font-weight:700}
+html.ds-ios.ios-liquid[data-theme=dark] .tab.on,html.ds-ios.ios-liquid[data-theme=dark] .lens-drag .tab.hover{color:#6cb4ff}
+/* hareket: üzerine gelince 1.05 (300ms), basınca biraz küçük */
+html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button){transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .2s}
+html.ds-ios.ios-liquid[data-theme] .dock-add{transition:transform .3s cubic-bezier(.22,1,.36,1),width .45s var(--spring),height .45s var(--spring)}
+@media (hover:hover){html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add):hover{transform:scale(1.05)}}
+html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add):active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add):is(:hover,:active){transform:none}}
+.ds-lq{margin-top:12px;padding:2px 14px}
 </style>
 </head>
 <body>
@@ -8043,6 +8374,30 @@ AccForm.render=function(){_r();const d=this.draft,sh=Sheet.el('.sheet');if(!sh||
 const _sync=AccForm.sync.bind(AccForm);AccForm.sync=function(){_sync();const d=this.draft;if(!d)return;const l=Sheet.el('#ac-last4');if(l)d.last4=(l.value.match(/\d/g)||[]).join('').slice(-4)};
 const _ps=AccForm.postSave;AccForm.postSave=function(out,d){const item=_ps?_ps.call(this,out,d):{...out};
   if(item.type==='checking'){if(d.debitCard)item.debitCard=true;else delete item.debitCard;if(d.debitCard&&d.last4)item.last4=d.last4}else delete item.debitCard;return item}}
+/* Saf iOS tasarımı: Ayarlar → Görünüm → Tasarım (Cam / Saf iOS). Cam varsayılan; iOS yalnızca html.ds-ios sınıfıyla devreye girer */
+const CzIOS={KEY:'cuzdan_ds',
+  on(){const s=Store.get();return !!(s&&s.settings&&s.settings.design==='ios')},
+  liquid(){return this.on()&&Store.get().settings.iosLiquid===true},
+  /* Liquid Glass butonlar: SVG filtresi yalnızca Chromium'da backdrop-filter:url() ile çalışır; Safari/iOS bulanık cam yedeğini kullanır */
+  svgOk(){const u=navigator.userAgent;return !/iPhone|iPad|iPod/.test(u)&&/Chrome|Chromium|Edg\//.test(u)&&!/Firefox|FxiOS/.test(u)},
+  svg(){if(document.getElementById('cz-lg-svg'))return;document.body.insertAdjacentHTML('beforeend',`<svg id="cz-lg-svg" class="hidden" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="container-glass" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="1" seed="1" result="turbulence"/><feGaussianBlur in="turbulence" stdDeviation="2" result="blurredNoise"/>
+      <feDisplacementMap in="SourceGraphic" in2="blurredNoise" scale="70" xChannelSelector="R" yChannelSelector="B" result="displaced"/><feGaussianBlur in="displaced" stdDeviation="4" result="finalBlur"/><feComposite in="finalBlur" in2="finalBlur" operator="over"/></filter></defs></svg>`)},
+  apply(){const r=document.documentElement,on=this.on(),lq=this.liquid(),t=r.dataset.theme==='light'?'light':'dark';r.classList.toggle('ds-ios',on);
+    r.classList.toggle('ios-liquid',lq);if(lq){r.classList.toggle('lg-svg',this.svgOk());if(document.body)this.svg()}else r.classList.remove('lg-svg');
+    try{on?localStorage.setItem(this.KEY,'ios:'+t+(lq?':lg':'')):localStorage.removeItem(this.KEY)}catch(e){}
+    if(on){const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==='dark'?'#000000':'#f2f2f7';
+      if(typeof GW!=='undefined'&&GW.kind==='glass')GW.close()}},
+  set(v){if((Store.get().settings.design||'glass')===v)return;SettingsSheet.look('design',v)},
+  pick(){const cur=this.on()?'ios':'glass',o=(k,l,d)=>`<button type="button" class="ds-opt pressable ${cur===k?'on':''}" role="radio" aria-checked="${cur===k}" onclick="CzIOS.set('${k}')">
+      <span class="ds-th ds-th-${k}" aria-hidden="true"><i></i><i></i><i></i><b></b></span><span class="ds-l">${l}<small>${d}</small></span></button>`;
+    return `<div class="field ds-field"><span>Tasarım</span><div class="ds-pick" role="radiogroup" aria-label="Tasarım">${o('glass','Cam','Fotoğraflı Liquid Glass')}${o('ios','Saf iOS','Apple uygulamaları gibi sade')}</div>`+
+      (cur==='ios'?`<div class="glass ds-lq"><div class="set-row"><div>Liquid Glass butonlar<small>Saf iOS tasarımında butonlara cam görünümü verir</small></div><label class="switch"><input type="checkbox" ${this.liquid()?'checked':''} onchange="SettingsSheet.look('iosLiquid',this.checked)"><span></span></label></div></div>`:'')+`</div>`}};
+{const _ap=Appearance.apply;Appearance.apply=function(){const r=_ap.apply(this,arguments);try{CzIOS.apply()}catch(e){}return r}}
+{const _o=SettingsSheet.open;SettingsSheet.open=function(){const r=_o.apply(this,arguments);try{const sh=Sheet.el('.sheet')||document.querySelector('#sheet'),look=sh&&sh.querySelector('#sec-look');
+  if(look&&!sh.querySelector('.ds-field')){look.insertAdjacentHTML('afterend',CzIOS.pick());
+    if(CzIOS.on()){const box=look.nextElementSibling.nextElementSibling;[...sh.querySelectorAll('.set-row')].filter(x=>/^(Cam görünümü|Koyu fotoğraf|Duruma göre renk|Arka plan)/.test(x.textContent.trim())).forEach(x=>x.classList.add('ds-glass-only'));
+      box&&box.insertAdjacentHTML('afterbegin','<p class="ds-note">Cam, arka plan fotoğrafı ve duruma göre renk ayarları yalnızca Cam tasarımında kullanılır.</p>')}}}catch(e){console.warn(e)}return r}}
 /* Alt bar: gösterge önce kayar, ağır sayfa çizimi bir kare sonra yapılır; geçiş takılmaz */
 {const _go=App.go.bind(App);let pend=0;
 App.go=function(tab,sub){if(tab===UI.tab&&!UI.stack.length&&!sub)return _go(tab,sub);
