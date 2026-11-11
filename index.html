@@ -1750,7 +1750,7 @@ html.wide .tx-days .day-h{top:90px}
 .dock{padding-bottom:max(8px,calc(var(--sab) - 10px))}
 body{padding-bottom:calc(max(8px,var(--sab) - 10px) + var(--dock-h) + 30px)}
 .tab-ind{will-change:transform,width;transition:transform .48s cubic-bezier(.32,1.18,.5,1),width .48s cubic-bezier(.32,1.18,.5,1),background .25s,box-shadow .25s}
-.lens-drag .tab-ind{transition:transform .07s linear,width .18s var(--ease),background .2s,box-shadow .2s}
+.lens-drag .tab-ind{transition:width .18s var(--ease),background .2s,box-shadow .2s}
 .tab{transition:color .3s var(--ease)}
 .tab svg{transition:transform .45s cubic-bezier(.32,1.3,.5,1)}
 .tab.on svg{transform:scale(1.06)}
@@ -6755,6 +6755,42 @@ Pages.czShared=(s)=>CzY.sh.page(s);
   const sg=C.segmented([['cal','Takvim'],['budget','Bütçe'],['rec','Düzenli'],['goals','Kumbara']],seg,'App.planTab')+'</div>',i=h.indexOf(sg);let e='';try{e=CzY.sh.entry()}catch(x){return h}
   return i<0?h+e:h.slice(0,i+sg.length)+e+h.slice(i+sg.length)}}
 {const _i=App.init.bind(App);App.init=()=>{_i();try{CzY.sh.sync()}catch(e){}CzX.whenReady(()=>{CzY.notif.check().catch(()=>{})})}}
+/* Ekstre paketi (.json, cuzdan:'ekstre'): yedeğin yerine geçmez; seçilen karta ekstreleri sırayla ekler, mükerrerleri atlar */
+const StmtPack={d:null,
+  open(d){this.d=d;const s=Store.get(),cards=s.accounts.filter(a=>a.type==='credit'&&!a.archived),c=d.card||{},st=d.statements||[],n=st.reduce((a,x)=>a+(x.transactions||[]).length,0);
+    const pick=cards.find(a=>c.last4&&(a.last4===c.last4||(a.name||'').includes(c.last4)))||cards.find(a=>/ziraat|bankkart/i.test((a.name||'')+' '+(a.bank||'')));
+    Sheet.open(Sheet.head('Ekstreleri ekle',{left:'Vazgeç',right:'Ekle',onRight:'StmtPack.apply()'})+
+      `<p class="muted sm" style="margin:0 4px 10px;line-height:1.5"><b>${st.length} ekstre · ${n} satır</b> (${st.map(x=>U.fmtDate(x.cut_date,'y')).join(', ')}). Mevcut verilerin silinmez; zaten kayıtlı olan işlemler atlanır, her ekstrenin limiti limit geçmişine yazılır.</p>
+      <div class="glass list" style="padding:0 12px">${cards.map(a=>`<label class="imp-row"><input type="radio" name="sp-acc" value="${a.id}" ${pick&&pick.id===a.id?'checked':''}><span>${C.ic('card')}</span><div class="mid"><b>${U.esc(a.name)}</b><span>Bu karta ekle · kesim ${a.credit.cutDay}, son ödeme ${a.credit.dueDay}</span></div></label>`).join('')}
+        <label class="imp-row"><input type="radio" name="sp-acc" value="" ${pick?'':'checked'}><span>${C.ic('plus')}</span><div class="mid"><b>Yeni kart: ${U.esc(c.name||'Kredi kartı')}</b><span>Kesim ${c.cutDay}, son ödeme ${c.dueDay}</span></div></label></div>
+      <p class="muted xs" style="margin:10px 4px 0;line-height:1.5">Var olan karta eklersen kesim günü ${c.cutDay}, son ödeme günü ${c.dueDay} olarak ayarlanır.</p>`)},
+  apply(){const d=this.d,c=d.card||{},el=document.querySelector('input[name="sp-acc"]:checked');let id=el?el.value:'';
+    const st0=(d.statements||[]).slice().sort((a,b)=>a.cut_date.localeCompare(b.cut_date));if(!st0.length)return;
+    if(!id){id=U.uid();Store.dispatch({type:'upsert',col:'accounts',item:{id,type:'credit',name:c.name||'Kredi kartı',bank:c.bank||'',color:Store.get().accounts.length,currency:'TRY',opening:0,
+      credit:{limit:+st0[0].limit||0,cutDay:c.cutDay||15,dueDay:c.dueDay||25,sharedWith:'',minRate:c.minRate||20,contractRate:'',lateRate:''}}})}
+    else{const a=D.account(Store.get(),id);Store.dispatch({type:'upsert',col:'accounts',item:{...a,credit:{...a.credit,cutDay:c.cutDay||a.credit.cutDay,dueDay:c.dueDay||a.credit.dueDay}}})}
+    let add=0,skip=0;
+    st0.forEach(x=>{const r=StatementImport.normalize(x,Store.get(),id);if(!r.ok)return;skip+=r.rows.filter(y=>!y.sel).length;
+      const acts=StatementImport.toActions(r.rows,id);add+=acts.length;acts.forEach(a=>Store.dispatch(a));
+      const a=D.account(Store.get(),id);if(+x.limit>0&&D.limitAt(a,x.cut_date)!==+x.limit){Store.dispatch({type:'upsert',col:'accounts',item:Limits.add(a,x.cut_date,+x.limit)})}});
+    Sheet.close();Haptic.success();Toast.show(`✓ ${st0.length} ekstre · ${add} işlem eklendi${skip?` · ${skip} kayıtlı olduğu için atlandı`:''}`);UI.stack=[];App.push('card',{id})}};
+{const _r=Backup.restore.bind(Backup);Backup.restore=d=>d&&d.cuzdan==='ekstre'?(StmtPack.open(d),true):_r(d)}
+/* Alt bar sürükleme: gösterge parmağı birebir izler (kare başına bir kez), kenarlarda esner, hızlı fiske yönündeki sekmeye geçer */
+{let raf=0,vx=0,lx=0,lt=0;
+Lens.move=function(e){const st=this.st;if(!st)return;const dx=e.clientX-st.x0,dy=e.clientY-st.y0;
+  if(!st.drag){if(Math.abs(dx)<5&&Math.abs(dy)<5)return;if(!st.tab&&Math.abs(dy)>Math.abs(dx)){this.st=null;return}
+    st.drag=true;st.c.classList.add('lens-drag');Haptic.tap();lx=e.clientX;lt=e.timeStamp;vx=0}
+  const dt=Math.max(1,e.timeStamp-lt);vx=vx*.5+(e.clientX-lx)/dt*.5;lx=e.clientX;lt=e.timeStamp;st.cx=e.clientX;
+  if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(this.st!==st)return;const R=st.rects,first=R[0],last=R[R.length-1],X=st.cx;
+    let i=0,best=1e9;R.forEach((r,j)=>{const d=Math.abs(r.cx-X);if(d<best){best=d;i=j}});
+    if(i!==st.idx){st.items.forEach((b,j)=>b.classList.toggle('hover',j===i));if(st.idx!==-1)Haptic.tap();st.idx=i}
+    const w=R[i].w,lo=first.l,hi=last.l+last.w-w,raw=X-w/2,x=(raw<lo?lo-(lo-raw)*.22:raw>hi?hi+(raw-hi)*.22:raw)-st.cr.left;
+    if(st.tab){st.ind.style.width=w+'px';st.ind.style.transform=`translateX(${x}px) scale(1.14,1.1)`}
+    else st.ind.style.transform=`translateX(${x-2}px) scale(1.06,1.12)`})};
+const _end=Lens.end.bind(Lens);
+Lens.end=function(e){const st=this.st;if(st&&st.drag&&Math.abs(vx)>.45){const R=st.rects,X=(st.cx||st.x0)+vx*140;let i=0,best=1e9;
+    R.forEach((r,j)=>{const d=Math.abs(r.cx-X);if(d<best){best=d;i=j}});st.idx=i}
+  cancelAnimationFrame(raf);raf=0;vx=0;return _end(e)}}
 /* Alt bar: gösterge önce kayar, ağır sayfa çizimi bir kare sonra yapılır; geçiş takılmaz */
 {const _go=App.go.bind(App);let pend=0;
 App.go=function(tab,sub){if(tab===UI.tab&&!UI.stack.length&&!sub)return _go(tab,sub);

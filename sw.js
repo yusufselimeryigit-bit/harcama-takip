@@ -1,6 +1,6 @@
 /* Cüzdan service worker: uygulamayı internetsiz açar.
    HTML önce ağdan alınır (güncellemeler hemen gelsin), ağ yoksa önbellekten açılır. */
-const CACHE='cuzdan-v13';
+const CACHE='cuzdan-v14';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
