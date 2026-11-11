@@ -7401,8 +7401,7 @@ const CzHome={
   lastKey:null
 };
 /* Ana Sayfa: hero başlığın hemen altına; ikincil "Kullanılabilir bakiye" sesi kısılır (CSS) */
-{const _h=Screens.home;Screens.home=(s,ui)=>{const h=_h(s,ui);if(!s.accounts.length||ui.homeEdit)return h;let x='';try{x=CzHome.hero(s)}catch(e){console.warn(e);return h}
-  const i=h.indexOf('</header></div>');return i<0?x+h:h.slice(0,i+15)+x+h.slice(i+15)}}
+/* Ana sayfadaki "Bu ay harcadın" üst kartı kullanıcının isteğiyle kaldırıldı (CzHome.hero duruyor, ekrana eklenmiyor) */
 /* Bütçe widget'ı: küçük → iç içe mini halkalar, orta → halkalar + açıklama */
 {const _r=WIDGETS.budget.r;WIDGETS.budget.r=(s,ui,z)=>{const st=D.budgetStatus(s);if(!st.length)return _r(s,ui,z);
   try{if(z==='m')return C.section('Bütçe',`<button onclick="App.go('plan','budget')">Tümü ›</button>`,CzHome.budgetCard(s,st,{size:120}));
