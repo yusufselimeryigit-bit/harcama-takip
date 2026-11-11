@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Cüzdan">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-64.png">
 <title>Cüzdan</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
 <style>
@@ -1745,6 +1746,87 @@ html.wide .tx-days .day-h{top:90px}
 .czy-inv{border:1px solid color-mix(in srgb,var(--orange,#ff9f0a) 45%,transparent)}
 
 </style>
+<style id="cz-legible">
+/* ---------- Okunurluk: cam görünüm kalır, ama her yazı fotoğrafın üstünde net okunur (WCAG AA) ---------- */
+/* 1) İkincil/soluk yazı renkleri daha belirgin */
+html[data-theme=dark]{--muted-foreground:#e8ddd0;--faint:#d6c8b8;--orange:#f9c88e;--red:#ffb4a8;--green:#a9e2b3}
+html[data-theme=light]{--muted-foreground:#4a3b30;--faint:#615244;--primary-def:#683f19;--orange:#864800;--red:#9c3320;--green:#226332}
+/* 2) Masaüstü: ana cam panel biraz daha dolu + daha yumuşak bulanıklık */
+@media (min-width:900px){
+  html[data-theme] #screen::before{background:linear-gradient(var(--gw-tint-l),var(--gw-tint-l)),color-mix(in srgb,var(--surface) calc(max(.72,var(--gw-opacity)) * 100%),transparent);
+    -webkit-backdrop-filter:blur(calc(var(--gw-blur) + 12px)) saturate(var(--gw-saturation));backdrop-filter:blur(calc(var(--gw-blur) + 12px)) saturate(var(--gw-saturation))}
+}
+/* 3) Telefon: ana panel yok, kartlar doğrudan fotoğrafın üstünde → her kart buzlu ve yeterince dolu */
+@media (max-width:899px){
+  html[data-theme=dark]:not([data-oled="1"]){--gw-shade:rgba(20,11,4,.5)}
+  html[data-theme=light]{--gw-shade:rgba(250,243,234,.5)}
+  html[data-theme] #screen :is(.glass,.gw-panel,.hero,.wt,.seg,.chip:not(.on)),
+  html[data-theme] .cd .glass,html[data-theme] .cd-body .glass,html[data-theme] .cd-tabs .seg{
+    -webkit-backdrop-filter:blur(calc(var(--gw-blur) + 8px)) saturate(var(--gw-saturation));backdrop-filter:blur(calc(var(--gw-blur) + 8px)) saturate(var(--gw-saturation))}
+  html[data-theme=light] #screen :is(.glass,.gw-panel,.hero,.wt,.seg,.chip:not(.on)),
+  html[data-theme=light] .cd .glass,html[data-theme=light] .cd-body .glass,html[data-theme=light] .cd-tabs .seg{
+    background:color-mix(in srgb,#fffaf3 calc(max(.8,.30 + var(--gw-opacity) * .6) * 100%),transparent)}
+  html[data-theme=dark] #screen :is(.glass,.gw-panel,.hero,.wt,.seg,.chip:not(.on)),
+  html[data-theme=dark] .cd .glass,html[data-theme=dark] .cd-body .glass,html[data-theme=dark] .cd-tabs .seg{
+    background:color-mix(in srgb,#241a12 calc(max(.8,.42 + var(--gw-opacity) * .5) * 100%),transparent)}
+  /* iç içe cam: üstteki kart zaten okunur zemin, ikinci kat bulanıklık/ton yok */
+  html[data-theme] #screen :is(.glass,.gw-panel,.hero,.wt) :is(.glass,.seg):not(.icon-btn),
+  html[data-theme] .cd-body .glass .glass{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--fill)}
+  html[data-theme] #screen .seg .thumb{background:var(--card)}
+  html.solid #screen :is(.glass,.gw-panel,.hero,.wt,.seg,.chip){-webkit-backdrop-filter:none;backdrop-filter:none}
+  html[data-theme] #screen>.sumbar,html[data-theme] #screen>*>.sumbar{padding:9px 13px;margin-left:0;margin-right:0;border-radius:14px;background:var(--glass);-webkit-backdrop-filter:blur(calc(var(--gw-blur) + 8px));backdrop-filter:blur(calc(var(--gw-blur) + 8px))}
+  html[data-theme=light] #screen>.sumbar,html[data-theme=light] #screen>*>.sumbar{background:color-mix(in srgb,#fffaf3 72%,transparent)}
+  html[data-theme=dark] #screen>.sumbar,html[data-theme=dark] #screen>*>.sumbar{background:color-mix(in srgb,#241a12 72%,transparent)}
+  html[data-theme] #screen .cal-nav button{background:var(--glass);-webkit-backdrop-filter:blur(var(--gw-blur));backdrop-filter:blur(var(--gw-blur))}
+  /* panel dışındaki başlık ve özet satırları: yumuşak hale */
+  html[data-theme=dark] #screen :is(.topbar,.page-head,.section-head,.cal-nav,.sumbar,.day-h,.tx-period,.cz-lead,.czy-lead,.cz-note,.czy-nokey){text-shadow:0 1px 2px rgba(0,0,0,.6),0 0 14px rgba(0,0,0,.45)}
+  html[data-theme=light] #screen :is(.topbar,.page-head,.section-head,.cal-nav,.sumbar,.day-h,.tx-period,.cz-lead,.czy-lead,.cz-note,.czy-nokey){text-shadow:0 0 2px rgba(255,250,243,.9),0 0 14px rgba(255,250,243,.8)}
+  html[data-theme] #screen :is(.glass,.gw-panel,.hero,.wt) :is(.section-head,.sumbar,.day-h){text-shadow:none}
+}
+/* 4) Grafikler: ısı haritası, sıralama rozetleri, eğilim rozetleri */
+html[data-theme=dark] .heat,html[data-theme=dark] .heat-legend{--blue:#9a5f2c}
+html[data-theme=light] .heat,html[data-theme=light] .heat-legend{--blue:#6b3f17}
+html[data-theme] .heat .c{color:var(--text)}
+html[data-theme] .heat .c.hot{color:#fff;text-shadow:0 0 2px rgba(0,0,0,.55)}
+html[data-theme] .row>span.ic[style*="font-weight:800"]{color:var(--text)!important}
+html[data-theme=dark] .tr-badge[style*="#ff9f0a"]{color:#ffc46e!important}
+html[data-theme=light] .tr-badge[style*="#ff9f0a"]{color:#864800!important}
+html[data-theme=light] .tr-badge[style*="#30d158"]{color:#1d5f2e!important}
+/* 5) Ay özeti hikâyesi: turuncu/açık mavi slaytlarda beyaz yazı için hafif karartma */
+#story::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.3) 34%,rgba(0,0,0,.3) 76%,rgba(0,0,0,.14))}
+#story .st-body{text-shadow:0 1px 3px rgba(0,0,0,.25)}
+#story .st-k,#story .st-sub{opacity:1}
+</style>
+<style id="cz-overlap">
+/* cz-overlap: üst üste binen metin / yapışık ikon düzeltmeleri — yalnız yerleşim, görsel dil aynı.
+   (cz-dock'tan ÖNCE yüklendiği için seçiciler "html " ile bir kademe güçlendirildi) */
+/* 1) Kart sayfası: tek sütunlu grid'ler en uzun satıra göre genişleyip ekrandan taşıyordu (12 aylık taksit grafiği, uzun işlem adları) */
+html .cd,html .cd-side,html .cd-main,html .cd-body{grid-template-columns:minmax(0,1fr)}
+html .actions{grid-auto-columns:minmax(0,1fr)}
+/* 2) Kart sayfası eylem düğmeleri: "Harcama ekle / Ekstre yükle" kenara yapışık, sığmayınca kesiliyordu */
+html .cd-actions .act{min-width:0;gap:5px;padding:0 5px;font-size:12.5px;letter-spacing:-.01em;white-space:normal;line-height:1.15;text-align:left;overflow:hidden}
+html .cd-actions .act .ic{width:22px;height:22px}
+html .cd-actions .act .ic svg.i{width:13px;height:13px}
+@media (max-width:380px){html .cd-actions .act .ic{display:none}html .cd-actions .act{text-align:center}}
+/* 3) Kredi kartı yüzü: uzun kart adı çipin altına giriyor / iki satıra taşıp destede alttaki karta biniyordu */
+html .ccard .cc-top{gap:10px}
+html .ccard .cc-top>div:first-child{min-width:0;flex:1 1 auto}
+html .ccard .cc-name,html .ccard .cc-bank{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html .ccard .chip{flex-shrink:0}
+/* 4) 12 aylık taksit grafiği: dar ekranda "102,9k" değerleri birbirine yapışıyor → küçült, hâlâ sığmıyorsa (overlap.js ölçer) bir atlayarak göster */
+html .cz-chart{container-type:inline-size}
+@container (max-width:400px){html .cz-val{font-size:9px;letter-spacing:-.03em}}
+html .cz-chart.cz-thin .cz-col:nth-of-type(even) .cz-val{visibility:hidden}
+/* 5) İşlem detayı kategori değeri: ikon ile ad arasında boşluk (overlap.js ile) */
+.cz-catv{display:inline-flex;align-items:center;gap:6px;max-width:100%;vertical-align:middle}
+.cz-catv-ic{display:inline-grid;place-items:center;flex-shrink:0}.cz-catv-ic svg.i{width:16px;height:16px}
+/* 6) Bölüm başlığı "Tümü ›" / "Takvim ›" ve eğilim rozeti "↑ %171": ikon metne yapışık (2px) */
+html .section-head button{gap:4px}
+html .tr-badge{gap:4px}
+/* 7) Kumbara kutucuğu: uzun hedef adı 3+ satıra taşıp komşu kutuyla hizayı bozuyordu */
+html .goal b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+
+</style>
 <style id="cz-dock">
 /* Alt bar: ev çizgisine daha yakın; gösterge tek eğriyle akar, sürüklerken parmağı gecikmesiz izler */
 .dock{padding-bottom:max(8px,calc(var(--sab) - 10px))}
@@ -2222,7 +2304,7 @@ const EMOJI_ALIAS={'🎯':'target','📱':'phone','💻':'laptop','🏖️':'umb
 const ICON_CHOICES=['target','phone','laptop','plane','car','home','grad','gift','ring','game','umbrella','heart','dumbbell','headphones','tv','coffee','music','wifi','bolt','shield','card','pill','book','star','cart','food','bus','fuel','shirt','repeat','receipt','tag','piggy','briefcase'];
 const ACCENTS=[['#8b5a2b','Kehribar'],['#0a84ff','Mavi'],['#5e5ce6','İndigo'],['#bf5af2','Mor'],['#ff375f','Pembe'],['#ff9f0a','Turuncu'],['#30d158','Yeşil'],['#32ade6','Turkuaz']];
 const CARD_STYLES=[['aurora','Aurora'],['metal','Metal'],['glass','Cam'],['mesh','Işıltı'],['carbon','Karbon'],['minimal','Sade']];
-const APP_ICONS=[['aurora','Aurora'],['night','Gece'],['glass','Cam'],['gold','Altın']];
+const APP_ICONS=[['21st','21st'],['aurora','Aurora'],['night','Gece'],['glass','Cam'],['gold','Altın']];
 
 /* ---------- 20_store.js ---------- */
 
@@ -3998,7 +4080,7 @@ const SettingsSheet={
         <div class="set-row"><div>Yüksek kontrast<small>Daha belirgin yazı ve kenarlar</small></div><label class="switch"><input type="checkbox" ${document.documentElement.classList.contains('hc')?'checked':''} onchange="SettingsSheet.look('contrast',this.checked)"><span></span></label></div>
         <div class="set-row"><div>Kaydırınca alt barı küçült<small>Kapalıyken alt bar her zaman aynı boyutta sabit kalır</small></div><label class="switch"><input type="checkbox" ${s.settings.dockMini===true?'checked':''} onchange="SettingsSheet.look('dockMini',this.checked)"><span></span></label></div>
         <div class="set-row"><div>Hareket efektleri<small>Kartlarda eğim ve ışık yansıması</small></div><label class="switch"><input type="checkbox" ${s.settings.motion!==false?'checked':''} onchange="SettingsSheet.motion(this.checked)"><span></span></label></div>
-        <div class="field"><span>Uygulama simgesi · ana ekrana eklerken kullanılır</span><div class="appicon-pick">${APP_ICONS.map(([k,l])=>`<button class="pressable ${(s.settings.appIcon||'aurora')===k?'on':''}" onclick="SettingsSheet.look('appIcon','${k}')"><img src="${AppIcon.render(k,120)}" alt="">${l}</button>`).join('')}</div></div>
+        <div class="field"><span>Uygulama simgesi · ana ekrana eklerken kullanılır</span><div class="appicon-pick">${APP_ICONS.map(([k,l])=>`<button class="pressable ${(s.settings.appIcon||'21st')===k?'on':''}" onclick="SettingsSheet.look('appIcon','${k}')"><img src="${AppIcon.render(k,120)}" alt="">${l}</button>`).join('')}</div></div>
         <button class="btn pressable" onclick="HomeEdit.open()">${C.ic('layout')}Ana Sayfa widget'larını düzenle</button>
       </div>
 
@@ -4863,7 +4945,7 @@ const Split={mq:window.matchMedia?matchMedia('(min-width: 900px)'):null,
 /* ===================== ui/interactions · hareketler ve efektler ===================== */
 /* Görünüm ayarları: vurgu rengi, OLED, yazı boyutu, yoğunluk, uygulama simgesi */
 const AppIcon={STY:{aurora:['#0a84ff','#bf5af2','#ffffff'],night:['#1c1c1e','#3a3a3c','#64d2ff'],glass:['#eef3ff','#c9d6ff','#0a84ff'],gold:['#f6d365','#b8860b','#ffffff']},cache:{},
-  render(k,size=180){const key=k+size;if(this.cache[key])return this.cache[key];
+  render(k,size=180){if(!k||k==='21st')return size>100?'icon-180.png':'icon-64.png';const key=k+size;if(this.cache[key])return this.cache[key];
     try{const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');const[a,b,f]=this.STY[k]||this.STY.aurora;
       const g=x.createLinearGradient(0,0,size,size);g.addColorStop(0,a);g.addColorStop(1,b);x.fillStyle=g;x.fillRect(0,0,size,size);
       const sh=x.createLinearGradient(0,0,0,size);sh.addColorStop(0,'rgba(255,255,255,.38)');sh.addColorStop(.55,'rgba(255,255,255,0)');x.fillStyle=sh;x.fillRect(0,0,size,size);
@@ -4871,7 +4953,7 @@ const AppIcon={STY:{aurora:['#0a84ff','#bf5af2','#ffffff'],night:['#1c1c1e','#3a
       ['M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3','M21 9h-5a3 3 0 0 0 0 6h5z'].forEach(d=>x.stroke(new Path2D(d)));x.restore();
       return this.cache[key]=c.toDataURL('image/png')}catch(e){return ''}},
   apply(k){const set=(rel,url)=>{let l=document.querySelector(`link[rel="${rel}"]`);if(!l){l=document.createElement('link');l.rel=rel;document.head.appendChild(l)}l.href=url};
-    const big=this.render(k||'aurora',180);if(big){set('apple-touch-icon',big);set('icon',this.render(k||'aurora',64))}}};
+    const big=this.render(k,180);if(big){set('apple-touch-icon',big);set('icon',this.render(k,64))}}};
 const Appearance={apply(){const st=Store.get().settings,r=document.documentElement;
   r.style.removeProperty('--blue');if(st.accent&&st.accent!==ACCENTS[0][0])r.style.setProperty('--accent-user',st.accent);else r.style.removeProperty('--accent-user');r.dataset.oled=st.oled===true?'1':'0';r.style.setProperty('--zoom',st.zoom||1);
   r.classList.toggle('compact',st.density==='compact');if(this._icon!==st.appIcon){this._icon=st.appIcon;AppIcon.apply(st.appIcon)}}};
@@ -6755,6 +6837,13 @@ Pages.czShared=(s)=>CzY.sh.page(s);
   const sg=C.segmented([['cal','Takvim'],['budget','Bütçe'],['rec','Düzenli'],['goals','Kumbara']],seg,'App.planTab')+'</div>',i=h.indexOf(sg);let e='';try{e=CzY.sh.entry()}catch(x){return h}
   return i<0?h+e:h.slice(0,i+sg.length)+e+h.slice(i+sg.length)}}
 {const _i=App.init.bind(App);App.init=()=>{_i();try{CzY.sh.sync()}catch(e){}CzX.whenReady(()=>{CzY.notif.check().catch(()=>{})})}}
+/* cz-overlap: İşlem detayı → "Kategori" satırı ikonun adını düz metin yazıyordu ("phone Elektronik"); gerçek ikon + aralıklı ad */
+{const _ptx=Pages.tx;Pages.tx=(s,ui,p)=>{const h=_ptx(s,ui,p);if(!h)return h;try{const t=D.tx(s,p.id);if(!t)return h;const c=cat(t.category),raw=c.icon+' '+c.name,i=h.indexOf('>'+raw+'<');if(i<0)return h;
+  return h.slice(0,i+1)+`<span class="cz-catv"><span class="cz-catv-ic" style="color:${c.color||'var(--text2)'}">${C.ic(c.icon)}</span><span>${U.esc(c.name)}</span></span>`+h.slice(i+1+raw.length)}catch(e){return h}}}
+/* cz-overlap: 12 aylık taksit grafiği değerleri ("102,9k") dar sütuna sığmayınca birbirine biniyordu → ölç, gerekirse birer atlayarak göster */
+{const fit=()=>{document.querySelectorAll('.cz-chart').forEach(ch=>{ch.classList.remove('cz-thin');const vs=[...ch.querySelectorAll('.cz-val')];if(vs.some(v=>v.textContent&&v.scrollWidth>v.clientWidth+2))ch.classList.add('cz-thin')})};
+  let q=0;const sched=()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;fit()})};
+  try{new MutationObserver(m=>{if(m.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&(n.matches('.cz-chart')||n.querySelector&&n.querySelector('.cz-chart')))||r.target.closest&&r.target.closest('.cz-chart,#cz-ic-chart')))sched()}).observe(document.body,{childList:true,subtree:true});addEventListener('resize',sched)}catch(e){}}
 /* Ekstre paketi (.json, cuzdan:'ekstre'): yedeğin yerine geçmez; seçilen karta ekstreleri sırayla ekler, mükerrerleri atlar */
 const StmtPack={d:null,
   open(d){this.d=d;const s=Store.get(),cards=s.accounts.filter(a=>a.type==='credit'&&!a.archived),c=d.card||{},st=d.statements||[],n=st.reduce((a,x)=>a+(x.transactions||[]).length,0);
