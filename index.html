@@ -2314,6 +2314,12 @@ body{padding-bottom:calc(max(8px,var(--sab) - 10px) + var(--dock-h) + 30px)}
 @media (prefers-reduced-motion:reduce){.tab-ind,.tab svg{transition:none}}
 .zr-presets.cz-nz .zr-ic{background:var(--primary-soft)!important;color:var(--primary)!important}
 .zr-presets.cz-nz .zr-p.on{box-shadow:inset 0 0 0 1.5px var(--primary)!important;border-color:var(--primary)!important}
+
+@media (max-width:899px){html:not(.ds-ios) .topbar.gw-head:has(.top-actions>:nth-child(3)){display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:center}
+html:not(.ds-ios) .topbar.gw-head:has(.top-actions>:nth-child(3))>div:first-child{display:contents}
+html:not(.ds-ios) .topbar.gw-head:has(.top-actions>:nth-child(3)) .t-sub{grid-column:1;grid-row:1;align-self:center;min-width:0;line-height:1.25;overflow-wrap:anywhere;margin:0;white-space:normal;text-overflow:clip}
+html:not(.ds-ios) .topbar.gw-head:has(.top-actions>:nth-child(3))>.top-actions{grid-column:2;grid-row:1;align-self:center}
+html:not(.ds-ios) .topbar.gw-head:has(.top-actions>:nth-child(3)) h1{grid-column:1/-1;grid-row:2;margin-top:10px}}
 </style>
 <style id="cz-splash-css">
 /* Açılış animasyonu (koyu) */
@@ -2886,6 +2892,20 @@ html.ds-ios.ios-liquid[data-theme] .dock-add{transition:transform .3s cubic-bezi
 html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add):active{transform:scale(.97)}
 @media (prefers-reduced-motion:reduce){html.ds-ios.ios-liquid[data-theme] :is(.btn,.mini-btn,.chip,.act,.icon-btn,.gw-btn,.sheet-head button,.dock-add):is(:hover,:active){transform:none}}
 .ds-lq{margin-top:12px;padding:2px 14px}
+
+/* Ana sayfa başlığı: "Tekrar hoş geldin" yuvarlak düğmelerle aynı satırda, "Genel bakış" altında ferah */
+html.ds-ios[data-theme] .topbar:has(.top-actions>:nth-child(3)){grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:center}
+html.ds-ios[data-theme] .topbar:has(.top-actions>:nth-child(3))>div:first-child{display:contents}
+html.ds-ios[data-theme] .topbar:has(.top-actions>:nth-child(3)) .t-sub{grid-column:1;grid-row:1;align-self:center;min-width:0;line-height:1.25;overflow-wrap:anywhere;white-space:normal;text-overflow:clip}
+html.ds-ios[data-theme] .topbar:has(.top-actions>:nth-child(3))>.top-actions{grid-column:2;grid-row:1;order:0;margin:0 -2px 0 0}
+html.ds-ios[data-theme] .topbar:has(.top-actions>:nth-child(3)) h1{grid-column:1/-1;grid-row:2;margin-top:16px}
+
+/* Liquid Glass alt ada: kenarlar yumuşak (koyu iç çizgiler yerine ince ışık kenarı + yumuşak gölge) */
+html.ds-ios.ios-liquid[data-theme=light] #dock :is(.tabbar,.dock-add)::before{box-shadow:0 10px 28px -10px rgba(0,0,0,.22),0 1px 4px rgba(0,0,0,.05),inset 0 1px 0 rgba(255,255,255,.75),inset 1px 1px 1.5px -.5px rgba(255,255,255,.9),inset -1px -1px 2px -.5px rgba(0,0,0,.08),inset 0 0 8px 2px rgba(0,0,0,.025)!important}
+html.ds-ios.ios-liquid[data-theme=dark] #dock :is(.tabbar,.dock-add)::before{box-shadow:0 10px 28px -10px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.14),inset 1px 1px 1.5px -.5px rgba(255,255,255,.3),inset -1px -1px 2px -.5px rgba(255,255,255,.12),inset 0 0 8px 2px rgba(255,255,255,.04)!important}
+html.ds-ios.ios-liquid[data-theme=light] #dock .tab-ind::before{box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 1px 1px 1.5px -.5px rgba(255,255,255,.9),inset -1px -1px 2px -.5px rgba(0,0,0,.07),inset 0 0 6px 1px rgba(0,0,0,.03),0 2px 8px -2px rgba(0,0,0,.12)!important}
+html.ds-ios.ios-liquid[data-theme=dark] #dock .tab-ind::before{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 1px 1px 1.5px -.5px rgba(255,255,255,.32),inset -1px -1px 2px -.5px rgba(255,255,255,.1),inset 0 0 6px 1px rgba(255,255,255,.05),0 2px 8px -2px rgba(0,0,0,.5)!important}
+html.ds-ios.ios-liquid[data-theme] #dock .lens-drag .tab-ind::before,html.ds-ios.ios-liquid[data-theme] #dock .tabbar.lens-drag .tab-ind::before{box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 0 0 1px rgba(255,255,255,.35),inset 0 0 10px 2px rgba(255,255,255,.12),0 8px 22px -6px rgba(0,0,0,.25)!important}
 </style>
 </head>
 <body>
