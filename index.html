@@ -2311,6 +2311,8 @@ body{padding-bottom:calc(max(8px,var(--sab) - 10px) + var(--dock-h) + 30px)}
 .tab span{transition:opacity .3s var(--ease),max-height .4s var(--ease)}
 .dock{transition:transform .45s cubic-bezier(.32,1.1,.5,1),opacity .3s var(--ease)}
 @media (prefers-reduced-motion:reduce){.tab-ind,.tab svg{transition:none}}
+.zr-presets.cz-nz .zr-ic{background:var(--primary-soft)!important;color:var(--primary)!important}
+.zr-presets.cz-nz .zr-p.on{box-shadow:inset 0 0 0 1.5px var(--primary)!important;border-color:var(--primary)!important}
 </style>
 <style id="cz-splash-css">
 /* Açılış animasyonu (koyu) */
@@ -8005,6 +8007,27 @@ Recap.show=function(i){CzRecap.show(i)};
 {const _c=Recap.close.bind(Recap);Recap.close=function(){const sc=document.getElementById('czr-scrim');if(sc){sc.classList.add('out');setTimeout(()=>sc.remove(),280)}_c()}}
 CzY.recap.render=()=>CzRecap.render();
 Recap.share=()=>CzY.recap.share();
+/* Hızlı kurulum artık her banka için: önce banka seçilir, kredi / banka kartı (vadesiz) / sanal kart tek dokunuşla doldurulur */
+const CZ_BANKS=[['ziraat','Ziraat','Ziraat Bankası'],['ykb','Yapı Kredi','Yapı Kredi'],['garanti','Garanti BBVA','Garanti BBVA'],['is','İş Bankası','İş Bankası'],['akbank','Akbank','Akbank'],
+  ['qnb','QNB','QNB'],['halk','Halkbank','Halkbank'],['vakif','VakıfBank','VakıfBank'],['deniz','DenizBank','DenizBank'],['enpara','Enpara','Enpara.com']];
+{const lc=x=>String(x||'').toLocaleLowerCase('tr').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/ı/g,'i');
+const bank=d=>CZ_BANKS.find(b=>b[0]===(d._bank||'ziraat'))||CZ_BANKS[0];
+const label=(k,b)=>b[0]==='ziraat'?null:{zk:`${b[1]} Kredi Kartı`,zb:`${b[1]} Banka Kartı (Vadesiz)`,zv:`${b[1]} Sanal Kart`}[k];
+AccForm.pickBank=function(k){this.sync();const d=this.draft;d._bank=k;if(d._preset)return this.preset(d._preset);Haptic.tap();this.render()};
+const _p=AccForm.preset;AccForm.preset=function(k){const d=this.draft,b=bank(d);if(b[0]==='ziraat')return _p.call(this,k);
+  const tk=Toast.show;Toast.show=()=>{};try{_p.call(this,k)}finally{Toast.show=tk}
+  const s=Store.get();d.bank=b[2];d.name=label(k,b).replace(' (Vadesiz)','');d.color=s.accounts.length%GRADIENTS.length;
+  if(k==='zv'){const root=s.accounts.find(a=>a.type==='credit'&&!a.credit.sharedWith&&lc((a.bank||'')+' '+a.name).includes(lc(b[1])));
+    if(root){d.credit.sharedWith=root.id;d.credit.cutDay=root.credit.cutDay;d.credit.dueDay=root.credit.dueDay;d.credit.minRate=root.credit.minRate||20}
+    else{d.credit.sharedWith='';Toast.show(`Önce ana ${b[1]} kredi kartını ekle; sanal kart ona bağlanır`)}}
+  this.render()};
+const _r=AccForm.render.bind(AccForm);
+AccForm.render=function(){_r();const d=this.draft,box=Sheet.el('.zr-presets');if(!box||!d)return;const b=bank(d),f=box.closest('.field'),sp=f&&f.querySelector(':scope>span');
+  if(sp)sp.textContent='Hızlı kurulum · önce bankanı seç';box.classList.toggle('cz-nz',b[0]!=='ziraat');
+  const row=document.createElement('div');row.className='chips wrap';row.style.cssText='margin:2px 0 10px;flex-wrap:wrap;gap:6px';
+  row.innerHTML=CZ_BANKS.map(x=>`<button type="button" class="chip pressable ${x[0]===b[0]?'on':''}" onclick="AccForm.pickBank('${x[0]}')">${x[1]}</button>`).join('');box.before(row);
+  box.querySelectorAll('.zr-p').forEach(btn=>{const k=(btn.getAttribute('onclick').match(/preset\('(\w+)'\)/)||[])[1],t=label(k,b);if(!t)return;
+    const tn=[...btn.childNodes].reverse().find(n=>n.nodeType===3);if(tn)tn.textContent=t})}}
 /* Banka kartı (vadesiz hesaba bağlı kart): hesap türlerinde ayrı seçenek, düzenlerken aç/kapa, son 4 hane */
 {AccForm.kind=function(t,debit){this.sync();const d=this.draft;d.type=t;d.debitCard=!!debit;d.currency='TRY';d._preset='';Haptic.tap();this.render()};
 const _r=AccForm.render.bind(AccForm);
