@@ -2078,7 +2078,7 @@ const U={
   /* durum (state) referansına bağlı çok girişli önbellek: aynı state + aynı argümanlar → aynı sonuç */
   memo(fn){const wm=new WeakMap();return(s,...a)=>{let m=wm.get(s);if(!m){m=new Map();wm.set(s,m)}
     const k=a.length?JSON.stringify(a):'';if(m.has(k))return m.get(k);const r=fn(s,...a);m.set(k,r);return r}},
-  split(total,n){const base=Math.floor(total/n*100)/100;const out=Array(n).fill(base);out[n-1]=U.r2(total-base*(n-1));return out},
+  split(total,n){const base=Math.floor(total/n*100)/100;const out=Array(n).fill(base);out[0]=U.r2(total-base*(n-1));return out},
   debounce(fn,ms=180){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}},
   b64url:buf=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),
   unb64url(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))},
@@ -2349,14 +2349,14 @@ D.refundMap=U.memo(s=>{const m={};s.transactions.forEach(t=>{if(t.kind==='refund
 D.cardLines=U.memo(s=>{const out=[],rm=D.refundMap(s);
   for(const t of s.transactions){const acc=D.account(s,t.accountId);if(!acc||acc.type!=='credit')continue;const c=acc.credit;
     if(t.kind==='expense'){
-      const n=Math.max(1,t.installments|0),f=D.stmtIdx(c,t.date),parts=U.split(t.amount,n),refs=rm[t.id]||[];
+      const n=Math.max(1,t.installments|0),f=t.billIdx!=null?t.billIdx:D.stmtIdx(c,t.date),parts=U.split(t.amount,n),refs=rm[t.id]||[];
       const full=refs.find(r=>r.amount>=t.amount-0.01),r=full?D.stmtIdx(c,full.date):Infinity;let billed=0;
       parts.forEach((amount,k)=>{let idx=f+k;if(t.closedIdx!=null&&idx>t.closedIdx)idx=Math.max(f,t.closedIdx);
         if(full&&idx>=r)return;              // tam iade: henüz faturalanmamış taksitler iptal
         if(full)billed+=amount;out.push({kind:'inst',tx:t,k,n,amount,accId:acc.id,idx})});
       if(full&&billed>0)out.push({kind:'refund',tx:full,orig:t,amount:-U.r2(billed),accId:acc.id,idx:r});   // faturalanmış kısım alacak olarak döner
       refs.filter(x=>x!==full).forEach(x=>out.push({kind:'refund',tx:x,orig:t,amount:-x.amount,accId:acc.id,idx:D.stmtIdx(c,x.date)}))}
-    else if(t.kind==='refund'&&!(t.refOf&&D.tx(s,t.refOf)))out.push({kind:'refund',tx:t,amount:-t.amount,accId:acc.id,idx:D.stmtIdx(c,t.date)})}
+    else if(t.kind==='refund'&&!(t.refOf&&D.tx(s,t.refOf)))out.push({kind:'refund',tx:t,amount:-t.amount,accId:acc.id,idx:t.billIdx!=null?t.billIdx:D.stmtIdx(c,t.date)})}
   return out});
 
 /* ---------- Ekstreler + ödeme dağıtımı (FIFO) ----------
@@ -2368,14 +2368,17 @@ D.statements=U.memo((s,accId)=>{const acc=D.account(s,accId),c=acc.credit,o=D.op
     return{idx:i,lines,total:U.r2(lines.reduce((a,l)=>a+l.amount,0)),paid:0,flag:!!s.paidStatements[accId+'|'+i]}});
   list.forEach(st=>{if(st.flag)st.paid=Math.max(0,st.total)});
   const payments=s.transactions.filter(t=>t.kind==='payment'&&t.toAccountId===accId).sort((a,b)=>a.date.localeCompare(b.date));
-  let pool=U.r2(payments.reduce((a,t)=>a+t.amount,0));
-  list.forEach(st=>{if(st.total<0&&!st.flag)pool=U.r2(pool-st.total)});        // eksi bakiyeli (iade) ekstreler havuza alacak ekler
-  for(const st of list){if(st.total<=0)continue;const take=Math.min(U.r2(st.total-st.paid),pool);st.paid=U.r2(st.paid+take);pool=U.r2(pool-take)}
+  /* tarih sırasıyla dağıtılır: kesimden önce yapılan ödemeler asgariyi (bankadaki gibi dönem borcunun %'si) düşürür */
+  const alloc=(amt,d)=>{for(const st of list){if(amt<=0)break;if(st.total<=0)continue;const take=Math.min(U.r2(st.total-st.paid),amt);if(take<=0)continue;
+    st.paid=U.r2(st.paid+take);if(d<=D.cutDate(c,st.idx))st.paidAtCut=U.r2((st.paidAtCut||0)+take);amt=U.r2(amt-take)}return amt};
+  let pool=0;
+  list.forEach(st=>{if(st.total<0&&!st.flag)pool=U.r2(pool+alloc(-st.total,D.cutDate(c,st.idx)))});        // eksi bakiyeli (iade) ekstreler alacak ekler
+  payments.forEach(t=>{pool=U.r2(pool+alloc(t.amount,t.date))});
   const rate=+c.minRate||20;
   list.forEach(st=>{st.remaining=U.r2(Math.max(0,st.total-st.paid));st.cut=D.cutDate(c,st.idx);st.due=D.dueDate(c,st.idx);
-    st.minPay=U.r2(Math.max(0,st.total)*rate/100);st.minLeft=U.r2(Math.max(0,Math.min(st.remaining,st.minPay-st.paid)));
+    const pre=st.flag?0:st.paidAtCut||0;st.minPay=U.r2(Math.max(0,st.total-pre)*rate/100);st.minLeft=U.r2(Math.max(0,Math.min(st.remaining,st.minPay-(st.paid-pre))));
     const late=st.idx<o&&U.daysUntil(st.due)<0;
-    st.status=st.idx>o?'future':st.idx===o?'open':st.total<=0.009?'empty':st.remaining<=0.009?'paid':late?(st.minLeft<=0.009?'partial-late':'overdue'):(st.paid>0?'partial':'due');
+    st.status=st.idx>o?'future':st.idx===o?'open':st.total<=0.009?'empty':st.remaining<=0.009?'paid':late?(st.minLeft<=0.009?'partial-late':'overdue'):(st.paid-pre>0.009?'partial':'due');
     st.interest=null;
     if(late&&st.remaining>0){const days=-U.daysUntil(st.due),r=st.minLeft>0?+c.lateRate:+c.contractRate;st.lateDays=days;
       if(r>0)st.interest=U.r2(st.remaining*r/100*days/30)}});
@@ -2911,21 +2914,22 @@ const StatementImport={
       const learned=D.recallMerchant(s,x.description||'','expense');
       const base={id:'r'+i,sel:true,desc:String(x.description||'').slice(0,60)||'İşlem',category:learned?.category||(expenseCats().includes(x.category)?x.category:'other'),raw:x};
       if(x.kind==='payment')return{...base,type:'payment',amount,date,label:'Ödeme'};
-      if(x.kind==='refund')return{...base,type:'refund',amount,date,label:'İade / alacak'};
+      if(x.kind==='refund')return{...base,type:'refund',amount,date,label:'İade / alacak',...(valid(r.cut_date)&&D.stmtIdx(c,date)<cutIdx?{billIdx:cutIdx}:{})};
       const n=+x.installment_total||1,k=+x.installment_no||1;
       if(n>1&&k>=1&&k<=n){const startIdx=cutIdx-(k-1),orig=x.original_total>0?U.r2(+x.original_total):U.r2(amount*n);
         const d=valid(x.date)&&D.stmtIdx(c,x.date)===startIdx?x.date:D.cutDate(c,startIdx);
         return{...base,type:'expense',amount:orig,date:d,installments:n,label:`${k}/${n} taksit · bu ekstrede ${U.money(amount,{raw:true})}`,lineAmount:amount}}
       const ex=x.kind==='interest'||x.kind==='fee';
-      return{...base,type:'expense',amount,date,installments:1,category:ex?'fees':base.category,label:ex?(x.kind==='interest'?'Faiz / vergi':'Ücret'):'Tek çekim'}});
+      return{...base,type:'expense',amount,date,installments:1,...(valid(r.cut_date)&&D.stmtIdx(c,date)<cutIdx?{billIdx:cutIdx}:{}),category:ex?'fees':base.category,label:ex?(x.kind==='interest'?'Faiz / vergi':'Ücret'):'Tek çekim'}});
     /* mükerrer tespiti: aynı kartta ±3 gün içinde aynı tutar */
-    rows.forEach(row=>{const dup=s.transactions.find(t=>(t.accountId===accId||t.toAccountId===accId)&&Math.abs(t.amount-row.amount)<0.01&&Math.abs(U.daysUntil(t.date)-U.daysUntil(row.date))<=3&&(row.type!=='payment'||t.kind==='payment'));
+    rows.forEach(row=>{if(row.installments>1){const st=D.stmtIdx(c,row.date),dup=s.transactions.find(t=>t.kind==='expense'&&t.accountId===accId&&(t.installments|0)===row.installments&&Math.abs(t.amount-row.amount)<0.05&&D.stmtIdx(c,t.date)===st);if(dup){row.dup=true;row.sel=false}}});
+    rows.forEach(row=>{if(row.dup)return;const dup=s.transactions.find(t=>(t.accountId===accId||t.toAccountId===accId)&&Math.abs(t.amount-row.amount)<0.01&&Math.abs(U.daysUntil(t.date)-U.daysUntil(row.date))<=3&&(row.type==='payment'?t.kind==='payment':row.type==='refund'?t.kind==='refund':t.kind==='expense'));
       if(dup){row.dup=true;row.sel=false}});
     return{ok:true,rows,meta:{card:r.card_name,cut:r.cut_date,due:r.due_date,total:r.statement_total,min:r.min_payment}}},
   toActions(rows,accId){return rows.filter(r=>r.sel).map(r=>{const id=U.uid();
     if(r.type==='payment')return{type:'upsert',col:'transactions',item:{id,kind:'payment',accountId:'',toAccountId:accId,amount:r.amount,date:r.date,merchant:'Kart ödemesi',note:'Ekstreden',source:'import'}};
-    if(r.type==='refund')return{type:'upsert',col:'transactions',item:{id,kind:'refund',accountId:accId,amount:r.amount,date:r.date,merchant:r.desc,category:r.category,source:'import'}};
-    return{type:'upsert',col:'transactions',item:{id,kind:'expense',accountId:accId,amount:r.amount,date:r.date,merchant:r.desc,category:r.category,installments:r.installments||1,note:'',source:'import'}}})}
+    if(r.type==='refund')return{type:'upsert',col:'transactions',item:{id,kind:'refund',accountId:accId,amount:r.amount,date:r.date,merchant:r.desc,category:r.category,source:'import',...(r.billIdx!=null?{billIdx:r.billIdx}:{})}};
+    return{type:'upsert',col:'transactions',item:{id,kind:'expense',accountId:accId,amount:r.amount,date:r.date,merchant:r.desc,category:r.category,installments:r.installments||1,note:'',source:'import',...(r.billIdx!=null?{billIdx:r.billIdx}:{})}}})}
 };
 
 /* Asenkron AI eylemleri: her görev ai/start → ai/success | ai/error ile state'e yansır */
