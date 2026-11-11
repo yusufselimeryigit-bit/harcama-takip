@@ -8005,6 +8005,21 @@ Recap.show=function(i){CzRecap.show(i)};
 {const _c=Recap.close.bind(Recap);Recap.close=function(){const sc=document.getElementById('czr-scrim');if(sc){sc.classList.add('out');setTimeout(()=>sc.remove(),280)}_c()}}
 CzY.recap.render=()=>CzRecap.render();
 Recap.share=()=>CzY.recap.share();
+/* Banka kartı (vadesiz hesaba bağlı kart): hesap türlerinde ayrı seçenek, düzenlerken aç/kapa, son 4 hane */
+{AccForm.kind=function(t,debit){this.sync();const d=this.draft;d.type=t;d.debitCard=!!debit;d.currency='TRY';d._preset='';Haptic.tap();this.render()};
+const _r=AccForm.render.bind(AccForm);
+AccForm.render=function(){_r();const d=this.draft,sh=Sheet.el('.sheet');if(!sh||!d)return;
+  const vb=sh.querySelector(`.cat-grid button[onclick="AccForm.set('type','checking')"]`);
+  if(vb){vb.setAttribute('onclick',"AccForm.kind('checking',false)");vb.classList.toggle('on',d.type==='checking'&&!d.debitCard);
+    const b=document.createElement('button');b.className='cat-opt pressable'+(d.type==='checking'&&d.debitCard?' on':'');b.setAttribute('onclick',"AccForm.kind('checking',true)");
+    b.innerHTML=`<span class="e">${C.ic('card')}</span>Banka kartı`;vb.after(b)}
+  if(d.type!=='checking')return;const g=Sheet.el('#ac-bank')?.closest('.grid2');if(!g)return;
+  const box=document.createElement('div');box.innerHTML=`<div class="set-row" style="margin:4px 2px 2px"><div>Banka kartı var<small>Hesap, kart görünümüyle gösterilir; kartla yaptığın harcamalar bu hesaptan düşer</small></div><label class="switch"><input type="checkbox" id="ac-debit" ${d.debitCard?'checked':''} onchange="AccForm.kind('checking',this.checked)"><span></span></label></div>`+
+    (d.debitCard?`<label class="field"><span>Kartın son 4 hanesi · opsiyonel</span><input class="input num" id="ac-last4" inputmode="numeric" maxlength="4" value="${U.esc(d.last4||'')}" placeholder="ör. 1234"></label>`:'');
+  g.after(box)};
+const _sync=AccForm.sync.bind(AccForm);AccForm.sync=function(){_sync();const d=this.draft;if(!d)return;const l=Sheet.el('#ac-last4');if(l)d.last4=(l.value.match(/\d/g)||[]).join('').slice(-4)};
+const _ps=AccForm.postSave;AccForm.postSave=function(out,d){const item=_ps?_ps.call(this,out,d):{...out};
+  if(item.type==='checking'){if(d.debitCard)item.debitCard=true;else delete item.debitCard;if(d.debitCard&&d.last4)item.last4=d.last4}else delete item.debitCard;return item}}
 /* Alt bar: gösterge önce kayar, ağır sayfa çizimi bir kare sonra yapılır; geçiş takılmaz */
 {const _go=App.go.bind(App);let pend=0;
 App.go=function(tab,sub){if(tab===UI.tab&&!UI.stack.length&&!sub)return _go(tab,sub);
