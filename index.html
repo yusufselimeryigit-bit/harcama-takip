@@ -8418,6 +8418,35 @@ const CzIOS={KEY:'cuzdan_ds',
   if(look&&!sh.querySelector('.ds-field')){look.insertAdjacentHTML('afterend',CzIOS.pick());
     if(CzIOS.on()){const box=look.nextElementSibling.nextElementSibling;[...sh.querySelectorAll('.set-row')].filter(x=>/^(Cam görünümü|Koyu fotoğraf|Duruma göre renk|Arka plan)/.test(x.textContent.trim())).forEach(x=>x.classList.add('ds-glass-only'));
       box&&box.insertAdjacentHTML('afterbegin','<p class="ds-note">Cam, arka plan fotoğrafı ve duruma göre renk ayarları yalnızca Cam tasarımında kullanılır.</p>')}}}catch(e){console.warn(e)}return r}}
+/* Siri / Kestirmeler gelen kutusu: kestirme harcamayı users/{uid}/inbox'a yazar (Cüzdan açılmadan);
+   uygulama açıkken ya da açılınca gelenler harcama olarak eklenir ve kutudan silinir */
+const CzInbox={unsub:null,
+  acc(s){const id=s.settings.siriAcc;if(id&&D.account(s,id))return id;
+    const a=s.accounts.find(a=>a.debitCard)||s.accounts.find(a=>a.type==='checking')||s.accounts[0];return a?a.id:''},
+  attach(u){if(this.unsub){try{this.unsub()}catch(e){}this.unsub=null}
+    const sdk=FirebaseAdapter.sdk;if(!u||!sdk)return;const{Fs,db}=sdk;
+    this.unsub=Fs.onSnapshot(Fs.collection(db,'users',u.uid,'inbox'),snap=>{if(snap.size)this.take(u.uid,snap.docs.map(d=>d.ref))},e=>console.warn('inbox',e))},
+  async take(uid,refs){const{Fs,db}=FirebaseAdapter.sdk,got=[];
+    for(const ref of refs){try{const d=await Fs.runTransaction(db,async tr=>{const x=await tr.get(ref);if(!x.exists())return null;tr.delete(ref);return x.data()});if(d)got.push([ref.id,d])}catch(e){console.warn(e)}}
+    if(!got.length)return;const s=Store.get(),acc=this.acc(s);if(!acc)return;let n=0,last='';
+    got.forEach(([id,d])=>{const amount=U.r2(U.parseNum(String(d.amount??'')));if(!(amount>0)||s.transactions.some(t=>t.inboxId===id))return;
+      const merchant=String(d.merchant||'').trim().slice(0,60)||'Harcama',learned=D.recallMerchant(s,merchant,'expense'),
+        date=/^\d{4}-\d{2}-\d{2}$/.test(d.date||'')&&d.date<=U.today()?d.date:U.today(),
+        cat=learned?.category||(expenseCats().includes(d.category)?d.category:'other');
+      Store.dispatch({type:'upsert',col:'transactions',item:{id:U.uid(),kind:'expense',accountId:learned?.accountId&&D.account(Store.get(),learned.accountId)?learned.accountId:acc,amount,date,merchant,category:cat,installments:1,note:'',source:'siri',inboxId:id}});
+      n++;last=`${merchant} ${U.money(amount,{raw:true})}`});
+    if(n){Haptic.success&&Haptic.success();Toast.show(n===1?`🎙️ Siri'den eklendi: ${last}`:`🎙️ Siri'den ${n} harcama eklendi`)}},
+  async copyKey(){const u=FirebaseAdapter.sdk?.auth?.currentUser;if(!u){Toast.show('Önce Bulut eşitleme · Firebase hesabınla giriş yap');return}
+    try{await navigator.clipboard.writeText(u.refreshToken);Haptic.success&&Haptic.success();Toast.show('✓ Kestirme anahtarı kopyalandı · kestirmeyi eklerken yapıştır',4500)}
+    catch(e){Toast.show('Kopyalanamadı')}},
+  row(){const s=Store.get(),acc=this.acc(s),signed=!!FirebaseAdapter.sdk?.auth?.currentUser;
+    return `<div class="row cz-siri cz-inbox"><span class="ic" style="background:#bf5af222;color:#bf5af2">${C.ic('voice')}</span><div class="mid"><b>Siri ile harcama ekle</b>
+      <span>“Hey Siri, harcama ekle” → tutar ve yeri söylersin, Cüzdan açılmadan buluta kaydedilir; uygulama açılınca harcamalara eklenir.</span>
+      <label class="field" style="margin:8px 0 6px"><span>Harcamalar şu hesaba yazılsın</span><select class="input" onchange="Store.dispatch({type:'settings/update',payload:{siriAcc:this.value}});Toast.show('✓ Siri harcamaları bu hesaba yazılacak')">${s.accounts.map(a=>`<option value="${a.id}" ${a.id===acc?'selected':''}>${U.esc(a.name)}</option>`).join('')}</select></label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><a class="mini-btn" href="Harcama-ekle.shortcut" download style="text-decoration:none">1 · Kestirmeyi indir</a><button class="mini-btn" onclick="CzInbox.copyKey()" ${signed?'':'disabled'}>2 · Anahtarı kopyala</button></div>
+      ${signed?'':'<span class="muted xs" style="display:block;margin-top:6px">Anahtar için önce Bulut eşitleme · Firebase hesabınla giriş yap.</span>'}</div></div>`}};
+{const _oa=FirebaseAdapter.onAuth;FirebaseAdapter.onAuth=function(cb){return _oa.call(this,u=>{cb(u);try{CzInbox.attach(u)}catch(e){console.warn(e)}})}}
+{const _o=SettingsSheet.open;SettingsSheet.open=function(){const r=_o.apply(this,arguments);try{const old=document.querySelector('#sheet .cz-siri');if(old)old.outerHTML=CzInbox.row()}catch(e){console.warn(e)}return r}}
 /* Alt bar: gösterge önce kayar, ağır sayfa çizimi bir kare sonra yapılır; geçiş takılmaz */
 {const _go=App.go.bind(App);let pend=0;
 App.go=function(tab,sub){if(tab===UI.tab&&!UI.stack.length&&!sub)return _go(tab,sub);
