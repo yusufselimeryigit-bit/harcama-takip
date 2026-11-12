@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>try{var sb=localStorage.getItem("cuzdan_sb");if(sb)document.querySelector("meta[name=apple-mobile-web-app-status-bar-style]").content=sb}catch(e){}</script>
-<script id="cz-ios-early">try{var cz_ds=(localStorage.getItem("cuzdan_ds")||"").split(":"),cz_r=document.documentElement;if(cz_ds[0]==="ios"){cz_r.classList.add("ds-ios");cz_r.dataset.theme=cz_ds[1]==="dark"?"dark":"light";if(cz_ds[2]==="lg")cz_r.classList.add("ios-liquid")}}catch(e){}</script>
+<script id="cz-ios-early">try{var cz_ds=(localStorage.getItem("cuzdan_ds")||"").split(":"),cz_r=document.documentElement,cz_ct=localStorage.getItem("currentTheme");if(cz_ds[0]==="wallet"||(!cz_ds[0]&&cz_ct==="apple-wallet")){cz_r.classList.add("ds-ios","ds-wallet");cz_r.dataset.theme="dark";cz_ct="apple-wallet"}else if(cz_ds[0]==="ios"){cz_r.classList.add("ds-ios");cz_r.dataset.theme=cz_ds[1]==="dark"?"dark":"light";if(cz_ds[2]==="lg")cz_r.classList.add("ios-liquid")}document.addEventListener("DOMContentLoaded",function(){document.body.classList.add(cz_ct==="apple-wallet"?"theme-apple-wallet":"theme-classic")})}catch(e){}</script>
 <meta name="apple-mobile-web-app-title" content="Cüzdan">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -2906,6 +2906,254 @@ html.ds-ios.ios-liquid[data-theme=dark] #dock :is(.tabbar,.dock-add)::before{box
 html.ds-ios.ios-liquid[data-theme=light] #dock .tab-ind::before{box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 1px 1px 1.5px -.5px rgba(255,255,255,.9),inset -1px -1px 2px -.5px rgba(0,0,0,.07),inset 0 0 6px 1px rgba(0,0,0,.03),0 2px 8px -2px rgba(0,0,0,.12)!important}
 html.ds-ios.ios-liquid[data-theme=dark] #dock .tab-ind::before{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 1px 1px 1.5px -.5px rgba(255,255,255,.32),inset -1px -1px 2px -.5px rgba(255,255,255,.1),inset 0 0 6px 1px rgba(255,255,255,.05),0 2px 8px -2px rgba(0,0,0,.5)!important}
 html.ds-ios.ios-liquid[data-theme] #dock .lens-drag .tab-ind::before,html.ds-ios.ios-liquid[data-theme] #dock .tabbar.lens-drag .tab-ind::before{box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 0 0 1px rgba(255,255,255,.35),inset 0 0 10px 2px rgba(255,255,255,.12),0 8px 22px -6px rgba(0,0,0,.25)!important}
+</style>
+<style id="cz-wallet">
+/* =====================================================================
+   Apple Wallet tasarımı (Ayarlar → Görünüm → Tasarım → Apple Wallet). OLED siyah + Liquid Glass.
+   Saf iOS iskeletinin (html.ds-ios) üstüne kurulur; her kural html.ds-wallet altında. Cam ve Saf iOS'a dokunmaz.
+   Yalnız koyu: JS data-theme=dark'ı zorlar, kullanıcının açık/koyu tercihi diğer tasarımlar için saklı kalır.
+   ===================================================================== */
+html.ds-wallet[data-theme]{
+  --bg-color:#000;--card-bg:rgba(255,255,255,.04);--layer:#121214;--text-primary:#fff;--text-secondary:#98989f;
+  --accent-color:#0A84FF;--accent-2:#5E5CE6;--pos:#34C759;--negc:#FF453A;--glass-border:rgba(255,255,255,.08);
+  --wg-blur:blur(30px) saturate(1.4);--wg-shadow:0 20px 40px rgba(0,0,0,.6);--wg-hi:inset 0 1px 0 rgba(255,255,255,.06);
+  --background:#000;--foreground:#fff;--muted-foreground:var(--text-secondary);--faint:#8d8d93;
+  --primary-def:#0A84FF;--primary-foreground:#fff;--primary-fill:color-mix(in srgb,var(--primary) 78%,#000);--chart-inc:var(--primary);
+  --card:#121214;--secondary:#1c1c1e;--muted:#2c2c2e;--border:var(--glass-border);--popover:#121214;--surface:#121214;--gw-panel:#121214;
+  --green:#34C759;--red:#FF453A;--orange:#FF9F0A;--purple:#BF5AF2;--indigo:#7d7aff;--pink:#FF375F;--teal:#40C8E0;--yellow:#FFD60A;
+  --fill:rgba(255,255,255,.07);--fill2:rgba(255,255,255,.11);--sep:rgba(255,255,255,.08);--hi:rgba(255,255,255,.1);--drop:rgba(0,0,0,.6);
+  --cell:var(--card-bg);--cell2:rgba(255,255,255,.06);--seg-on:rgba(255,255,255,.2);--ios-mat:rgba(22,22,24,.62);--ios-line:var(--glass-border);--ios-label3:#8e8e93;
+  --czh-other:rgba(235,235,245,.3);--czh-track:rgba(255,255,255,.1);
+  --glass:var(--card-bg);--glass-2:var(--fill);--glass-strong:rgba(18,18,20,.72);--sheet:rgba(18,18,20,.92);--toast:rgba(28,28,30,.8);
+  --glass-border:rgba(255,255,255,.08);--lens:var(--fill);--solid:#121214;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,sans-serif;
+  --cz-round:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  --ios-blur:var(--wg-blur);
+  background:#000;color-scheme:dark;
+}
+html.ds-wallet[data-theme] body{background:transparent;font-family:var(--font);color:var(--text)}
+html.ds-wallet[data-theme] ::selection{background:rgba(10,132,255,.35)}
+html.ds-wallet[data-theme] #cz-splash{background:#000!important}
+
+/* Ortam ışığı: siyah üstünde camın cam gibi okunması için çok hafif, yavaş renk alanı (tek katman, bulanıklık yok) */
+html.ds-wallet[data-theme] body::before{content:"";position:fixed;inset:-25%;z-index:-1;pointer-events:none;
+  background:radial-gradient(38% 30% at 22% 18%,rgba(10,70,200,.30),transparent 70%),
+    radial-gradient(34% 28% at 82% 42%,rgba(94,92,230,.22),transparent 70%),
+    radial-gradient(40% 30% at 30% 84%,rgba(16,140,150,.16),transparent 70%);
+  animation:czwt-drift 46s ease-in-out infinite alternate;will-change:transform}
+html.ds-wallet[data-theme].czwt-scrolling body::before{animation-play-state:paused}
+@keyframes czwt-drift{0%{transform:translate3d(0,0,0) rotate(0deg)}50%{transform:translate3d(4%,-3%,0) rotate(8deg)}100%{transform:translate3d(-3%,4%,0) rotate(-6deg)}}
+@media (prefers-reduced-motion:reduce){html.ds-wallet[data-theme] body::before{animation:none}}
+
+/* ---------- Liquid Glass yüzeyler: görünür her yüzeyde tek bulanıklık ---------- */
+html.ds-wallet[data-theme] #screen :is(.glass,.gw-panel,.hero,.wt):not(.icon-btn),
+html.ds-wallet[data-theme] .cd .glass,html.ds-wallet[data-theme] .cd-body .glass,
+html.ds-wallet[data-theme] .tx-days .day-rows,
+html.ds-wallet[data-theme] #screen>.sumbar,html.ds-wallet[data-theme] #screen>*>.sumbar{
+  background:var(--card-bg)!important;-webkit-backdrop-filter:var(--wg-blur)!important;backdrop-filter:var(--wg-blur)!important;
+  border:1px solid var(--glass-border);box-shadow:var(--wg-hi),var(--wg-shadow)!important}
+/* İç içe cam: daha açık dolgu, ek bulanıklık yok (iPhone'da akıcı) */
+html.ds-wallet[data-theme] #screen :is(.glass,.gw-panel,.hero,.wt,.day-rows) :is(.glass,.gw-panel,.hero,.wt):not(.icon-btn),
+html.ds-wallet[data-theme] .cd-body .glass .glass,html.ds-wallet[data-theme] .sheet :is(.glass,.list,.gw-panel){
+  background:rgba(255,255,255,.05)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;border-color:rgba(255,255,255,.06)}
+html.ds-wallet[data-theme] #screen :is(.glass,.gw-panel,.hero,.wt,.day-rows) :is(.seg,.search,.chip:not(.on),.btn:not(.primary),.list){-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}
+html.ds-wallet[data-theme] .tx-days .day-h,html.ds-wallet[data-theme] .tx-days>.day:first-child .day-h{background:transparent!important}
+html.ds-wallet[data-theme] .matrix td:first-child,html.ds-wallet[data-theme] .matrix th:first-child{background:#121214}
+
+/* Üst yuvarlak düğmeler */
+html.ds-wallet[data-theme] .icon-btn,html.ds-wallet[data-theme] .gw-btn{background:rgba(255,255,255,.08)!important;border:1px solid var(--glass-border);box-shadow:var(--wg-hi)!important;
+  -webkit-backdrop-filter:var(--wg-blur);backdrop-filter:var(--wg-blur);color:var(--text)}
+html.ds-wallet[data-theme] .gw-av-m,html.ds-wallet[data-theme] .gw-av{background:linear-gradient(160deg,#0a6cde,#4b49c8)!important}
+html.ds-wallet[data-theme] .avatar{background:linear-gradient(160deg,#0a6cde,#4b49c8)}
+
+/* Pencereler, menüler, bildirim: kalın cam (arka içerikten bağımsız okunur) */
+html.ds-wallet[data-theme] .sheet-backdrop{background:rgba(0,0,0,.5)}
+html.ds-wallet[data-theme] .sheet{--cell:rgba(255,255,255,.06);background:var(--sheet)!important;-webkit-backdrop-filter:var(--wg-blur)!important;backdrop-filter:var(--wg-blur)!important;
+  border:1px solid var(--glass-border);box-shadow:var(--wg-hi),0 -10px 40px rgba(0,0,0,.6)!important}
+html.ds-wallet[data-theme] .grabber,html.ds-wallet[data-theme] .grab-zone .grabber{background:rgba(255,255,255,.28)}
+html.ds-wallet[data-theme] .ctx,html.ds-wallet[data-theme] .gw-pop{background:rgba(28,28,30,.8)!important;-webkit-backdrop-filter:var(--wg-blur)!important;backdrop-filter:var(--wg-blur)!important;
+  border:1px solid var(--glass-border);box-shadow:var(--wg-hi),var(--wg-shadow)!important}
+html.ds-wallet[data-theme] .toast{background:var(--toast)!important;-webkit-backdrop-filter:var(--wg-blur)!important;backdrop-filter:var(--wg-blur)!important;color:#fff;
+  border:1px solid var(--glass-border);box-shadow:var(--wg-hi),var(--wg-shadow)!important;border-radius:9999px}
+html.ds-wallet[data-theme] .chat-bar,html.ds-wallet[data-theme] .w-editbar,html.ds-wallet[data-theme] #ptr{background:rgba(22,22,24,.7)!important;-webkit-backdrop-filter:var(--wg-blur)!important;backdrop-filter:var(--wg-blur)!important;
+  border:1px solid var(--glass-border);box-shadow:var(--wg-hi),var(--wg-shadow)!important}
+html.ds-wallet[data-theme] .bubble{background:rgba(255,255,255,.07);border:1px solid var(--glass-border)}
+
+/* Kaydırınca gezinme çubuğu + alt ada */
+html.ds-wallet[data-theme] #navbar{background:rgba(0,0,0,.6)!important;-webkit-backdrop-filter:var(--wg-blur)!important;backdrop-filter:var(--wg-blur)!important;box-shadow:inset 0 -1px 0 var(--glass-border)!important}
+html.ds-wallet[data-theme] .tabbar,html.ds-wallet[data-theme] .dock-add{background:rgba(22,22,24,.62)!important;-webkit-backdrop-filter:var(--wg-blur)!important;backdrop-filter:var(--wg-blur)!important;
+  border:1px solid var(--glass-border);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),var(--wg-shadow)!important}
+html.ds-wallet[data-theme] .tab{color:#c7c7cc}
+html.ds-wallet[data-theme] .tab.on,html.ds-wallet[data-theme] .lens-drag .tab.hover{color:#3d9bff}
+html.ds-wallet[data-theme] .tab-ind{background:rgba(255,255,255,.1)!important;border-radius:9999px}
+html.ds-wallet[data-theme] .dock-add{color:#3d9bff}
+html.ds-wallet[data-theme] .dock::before{background:linear-gradient(to top,#000 15%,transparent)}
+html.ds-wallet[data-theme] #sbar{background:linear-gradient(#000 0%,rgba(0,0,0,.82) var(--sat),transparent)}
+
+/* Masaüstü */
+html.ds-wallet[data-theme].wide .gw-top,html.ds-wallet[data-theme].wide .gw-rail{background:rgba(18,18,20,.74)!important;-webkit-backdrop-filter:var(--wg-blur)!important;backdrop-filter:var(--wg-blur)!important;
+  border:1px solid var(--glass-border);box-shadow:var(--wg-hi),var(--wg-shadow)!important}
+html.ds-wallet[data-theme].wide .gw-mark{background:linear-gradient(160deg,#0A84FF,#5E5CE6);color:#fff}
+html.ds-wallet[data-theme].wide .gw-rb{color:#aeaeb2}
+html.ds-wallet[data-theme].wide .gw-rb.on{background:rgba(255,255,255,.08);color:#3d9bff}
+
+/* ---------- Düğmeler: hap biçimi + basınca küçülme ---------- */
+html.ds-wallet[data-theme] :is(.btn,.mini-btn,.chip,.fchip,.toast-act,.tx-fbtn,.sheet-head button,.cal-nav button,.gw-chip,.icon-btn,.gw-btn,.dock-add){border-radius:9999px}
+html.ds-wallet[data-theme] :is(.btn,.mini-btn,.chip,.fchip,.toast-act,.tx-fbtn,.sheet-head button,.cal-nav button,.icon-btn,.gw-btn,.dock-add,.qa,.act,.cc-flip):active{transform:scale(.96);transition:transform .1s ease}
+html.ds-wallet[data-theme] .btn{background:rgba(255,255,255,.07);color:#3d9bff;border:1px solid var(--glass-border);font-weight:600}
+html.ds-wallet[data-theme] .sheet .btn,html.ds-wallet[data-theme] #screen .glass .btn{background:rgba(255,255,255,.07)}
+html.ds-wallet[data-theme] .btn.primary,html.ds-wallet[data-theme] .sheet .btn.primary,html.ds-wallet[data-theme] #screen .glass .btn.primary{background:var(--primary-fill);color:#fff;border-color:transparent}
+html.ds-wallet[data-theme] .btn.danger{color:#ff6961}
+html.ds-wallet[data-theme] .mini-btn{color:#4da3ff;background:rgba(10,132,255,.16)}
+html.ds-wallet[data-theme] .link,html.ds-wallet[data-theme] .toast-act,html.ds-wallet[data-theme] .sheet-head button,html.ds-wallet[data-theme] .section-head button,html.ds-wallet[data-theme] .nb-back,html.ds-wallet[data-theme] .back,html.ds-wallet[data-theme] .head-btn,html.ds-wallet[data-theme] .tx-period button,html.ds-wallet[data-theme] .pay-more,html.ds-wallet[data-theme] .home-edit button{color:#3d9bff}
+html.ds-wallet[data-theme] .chip,html.ds-wallet[data-theme] #screen .chip:not(.on),html.ds-wallet[data-theme] .sheet .chip:not(.on){background:rgba(255,255,255,.07);color:#fff;border:1px solid var(--glass-border)}
+html.ds-wallet[data-theme] .chip.on{background:var(--primary-fill);color:#fff;border-color:transparent}
+html.ds-wallet[data-theme] .fchip{background:rgba(10,132,255,.16);color:#4da3ff}
+/* Bölümlü kontrol */
+html.ds-wallet[data-theme] .seg,html.ds-wallet[data-theme] #screen .seg,html.ds-wallet[data-theme] .cd-tabs .seg{background:rgba(118,118,128,.24)!important;border-radius:9999px;border:1px solid var(--glass-border)}
+html.ds-wallet[data-theme] .seg .thumb,html.ds-wallet[data-theme] #screen .seg .thumb{border-radius:9999px;background:rgba(255,255,255,.2)!important;box-shadow:0 3px 8px rgba(0,0,0,.35)!important}
+html.ds-wallet[data-theme] .seg button{color:#fff}
+html.ds-wallet[data-theme] .gw-seg{background:rgba(118,118,128,.24);border-radius:9999px}
+html.ds-wallet[data-theme] .gw-seg button{border-radius:9999px;color:#fff}
+html.ds-wallet[data-theme] .gw-seg button.on{background:rgba(255,255,255,.2)}
+/* Anahtar */
+html.ds-wallet[data-theme] .switch span{background:rgba(120,120,128,.32)}
+html.ds-wallet[data-theme] .switch input:checked+span{background:#34C759}
+html.ds-wallet[data-theme] .switch input:focus-visible+span{box-shadow:0 0 0 3px rgba(10,132,255,.5)}
+/* Form alanları: iOS koyu form */
+html.ds-wallet[data-theme] .input,html.ds-wallet[data-theme] .sheet .glass .input,html.ds-wallet[data-theme] #screen .glass .input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#fff;
+  transition:border-color .2s,box-shadow .2s}
+html.ds-wallet[data-theme] .input::placeholder,html.ds-wallet[data-theme] .search input::placeholder{color:#8d8d93}
+html.ds-wallet[data-theme] .input:focus,html.ds-wallet[data-theme] .input:focus-visible{border-color:#0A84FF;box-shadow:0 0 0 3px rgba(10,132,255,.28);outline:none}
+html.ds-wallet[data-theme] select.input{background-color:rgba(255,255,255,.06)}
+html.ds-wallet[data-theme] select.input option{background:#1c1c1e;color:#fff}
+html.ds-wallet[data-theme] .search,html.ds-wallet[data-theme] #screen .search{background:rgba(118,118,128,.24)!important;border-radius:9999px;border:1px solid var(--glass-border)}
+html.ds-wallet[data-theme] .search:focus-within{border-color:#0A84FF;box-shadow:0 0 0 3px rgba(10,132,255,.28)!important}
+html.ds-wallet[data-theme] .cat-opt{background:rgba(255,255,255,.05);border:1px solid var(--glass-border)}
+html.ds-wallet[data-theme] .cat-opt.on{border-color:#0A84FF;background:rgba(10,132,255,.16)}
+html.ds-wallet[data-theme] .preview{background:rgba(10,132,255,.1)}
+
+/* ---------- Tipografi ---------- */
+html.ds-wallet[data-theme] .topbar h1,html.ds-wallet[data-theme] .page-title,html.ds-wallet[data-theme] .section-head h2,html.ds-wallet[data-theme] .nb-title,html.ds-wallet[data-theme] .sheet-head h3{color:#fff}
+html.ds-wallet[data-theme] .muted,html.ds-wallet[data-theme] .set-row small,html.ds-wallet[data-theme] .field>span,html.ds-wallet[data-theme] .gw-title h2,html.ds-wallet[data-theme] .topbar .t-sub,html.ds-wallet[data-theme] .row .mid span{color:var(--text2)}
+html.ds-wallet[data-theme] .num,html.ds-wallet[data-theme] :is(.hero-amount,.czh-amt,.cc-amt,.wt-v,.gw-sum b,.gw-stat .v,.stat .v,.acc-tile .v,.row .end b,.tp-foot b,.gw-foot b,.czi-bal){font-variant-numeric:tabular-nums}
+html.ds-wallet[data-theme] :is(.hero-amount,.czh-amt){font-weight:700;letter-spacing:-.03em;color:#fff}
+html.ds-wallet[data-theme] :is(.hero-amount,.czh-amt) .dec{font-size:.56em;font-weight:600;color:var(--text2);letter-spacing:0}
+html.ds-wallet[data-theme] :is(.wt-v,.gw-sum b,.gw-stat .v,.stat .v,.acc-tile .v,.cc-amt){font-weight:700}
+html.ds-wallet[data-theme] .row .end b{font-weight:600}
+html.ds-wallet[data-theme] .pos,html.ds-wallet[data-theme] .tp-sum .pos{color:#34C759}
+html.ds-wallet[data-theme] .neg,html.ds-wallet[data-theme] .czwt-exp,html.ds-wallet[data-theme] .badge.red{color:#FF6961}
+html.ds-wallet[data-theme] .delta.up{color:#FF6961;background:rgba(255,69,58,.14)}
+html.ds-wallet[data-theme] .delta.down{color:#34C759;background:rgba(52,199,89,.14)}
+html.ds-wallet[data-theme] .gw-chg{color:#34C759;background:rgba(52,199,89,.14)}
+html.ds-wallet[data-theme] .gw-chg.down{color:#FF6961;background:rgba(255,69,58,.14)}
+html.ds-wallet[data-theme] .badge.blue,html.ds-wallet[data-theme] .score,html.ds-wallet[data-theme] .gw-chip{background:rgba(10,132,255,.16);color:#4da3ff}
+html.ds-wallet[data-theme] .qa .ic,html.ds-wallet[data-theme] .act .ic,html.ds-wallet[data-theme] .rc-ic,html.ds-wallet[data-theme] .ob-feat .ic{color:#4da3ff!important;background:rgba(10,132,255,.16)!important}
+html.ds-wallet[data-theme] .accent-pick button:first-child{background:#0A84FF!important}
+html.ds-wallet[data-theme] .ds-opt{background:rgba(255,255,255,.05)}
+
+/* Grafikler siyahta okunur */
+html.ds-wallet[data-theme] .gw-plot path.l-inc{stroke:#0A84FF}
+html.ds-wallet[data-theme] .gw-pt-dot,html.ds-wallet[data-theme] .dbars span,html.ds-wallet[data-theme] .gw-track i{background:#0A84FF}
+html.ds-wallet[data-theme] .gw-grid i{border-top-color:rgba(255,255,255,.1)}
+html.ds-wallet[data-theme] .gw-tip{background:rgba(28,28,30,.92);border:1px solid var(--glass-border);box-shadow:var(--wg-shadow)}
+html.ds-wallet[data-theme] .bar-stack,html.ds-wallet[data-theme] .rb-stack{background:rgba(255,255,255,.08)}
+html.ds-wallet[data-theme] .donut circle.track{stroke:rgba(255,255,255,.08)}
+html.ds-wallet[data-theme] .heat,html.ds-wallet[data-theme] .heat-legend{--blue:#0a6cde}
+html.ds-wallet[data-theme] .cal .d.sel{background:rgba(10,132,255,.14);box-shadow:inset 0 0 0 1.5px #0A84FF}
+html.ds-wallet[data-theme] .cal-nav button,html.ds-wallet[data-theme] #screen .cal-nav button{background:rgba(255,255,255,.08)!important;color:#3d9bff}
+
+/* ---------- Kartlar: metalik parlama, ince cam kenar, derin gölge ---------- */
+html.ds-wallet[data-theme] .ccard{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.08),0 20px 40px rgba(0,0,0,.6)}
+html.ds-wallet[data-theme] .ccard .sheen{inset:0;mix-blend-mode:normal;border-radius:inherit;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.16) 44%,rgba(255,255,255,.05) 50%,transparent 60%),
+    radial-gradient(circle at calc(50% + var(--sx,0%)) calc(30% + var(--sy,0%)),rgba(255,255,255,.14),transparent 50%)}
+
+/* Apple Wallet yığını: kartlar + banka kartları + hesaplar; arkadakine dokun → öne gelir */
+html.ds-wallet[data-theme] .czwt-deck{margin-top:4px}
+html.ds-wallet[data-theme] .czwt-deck .wslot{transition:transform .55s cubic-bezier(.34,1.3,.64,1)}
+html.ds-wallet[data-theme] .czwt-deck .wslot+.wslot .ccard:not(.cc-back){box-shadow:0 -10px 24px -12px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.08),0 20px 40px rgba(0,0,0,.6)}
+html.ds-wallet[data-theme] .czwt-deck .wslot:not(.front){cursor:pointer}
+html.ds-wallet[data-theme] .czwt-deck .wslot.front .ccard{transition:transform .2s cubic-bezier(.25,1,.5,1)}
+html.ds-wallet[data-theme] .czwt-deck .wslot.front:active .czwt-face .ccard{transform:scale(.98)}
+@media (hover:hover){html.ds-wallet[data-theme] .czwt-deck .wslot:not(.front):hover{transform:translateY(calc(var(--y) - 14px)) scale(1.012)!important}}
+html.ds-wallet[data-theme] .czwt-deck .wslot:not(.front):active{transform:translateY(calc(var(--y) - 8px)) scale(.985)!important;transition:transform .12s ease}
+html.ds-wallet[data-theme] .czwt-face{position:relative;height:200px}
+html.ds-wallet[data-theme] .czwt-face>.ccard{position:absolute;inset:0;height:100%;width:100%;max-width:none;flex:none}
+html.ds-wallet[data-theme] .czwt-pc .czwt-pt{display:flex;align-items:center;gap:10px;min-width:0}
+html.ds-wallet[data-theme] .czwt-pi{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:grid;place-items:center;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.3)}
+html.ds-wallet[data-theme] .czwt-pi svg.i{width:17px;height:17px}
+html.ds-wallet[data-theme] .czwt-pn{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+html.ds-wallet[data-theme] .czwt-pn b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.ds-wallet[data-theme] .czwt-pn span{font-size:12px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.ds-wallet[data-theme] .czwt-pv{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;transition:opacity .25s}
+html.ds-wallet[data-theme] .czwt-deck .wslot.front .czwt-pv{opacity:0}
+html.ds-wallet[data-theme] .czwt-deck.czw-tight .wslot:not(.front) .czwt-pn span{visibility:hidden}
+html.ds-wallet[data-theme] .czwt-pc .cc-lbl{font-size:11.5px;font-weight:600;opacity:.9}
+html.ds-wallet[data-theme] .czwt-pc .cc-foot{display:flex;justify-content:space-between;font-size:12px;opacity:.92;margin-top:8px}
+html.ds-wallet[data-theme] .czwt-pc::before{background:linear-gradient(115deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,0) 42%),radial-gradient(circle at 90% 120%,rgba(255,255,255,.14),transparent 55%)}
+@media (prefers-reduced-motion:reduce){html.ds-wallet[data-theme] .czwt-deck .wslot,html.ds-wallet[data-theme] .czwt-deck .wslot .ccard{transition:none!important}html.ds-wallet[data-theme] .czwt-deck .wslot:not(.front):is(:hover,:active){transform:translateY(var(--y))!important}}
+
+/* ---------- Dynamic Island: durum çubuğunun / gerçek adanın ALTINDA yüzen kapsül ---------- */
+html.ds-wallet[data-theme] #czwt-island{position:fixed;top:calc(var(--sat) + 6px);left:50%;z-index:47;height:36px;width:auto;max-width:calc(100vw - 24px);transform:translateX(-50%);
+  border-radius:9999px;background:rgba(14,14,16,.82);-webkit-backdrop-filter:var(--wg-blur);backdrop-filter:var(--wg-blur);
+  border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 30px rgba(0,0,0,.6);color:#fff;overflow:hidden;
+  transition:all .3s cubic-bezier(.25,1,.5,1)}
+html.ds-wallet[data-theme] #czwt-island.open{border-radius:28px;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 24px 50px rgba(0,0,0,.75)}
+html.ds-wallet[data-theme] #czwt-island.tst{border-radius:22px}
+html.ds-wallet[data-theme] .czi-c{display:flex;align-items:center;gap:8px;height:34px;padding:0 14px 0 6px;white-space:nowrap;width:100%;color:#fff;font:inherit;text-align:left}
+html.ds-wallet[data-theme] .czi-ic{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:linear-gradient(150deg,#0A84FF,#5E5CE6);color:#fff}
+html.ds-wallet[data-theme] .czi-ic svg{width:14px;height:14px}
+html.ds-wallet[data-theme] .czi-bal{font-size:15px;font-weight:600;letter-spacing:-.01em}
+html.ds-wallet[data-theme] .czi-bal .czi-cur{font-size:.82em;font-weight:600;color:#c7c7cc;margin-right:3px}
+html.ds-wallet[data-theme] .czi-lab{margin-left:auto;padding-left:10px;font-size:12px;color:#98989f;opacity:0;transition:opacity .2s}
+html.ds-wallet[data-theme] #czwt-island.open .czi-lab{opacity:1}
+html.ds-wallet[data-theme] .czi-dot{width:7px;height:7px;border-radius:50%;background:#FF9F0A;flex-shrink:0;box-shadow:0 0 0 3px rgba(255,159,10,.18)}
+html.ds-wallet[data-theme] #czwt-island.open .czi-dot{display:none}
+html.ds-wallet[data-theme] .czi-x{padding:2px 8px 10px;opacity:0;visibility:hidden;transition:opacity .2s .05s}
+html.ds-wallet[data-theme] #czwt-island.open .czi-x{opacity:1;visibility:visible}
+html.ds-wallet[data-theme] .czi-r{display:flex;align-items:center;gap:10px;width:100%;padding:9px 8px;border-radius:16px;text-align:left;color:#fff;font:inherit}
+html.ds-wallet[data-theme] .czi-r+.czi-r{box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+html.ds-wallet[data-theme] .czi-r:active{background:rgba(255,255,255,.07);transform:scale(.98);transition:transform .1s ease}
+html.ds-wallet[data-theme] .czi-r .czi-ri{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:rgba(255,255,255,.08)}
+html.ds-wallet[data-theme] .czi-r .czi-ri svg.i{width:16px;height:16px}
+html.ds-wallet[data-theme] .czi-r .czi-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+html.ds-wallet[data-theme] .czi-r .czi-k{font-size:11.5px;color:#98989f;font-weight:500}
+html.ds-wallet[data-theme] .czi-r .czi-m b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.ds-wallet[data-theme] .czi-r .czi-v{font-size:14.5px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+html.ds-wallet[data-theme] .czi-r.warn .czi-ri{background:rgba(255,159,10,.16);color:#FF9F0A}
+html.ds-wallet[data-theme] .czi-r.bad .czi-ri{background:rgba(255,69,58,.16);color:#FF6961}
+html.ds-wallet[data-theme] .czi-t{display:none;align-items:center;gap:10px;min-height:42px;padding:6px 16px 6px 8px;font-size:14px;font-weight:500;line-height:1.3}
+html.ds-wallet[data-theme] #czwt-island.tst .czi-c,html.ds-wallet[data-theme] #czwt-island.tst .czi-x{display:none}
+html.ds-wallet[data-theme] #czwt-island.tst .czi-t{display:flex}
+html.ds-wallet[data-theme] .czi-t>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+html.ds-wallet[data-theme] #czwt-island :focus-visible{outline:2px solid #0A84FF;outline-offset:-2px}
+html.ds-wallet[data-theme].czwt-isl body{padding-top:calc(var(--sat) + 52px)}
+html.ds-wallet[data-theme].czwt-isl #sbar{height:calc(var(--sat) + 50px)}
+html.ds-wallet[data-theme].czwt-isl #navbar{padding-top:calc(var(--sat) + 44px);height:calc(var(--sat) + 92px)}
+html.ds-wallet[data-theme].czwt-isl .w-editbar{top:calc(var(--sat) + 50px)}
+html.ds-wallet[data-theme].czwt-isl #ptr{top:calc(var(--sat) + 50px)}
+html.ds-wallet[data-theme].czwt-isl .toast.czwt-mirror{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden;clip-path:inset(50%);opacity:0;pointer-events:none}
+html.ds-wallet[data-theme] body:has(#story) #czwt-island,html.ds-wallet[data-theme] body:has(#lock) #czwt-island{display:none!important}
+@media (prefers-reduced-motion:reduce){html.ds-wallet[data-theme] #czwt-island,html.ds-wallet[data-theme] .czi-x,html.ds-wallet[data-theme] .czi-lab{transition:none}}
+
+/* Ayarlar: Tema seçimi Apple Wallet'ta kilitli (her zaman koyu) */
+html.ds-wallet[data-theme] .czwt-themefield .seg{opacity:.62;pointer-events:none}
+html.ds-wallet[data-theme] .ds-note{color:#a1a1a8}
+html.ds-wallet[data-theme] .czwt-themenote{display:block;margin:7px 16px 0;font-size:13px;line-height:1.35;color:var(--text2)}
+
+/* ---------- Tasarım seçici: üçüncü döşeme (her tasarımda görünür) ---------- */
+.ds-pick.ds-pick3{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ds-pick3 .ds-opt{padding:12px 6px 10px}
+.ds-pick3 .ds-th{width:68px;height:106px}
+.ds-pick3 .ds-th i:nth-child(1){top:12px;height:27px}.ds-pick3 .ds-th i:nth-child(2){top:45px;height:20px}.ds-pick3 .ds-th i:nth-child(3){top:71px;height:14px}
+.ds-th-wallet{background:radial-gradient(80% 50% at 15% 10%,rgba(10,90,255,.4),transparent 70%),radial-gradient(70% 50% at 95% 85%,rgba(94,92,230,.35),transparent 70%),#000}
+.ds-pick3 .ds-th-wallet i{left:7px;right:7px;height:34px;border-radius:7px;box-shadow:0 -3px 6px rgba(0,0,0,.55),inset 0 0 0 .5px rgba(255,255,255,.28),inset 0 1px 0 rgba(255,255,255,.3)}
+.ds-pick3 .ds-th-wallet i:nth-child(1){top:12px;height:34px;background:linear-gradient(135deg,#0a84ff,#5e5ce6)}
+.ds-pick3 .ds-th-wallet i:nth-child(2){top:28px;height:34px;background:linear-gradient(135deg,#3a3940,#141418)}
+.ds-pick3 .ds-th-wallet i:nth-child(3){top:44px;height:34px;right:7px;background:linear-gradient(135deg,#30d158,#0a84ff)}
+.ds-th-wallet b{background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.25)}
+.ds-th-wallet b::after{content:"";position:absolute;left:50%;top:-84px;width:26px;height:7px;margin-left:-13px;border-radius:9999px;background:rgba(30,30,32,.95);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.2)}
 </style>
 </head>
 <body>
@@ -8467,6 +8715,104 @@ const CzInbox={unsub:null,
       ${signed?'':'<span class="muted xs" style="display:block;margin-top:6px">Anahtar için önce Bulut eşitleme · Firebase hesabınla giriş yap.</span>'}</div></div>`}};
 {const _oa=FirebaseAdapter.onAuth;FirebaseAdapter.onAuth=function(cb){return _oa.call(this,u=>{cb(u);try{CzInbox.attach(u)}catch(e){console.warn(e)}})}}
 {const _o=SettingsSheet.open;SettingsSheet.open=function(){const r=_o.apply(this,arguments);try{const old=document.querySelector('#sheet .cz-siri');if(old)old.outerHTML=CzInbox.row()}catch(e){console.warn(e)}return r}}
+/* Apple Wallet tasarımı: Ayarlar → Görünüm → Tasarım (Cam / Saf iOS / Apple Wallet). settings.design='wallet' → html.ds-wallet (+ ds-ios iskeleti).
+   OLED siyah + Liquid Glass; yalnız koyu. Kart yığınına hesaplar da girer; üstte Dynamic Island kapsülü. Cam ve Saf iOS'a dokunmaz */
+const CzWalletTheme={
+  on(){const s=Store.get();return !!(s&&s.settings&&s.settings.design==='wallet')},
+  apply(){const r=document.documentElement,on=this.on(),was=r.classList.contains('ds-wallet');r.classList.toggle('ds-wallet',on);
+    if(on){r.classList.add('ds-ios');r.classList.remove('ios-liquid','lg-svg');r.dataset.theme='dark';
+      const m=document.querySelector('meta[name=theme-color]');if(m)m.content='#000000';
+      try{localStorage.setItem(CzIOS.KEY,'wallet:dark')}catch(e){}
+      if(typeof GW!=='undefined'&&GW.kind==='glass')GW.close()}
+    else if(was){r.dataset.theme=Theme.effective();CzIOS.apply()}
+    const ct=on?'apple-wallet':CzIOS.on()?'ios':'classic';try{localStorage.setItem('currentTheme',ct)}catch(e){}
+    if(document.body){document.body.classList.toggle('theme-apple-wallet',on);document.body.classList.toggle('theme-classic',!on)}
+    this.scrollWatch();this.island.sync()},
+  /* kaydırırken ortam ışığı durur: bulanık camlar her karede yeniden örneklenmez */
+  scrollWatch(){if(this._sw)return;this._sw=1;let t=0;const r=document.documentElement;
+    addEventListener('scroll',()=>{if(!r.classList.contains('ds-wallet'))return;if(!t)r.classList.add('czwt-scrolling');clearTimeout(t);t=setTimeout(()=>{t=0;r.classList.remove('czwt-scrolling')},220)},{passive:true})},
+  /* ---------- Ayarlar ---------- */
+  pick(){const d=Store.get().settings.design,cur=d==='wallet'?'wallet':d==='ios'?'ios':'glass',
+      o=(k,l,ds)=>`<button type="button" class="ds-opt pressable ${cur===k?'on':''}" role="radio" aria-checked="${cur===k}" onclick="CzIOS.set('${k}')">
+      <span class="ds-th ds-th-${k}" aria-hidden="true"><i></i><i></i><i></i><b></b></span><span class="ds-l">${l}<small>${ds}</small></span></button>`;
+    return `<div class="field ds-field"><span>Tasarım</span><div class="ds-pick ds-pick3" role="radiogroup" aria-label="Tasarım">${o('glass','Cam','Fotoğraflı Liquid Glass')}${o('ios','Saf iOS','Apple uygulamaları gibi sade')}${o('wallet','Apple Wallet','OLED siyah, cam kartlar')}</div>`+
+      (cur==='ios'?`<div class="glass ds-lq"><div class="set-row"><div>Liquid Glass butonlar<small>Saf iOS tasarımında butonlara cam görünümü verir</small></div><label class="switch"><input type="checkbox" ${CzIOS.liquid()?'checked':''} onchange="SettingsSheet.look('iosLiquid',this.checked)"><span></span></label></div></div>`:'')+`</div>`},
+  settings(){const sh=Sheet.el('.sheet')||document.querySelector('#sheet');if(!sh)return;
+    [...sh.querySelectorAll('.set-row')].filter(x=>/^(Cam görünümü|Koyu fotoğraf|Duruma göre renk|Arka plan)/.test(x.textContent.trim())).forEach(x=>x.classList.add('ds-glass-only'));
+    const look=sh.querySelector('#sec-look'),box=look&&look.nextElementSibling&&look.nextElementSibling.nextElementSibling;
+    if(box&&!box.querySelector('.ds-note'))box.insertAdjacentHTML('afterbegin','<p class="ds-note">Cam, arka plan fotoğrafı ve duruma göre renk ayarları yalnızca Cam tasarımında kullanılır.</p>');
+    const tf=[...sh.querySelectorAll('.field')].find(f=>f.querySelector(':scope>span')?.textContent.trim()==='Tema');
+    if(tf&&!tf.querySelector('.czwt-themenote')){tf.classList.add('czwt-themefield');tf.insertAdjacentHTML('beforeend','<small class="czwt-themenote">Apple Wallet her zaman koyu görünür. Seçimin Cam ve Saf iOS için saklanır.</small>')}},
+  /* ---------- Kart yığını: kredi kartları + banka kartları + hesaplar ---------- */
+  pass(s,a){const b=D.balance(s,a.id),bk=CzWallet.bankOf(a),t=ACCOUNT_TYPES[a.type]||{name:'Hesap'},g=GRADIENTS[(a.color||0)%GRADIENTS.length],
+      c1=bk?bk.c1:g[0],c2=bk?bk.c2:g[1],v=U.money(b,{cur:a.currency});
+    return `<div class="ccard czwt-pc" style="--cc1:${c1};--cc2:${c2};background:linear-gradient(135deg,${c1},${c2})"><span class="sheen"></span>
+      <div class="czwt-pt"><span class="czwt-pi">${C.ic(accIcon(a))}</span><div class="czwt-pn"><b>${U.esc(a.name)}</b><span>${U.esc(a.bank||t.name)}</span></div><b class="czwt-pv">${v}</b></div>
+      <div><div class="cc-lbl">${a.type==='cash'?'Nakit':a.type==='fx'?(a.currency==='XAU'?'Altın':'Döviz')+' bakiyesi':'Bakiye'}</div><div class="cc-amt num">${v}</div>
+        <div class="cc-foot"><span>${t.name}</span><span>${a.currency!=='TRY'?'≈ '+U.money(D.toTRY(s,b,a.currency),{dec:false}):'Türk lirası'}</span></div></div></div>`},
+  deck(s,ui){const items=[...s.accounts.filter(a=>a.type==='credit'),...s.accounts.filter(a=>a.type!=='credit'&&!a.archived)];if(!items.length)return '';
+    let order=items;const sel=items.find(a=>a.id===ui.walletSel);if(sel)order=[...items.filter(a=>a!==sel),sel];
+    const n=order.length,peek=n<=3?62:n<=5?56:n<=7?50:44;
+    return `<div class="wallet czwt-deck ${n===1?'single':''} ${peek<62?'czw-tight':''}" style="height:${200+(n-1)*peek}px;--czw-peek:${peek}px">${order.map((a,i)=>{const front=i===n-1,y=i*peek,cc=a.type==='credit';
+      return `<div class="wslot ${front?'front':''}" data-id="${a.id}"${cc?'':` data-acc="${a.id}"`} style="--y:${y}px;transform:translateY(${y}px);z-index:${i+1}" onclick="CzWalletTheme.tap('${a.id}',${front})">`+
+        (cc?C.cardFlip(s,a,ui):`<div class="czwt-face">${a.debitCard&&typeof C.debitCard==='function'?C.debitCard(s,a):this.pass(s,a)}</div>`)+`</div>`}).join('')}</div>`},
+  tap(id,front){if(UI.homeEdit)return;const a=D.account(Store.get(),id);if(!a)return;
+    if(front)return a.type==='credit'?App.walletTap(id,true):App.openAcc(id);
+    const before={};document.querySelectorAll('.czwt-deck .wslot').forEach(e=>before[e.dataset.id]=e.getBoundingClientRect().top);
+    UI.walletSel=id;Haptic.tap();App.render();if(Motion.reduced())return;
+    document.querySelectorAll('.czwt-deck .wslot').forEach(e=>{const o=before[e.dataset.id];if(o==null||!e.animate)return;const dy=o-e.getBoundingClientRect().top;if(Math.abs(dy)<1)return;
+      const y=parseFloat(e.style.getPropertyValue('--y'))||0,me=e.dataset.id===id;
+      e.animate(me?[{transform:`translateY(${y+dy}px) scale(1)`},{transform:`translateY(${y+dy*.4}px) scale(1.035)`,offset:.45},{transform:`translateY(${y}px) scale(1)`}]
+        :[{transform:`translateY(${y+dy}px)`},{transform:`translateY(${y}px)`}],{duration:me?600:520,easing:'cubic-bezier(.34,1.25,.64,1)'})})},
+  /* ---------- Dynamic Island ---------- */
+  island:{el:null,open:false,tst:0,acts:[],
+    vis(){const s=Store.get();return CzWalletTheme.on()&&!document.documentElement.classList.contains('wide')&&!!s&&s.accounts.length>0&&!(document.body&&document.body.classList.contains('onboarding'))},
+    ensure(){if(this.el)return this.el;const el=document.createElement('div');el.id='czwt-island';el.hidden=true;
+      el.innerHTML=`<button type="button" class="czi-c" aria-expanded="false"><span class="czi-ic">${C.ic('wallet')}</span><b class="czi-bal num"></b><span class="czi-dot" hidden></span><span class="czi-lab">Kullanılabilir</span></button><div class="czi-x" role="group" aria-label="Özet"></div><div class="czi-t" aria-hidden="true"><span class="czi-ic">${C.ic('bell')}</span><span></span></div>`;
+      el.addEventListener('click',e=>{const r=e.target.closest('[data-go]');if(r){const f=this.acts[+r.dataset.go];this.toggle(false);if(f)f();return}
+        if(this.tst){this.endToast();return}Haptic.tap();this.toggle()});
+      el.addEventListener('keydown',e=>{if(e.key==='Escape'&&this.open){this.toggle(false);el.querySelector('.czi-c').focus()}});
+      document.addEventListener('pointerdown',e=>{if(this.open&&!el.contains(e.target))this.toggle(false)},true);
+      document.body.appendChild(el);this.el=el;return el},
+    sync(){const v=this.vis();document.documentElement.classList.toggle('czwt-isl',v);
+      if(!v){if(this.el){this.el.hidden=true;this.open=false;this.el.classList.remove('open','tst')}return}
+      const el=this.ensure();el.hidden=false;this.paint()},
+    data(s){const T=U.today(),rows=[];this.acts=[];const add=(cls,ic,k,t,v,f)=>{this.acts.push(f);rows.push(`<button type="button" class="czi-r ${cls}" data-go="${this.acts.length-1}"><span class="czi-ri">${C.ic(ic)}</span><span class="czi-m"><span class="czi-k">${k}</span><b>${U.esc(t)}</b></span>${v}</button>`)};
+      const txs=s.transactions.map((t,i)=>[t,i]).filter(([t])=>t.date<=T).sort((a,b)=>b[0].date.localeCompare(a[0].date)||b[1]-a[1]),t=txs[0]&&txs[0][0];
+      if(t){const v=C.txVis(s,t),cur=v.cur||D.account(s,t.accountId)?.currency||'TRY',amt=v.amt??t.amount;
+        add('','receipt','Son işlem · '+U.relDate(t.date),v.title,`<b class="czi-v num ${v.sign>0?'pos':v.sign<0?'czwt-exp':''}">${v.sign>0?'+':v.sign<0?'−':''}${U.money(amt,{cur})}</b>`,()=>App.push('tx',{id:t.id}))}
+      const up=D.upcoming(s,45),nx=up.find(x=>!x.income&&U.daysUntil(x.date)>=0);
+      if(nx){const d=U.daysUntil(nx.date);add('','calendar','Sıradaki ödeme · '+(d===0?'bugün':d===1?'yarın':U.fmtDate(nx.date)),nx.title,`<b class="czi-v num">${U.money(nx.amount,{dec:false})}</b>`,
+        ()=>nx.accId?App.push('card',{id:nx.accId}):App.go('plan','cal'))}
+      const od=up.filter(x=>x.kind==='stmt'&&U.daysUntil(x.date)<0),ob=D.budgetStatus(s).filter(b=>b.over);let alert=false;
+      if(od.length){alert=true;const x=od[0];add('bad','alert','Uyarı · ödeme gecikti',x.title+(od.length>1?` +${od.length-1}`:''),`<b class="czi-v num czwt-exp">${U.money(x.amount,{dec:false})}</b>`,()=>App.push('card',{id:x.accId}))}
+      else if(ob.length){alert=true;const b=ob[0];add('warn','alert','Uyarı · bütçe aşıldı',cat(b.category).name+(ob.length>1?` +${ob.length-1}`:''),`<b class="czi-v num czwt-exp">${U.money(-b.left,{dec:false})}</b>`,()=>App.go('plan','budget'))}
+      return {rows,alert}},
+    paint(){const el=this.el,s=Store.get();if(!el||!s)return;const liq=D.liquidAt(s,U.today()),m=U.money(liq,{dec:false}),num=m.replace(/\s*₺$/,'');
+      const bal=el.querySelector('.czi-bal'),h=/₺$/.test(m)?`<span class="czi-cur">₺</span>${U.esc(num)}`:U.esc(m);if(bal.innerHTML!==h)bal.innerHTML=h;
+      const d=this.data(s),x=el.querySelector('.czi-x');x.innerHTML=d.rows.join('')||'<p class="czi-k" style="padding:8px">Her şey yolunda.</p>';
+      el.querySelector('.czi-dot').hidden=!d.alert;const c=el.querySelector('.czi-c');c.setAttribute('aria-label',`Kullanılabilir bakiye ${PRIVACY?'gizli':m}${d.alert?', uyarı var':''}. Ayrıntılar için dokun`);
+      this.size()},
+    size(){const el=this.el;if(!el||el.hidden)return;const max=Math.min(360,innerWidth-24);el.querySelector('.czi-x').style.width=el.querySelector('.czi-t').style.width=(max-2)+'px';
+      if(this.tst){el.style.width=max+'px';el.style.height=Math.max(44,el.querySelector('.czi-t').scrollHeight+2)+'px';return}
+      if(this.open){el.style.width=max+'px';el.style.height=(36+el.querySelector('.czi-x').scrollHeight)+'px';return}
+      const c=el.querySelector('.czi-c'),lab=c.querySelector('.czi-lab');lab.style.display='none';c.style.width='max-content';const w=Math.min(max,Math.ceil(c.getBoundingClientRect().width/(parseFloat(getComputedStyle(document.body).zoom)||1))+2);c.style.width='';lab.style.display='';el.style.width=w+'px';el.style.height='36px'},
+    toggle(v){if(!this.el)return;this.open=typeof v==='boolean'?v:!this.open;if(this.open)this.endToast(true);this.el.classList.toggle('open',this.open);
+      this.el.querySelector('.czi-c').setAttribute('aria-expanded',this.open);if(this.open)this.paint();else this.size()},
+    toast(ms,action){if(!this.vis()||action||!this.el||this.el.hidden||document.getElementById('sheet')||this.open)return;
+      const t=[...document.querySelectorAll('#toasts .toast')].pop();if(!t)return;const txt=(t.querySelector('span')||t).textContent.trim();if(!txt)return;
+      t.classList.add('czwt-mirror');this.el.querySelector('.czi-t span:last-child').textContent=txt;clearTimeout(this.tst);this.el.classList.add('tst');
+      this.tst=setTimeout(()=>this.endToast(),Math.min(ms||2600,3400));this.size()},
+    endToast(quiet){if(!this.tst)return;clearTimeout(this.tst);this.tst=0;if(this.el){this.el.classList.remove('tst');if(!quiet)this.size()}}}};
+CzIOS.pick=function(){return CzWalletTheme.pick()};
+{const _ap=Appearance.apply;Appearance.apply=function(){const r=_ap.apply(this,arguments);try{CzWalletTheme.apply()}catch(e){console.warn(e)}return r}}
+{const _sb=StatusBar.apply;StatusBar.apply=function(){const r=_sb.apply(this,arguments);try{if(CzWalletTheme.on()){const m=document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]');if(m)m.content='black-translucent';localStorage.setItem('cuzdan_sb','black-translucent')}}catch(e){}return r}}
+{const _o=SettingsSheet.open;SettingsSheet.open=function(){const r=_o.apply(this,arguments);try{if(CzWalletTheme.on())CzWalletTheme.settings()}catch(e){console.warn(e)}return r}}
+{const _w=C.wallet;C.wallet=(s,ui)=>CzWalletTheme.on()?CzWalletTheme.deck(s,ui):_w(s,ui)}
+{const _r=C.txRow;C.txRow=(s,t,ctx,extra)=>{const h=_r(s,t,ctx,extra);if(!CzWalletTheme.on())return h;try{return C.txVis(s,t,ctx).sign<0?h.replace('<b class="num ">','<b class="num czwt-exp">'):h}catch(e){return h}}}
+{const _rn=App.render;App.render=function(){const r=_rn.apply(this,arguments);try{CzWalletTheme.island.sync()}catch(e){console.warn(e)}return r}}
+{const _t=Toast.show;Toast.show=function(msg,ms,action){const r=_t.apply(this,arguments);try{CzWalletTheme.island.toast(ms,action)}catch(e){}return r}}
+addEventListener('resize',()=>{try{CzWalletTheme.island.size()}catch(e){}},{passive:true});
 /* Alt bar: gösterge önce kayar, ağır sayfa çizimi bir kare sonra yapılır; geçiş takılmaz */
 {const _go=App.go.bind(App);let pend=0;
 App.go=function(tab,sub){if(tab===UI.tab&&!UI.stack.length&&!sub)return _go(tab,sub);
