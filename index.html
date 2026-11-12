@@ -8736,7 +8736,8 @@ const CzWalletTheme={
       o=(k,l,ds)=>`<button type="button" class="ds-opt pressable ${cur===k?'on':''}" role="radio" aria-checked="${cur===k}" onclick="CzIOS.set('${k}')">
       <span class="ds-th ds-th-${k}" aria-hidden="true"><i></i><i></i><i></i><b></b></span><span class="ds-l">${l}<small>${ds}</small></span></button>`;
     return `<div class="field ds-field"><span>Tasarım</span><div class="ds-pick ds-pick3" role="radiogroup" aria-label="Tasarım">${o('glass','Cam','Fotoğraflı Liquid Glass')}${o('ios','Saf iOS','Apple uygulamaları gibi sade')}${o('wallet','Apple Wallet','OLED siyah, cam kartlar')}</div>`+
-      (cur==='ios'?`<div class="glass ds-lq"><div class="set-row"><div>Liquid Glass butonlar<small>Saf iOS tasarımında butonlara cam görünümü verir</small></div><label class="switch"><input type="checkbox" ${CzIOS.liquid()?'checked':''} onchange="SettingsSheet.look('iosLiquid',this.checked)"><span></span></label></div></div>`:'')+`</div>`},
+      (cur==='ios'?`<div class="glass ds-lq"><div class="set-row"><div>Liquid Glass butonlar<small>Saf iOS tasarımında butonlara cam görünümü verir</small></div><label class="switch"><input type="checkbox" ${CzIOS.liquid()?'checked':''} onchange="SettingsSheet.look('iosLiquid',this.checked)"><span></span></label></div></div>`:'')+
+      (cur==='wallet'?`<div class="glass ds-lq"><div class="set-row"><div>Üstteki ada (Dynamic Island)<small>Ekranın üstünde bakiyeyi, son işlemi ve uyarıları gösteren kapsül</small></div><label class="switch"><input type="checkbox" ${Store.get().settings.walletIsland!==false?'checked':''} onchange="Store.dispatch({type:'settings/update',payload:{walletIsland:this.checked}});CzWalletTheme.island.sync()"><span></span></label></div></div>`:'')+`</div>`},
   settings(){const sh=Sheet.el('.sheet')||document.querySelector('#sheet');if(!sh)return;
     [...sh.querySelectorAll('.set-row')].filter(x=>/^(Cam görünümü|Koyu fotoğraf|Duruma göre renk|Arka plan)/.test(x.textContent.trim())).forEach(x=>x.classList.add('ds-glass-only'));
     const look=sh.querySelector('#sec-look'),box=look&&look.nextElementSibling&&look.nextElementSibling.nextElementSibling;
@@ -8766,7 +8767,7 @@ const CzWalletTheme={
         :[{transform:`translateY(${y+dy}px)`},{transform:`translateY(${y}px)`}],{duration:me?600:520,easing:'cubic-bezier(.34,1.25,.64,1)'})})},
   /* ---------- Dynamic Island ---------- */
   island:{el:null,open:false,tst:0,acts:[],
-    vis(){const s=Store.get();return CzWalletTheme.on()&&!document.documentElement.classList.contains('wide')&&!!s&&s.accounts.length>0&&!(document.body&&document.body.classList.contains('onboarding'))},
+    vis(){const s=Store.get();return CzWalletTheme.on()&&s?.settings?.walletIsland!==false&&!document.documentElement.classList.contains('wide')&&!!s&&s.accounts.length>0&&!(document.body&&document.body.classList.contains('onboarding'))},
     ensure(){if(this.el)return this.el;const el=document.createElement('div');el.id='czwt-island';el.hidden=true;
       el.innerHTML=`<button type="button" class="czi-c" aria-expanded="false"><span class="czi-ic">${C.ic('wallet')}</span><b class="czi-bal num"></b><span class="czi-dot" hidden></span><span class="czi-lab">Kullanılabilir</span></button><div class="czi-x" role="group" aria-label="Özet"></div><div class="czi-t" aria-hidden="true"><span class="czi-ic">${C.ic('bell')}</span><span></span></div>`;
       el.addEventListener('click',e=>{const r=e.target.closest('[data-go]');if(r){const f=this.acts[+r.dataset.go];this.toggle(false);if(f)f();return}
