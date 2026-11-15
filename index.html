@@ -415,7 +415,7 @@ input[type=date].input{min-height:50px}
 
 /* Rings, goals */
 .ring{position:relative;display:inline-grid;place-items:center}
-.ring svg{transform:rotate(-90deg);display:block}
+.ring>svg{transform:rotate(-90deg);display:block}.ring .in svg{transform:none}
 .ring circle{fill:none;stroke-linecap:round;transition:stroke-dasharray 1s var(--ease)}
 .ring .in{position:absolute;inset:0;display:grid;place-items:center;font-size:22px}
 .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -3160,6 +3160,147 @@ html.ds-wallet[data-theme] .czwt-themenote{display:block;margin:7px 16px 0;font-
 html.ds-ios[data-theme] #screen .tx-days.glass,html.ds-wallet[data-theme] #screen .tx-days.glass{background:transparent!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 html.ds-ios[data-theme] #screen .tx-days.glass::before,html.ds-ios[data-theme] #screen .tx-days.glass::after,html.ds-wallet[data-theme] #screen .tx-days.glass::before,html.ds-wallet[data-theme] #screen .tx-days.glass::after{display:none!important}
 </style>
+<style id="cz-uxfix">
+/* cz-uxfix · UI/UX denetimi düzeltmeleri */
+
+/* K1: Sankey masaüstünde büyüyüp yazıları şişirmesin */
+.sankey{max-width:400px;margin:0 auto}
+
+/* K2: Gelecek ekstreler (kapalı bölüm) */
+.cz-fut{margin-top:6px}
+.cz-fut-h{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;padding:0 16px;border-radius:16px;background:var(--fill);color:var(--text);font-size:15px;font-weight:600;margin:4px 0 10px}
+.cz-fut-n{display:inline-flex;align-items:center;gap:4px;color:var(--text2);font-weight:400}
+.cz-fut-n svg{width:15px;height:15px;transform:rotate(90deg);transition:transform .25s var(--ease)}
+.cz-fut.open .cz-fut-n svg{transform:rotate(-90deg)}
+/* Ö12: "▼ detay" yerine chevron */
+.cz-dchev{display:inline-flex;margin-top:6px;color:var(--text3)}
+.cz-dchev svg{width:14px;height:14px;transform:rotate(90deg)}
+.cz-dchev.up svg{transform:rotate(-90deg)}
+
+/* Ö1: Wallet'ta giderler nötr (yalnız uyarılar kırmızı) */
+html.ds-wallet[data-theme] #screen .row .num.czwt-exp,html.ds-wallet[data-theme] #screen .czwt-exp:not(.czi-v){color:var(--text)}
+
+/* Ö3 / Ö4: Kart detayı: kısa başlık, tek tip eylem kutuları, küçük haplar */
+.cd-id .page-title{font-size:28px;line-height:1.12;letter-spacing:-.02em;overflow-wrap:anywhere}
+html .cd .cd-actions{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:10px}
+html body .cd .cd-actions .act{flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:6px!important;min-height:64px!important;padding:10px 4px!important;
+  font-size:12px!important;font-weight:500!important;line-height:1.2!important;text-align:center!important;white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis}
+html body .cd .cd-actions .act .ic{display:grid!important;place-items:center;width:32px;height:32px;border-radius:50%;margin:0}
+.cd-sum .zr-links{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:12px -2px 0;padding:0 2px}
+.cd-sum .zr-links::-webkit-scrollbar{display:none}
+html body .cd-sum .zr-links .chip{flex:none;min-height:32px!important;height:32px;padding:0 12px!important;font-size:13px!important;border-radius:16px!important;white-space:nowrap}
+
+/* Ö5: sohbet: dock gizli, giriş kutusu en altta */
+body.cz-chat #dock{opacity:0;pointer-events:none;transform:translateY(140%)}
+body.cz-chat .chat-bar{bottom:calc(var(--sab) + 12px)!important}
+body.cz-chat #screen{padding-bottom:calc(var(--sab) + 96px)!important}
+body.cz-chat .chat .chips{padding-bottom:12px}
+
+/* Ö6: masaüstü ana sayfa başlığı: selamlama üstte, büyük başlık altta, butonlar sağda */
+html.wide .topbar.gw-head>div:first-child{display:block!important;min-width:0}
+html.wide .topbar.gw-head{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:16px}
+html.wide .topbar.gw-head h1{text-align:left!important;margin:2px 0 0!important}
+html.wide .split-l .topbar.gw-head{flex-wrap:wrap}
+html.wide .split-l .topbar.gw-head .gw-date{display:none}
+.t-sub:empty{display:none}
+
+/* Ö7: masaüstünde kartlar içerik kadar uzasın, takvim gerilmesin */
+html.wide .hg-body>*,html.wide .wgrid>*{align-self:start}
+html.wide .wt{min-height:0!important}
+html.wide #screen .cal{max-width:640px;margin-left:auto;margin-right:auto}
+html.wide #screen .cal-nav,html.wide #screen .sumbar,html.wide #screen .cz-cal-leg{max-width:640px;margin-left:auto;margin-right:auto}
+html.wide #screen .cal .d.today{max-width:none}
+
+/* Ö8: masaüstünde sayfalar ortada açılan pencere */
+html.wide .sheet-backdrop{align-items:center!important;padding:24px}
+html.wide .sheet-backdrop .sheet{margin:0!important;width:min(560px,100%)!important;max-height:min(86vh,860px)!important;border-radius:22px!important;
+  border:1px solid var(--glass-border)!important;padding-bottom:24px!important;animation:czModalIn .28s var(--ease)!important;box-shadow:0 30px 80px rgba(0,0,0,.45)!important}
+html.wide .sheet-backdrop .sheet .grabber{display:none}
+html.wide .sheet-backdrop .sheet[style*=height]{height:auto!important}
+@keyframes czModalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+
+/* Ö9: çizgi grafik eksen yazıları sabit boyutta */
+.lc-wrap .lchart text{display:none}
+.cz-ax{position:relative;height:16px;margin-top:-16px;font-size:10px;line-height:16px;color:var(--text2);pointer-events:none}
+.cz-ax span{position:absolute;top:0;white-space:nowrap}
+.cz-ax .cz-ax-middle{transform:translateX(-50%)}
+.cz-ax .cz-ax-end{transform:translateX(-100%)}
+
+/* Ö10: kesilen metinler iki satıra insin */
+#home-pay .row .mid b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#screen .bud .mid span,#screen .budget-row .mid span{white-space:normal}
+
+/* Ö11: bütçe özet kartı: normal yazım, tek satır tutar */
+.czr-k,.czr-pct,.czr-pr{text-transform:none!important;letter-spacing:0!important;font-size:13px!important;font-weight:500!important}
+.czr-tot{white-space:nowrap}
+.czr-tot .num:last-child{font-size:15px}
+
+/* K-1: bugün zaten kırmızı daire; mavi seçim halkası yalnız başka gün seçilince */
+#screen .cal .d.today.sel{box-shadow:none!important}
+/* K-2: takvim işaret açıklaması */
+.cz-cal-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 4px 0;font-size:12px;color:var(--text2)}
+.cz-cal-leg span{display:inline-flex;align-items:center;gap:6px}
+.cz-cal-leg i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.cz-cal-leg i.cz-m{background:conic-gradient(#0a84ff 0 33%,#ff375f 0 66%,#30d158 0)}
+
+/* K-8: Wallet: hesaplar yığında zaten var; alttaki tekrar listesi gizli */
+html.ds-wallet[data-theme] .cards-panel:not(.no-cards) .cp-accts .gw-title,
+html.ds-wallet[data-theme] .cards-panel:not(.no-cards) .cp-accts .row:not(.cp-add){display:none}
+
+/* K-9: tutarlar kelime ortasından kırılmasın */
+.sheet .num,.sheet b.num,#screen .stmt-nums b{white-space:nowrap}
+
+/* K-10: tutar girişinde odak çerçevesi yok */
+.sheet .amount-in,.sheet .amount-in:focus,.sheet .amount-in:focus-visible{outline:none!important;box-shadow:none!important}
+html.ds-ios[data-theme] .sheet .amount-box,html.ds-ios[data-theme] .sheet .amount-box:focus-within,
+html.ds-ios[data-theme] .sheet .amt-wrap,html.ds-ios[data-theme] .sheet .amt-wrap:focus-within{outline:0!important;box-shadow:none!important;border-color:transparent!important}
+
+/* K-11: Wallet'ta tema seçimi kullanılamaz; yalnız açıklama kalsın */
+html.ds-wallet[data-theme] .czwt-themefield .seg{display:none}
+
+/* K-12: filtre seçicilerinde chevron */
+.sheet select.input{-webkit-appearance:none!important;appearance:none!important;padding-right:38px!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;
+  background-repeat:no-repeat!important;background-position:right 14px center!important;background-size:12px!important}
+.sheet .chips.wrap:has(.chip[onclick*="TxFilter.set('type'"]){flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.sheet .chips.wrap:has(.chip[onclick*="TxFilter.set('type'"]) .chip{flex:none}
+
+/* K-14: bilgi tablosu ayraçları metinle hizalı */
+#screen .list.info .row+.row::before{left:16px}
+
+/* K-15: önceki aya geçiş */
+.cz-prev-m{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;min-height:46px;margin:6px 0 4px;font-size:15px;font-weight:500;color:var(--blue)}
+.cz-prev-m svg{width:14px;height:14px}
+
+/* K-17: kompakt başlık altından içerik okunmasın */
+html.ds-wallet[data-theme] #navbar{background:rgba(0,0,0,.8)!important}
+
+/* --- 2. tur --- */
+html body .cd .cd-id h1.page-title{font-size:26px!important;line-height:1.15!important}
+#screen .cal .d.today.sel{background:transparent!important}
+.sheet .chips.wrap .chip{padding-left:12px!important;padding-right:12px!important;font-size:14px!important}
+.czr-tot{display:flex!important;align-items:baseline;gap:6px;flex-wrap:nowrap}
+@media (max-width:600px){.czr-card.big svg.czr{width:118px!important;height:118px!important;flex:none}}
+.czy-entry .mid span,#screen .cz-wrap2 .row .mid span{white-space:normal!important;overflow:visible;text-overflow:clip}
+/* K-13: taksit grafiği: yıl etiketi satır kırmasın, boş ay için taban çizgisi */
+.cz-x{position:relative;white-space:nowrap}
+.cz-x small{position:absolute;left:50%;top:100%;transform:translateX(-50%);font-size:9px;line-height:1;opacity:.8}
+.cz-stack{min-height:2px}
+.cz-legend{margin-top:16px}
+/* K-19: harcama ritmi tek renk (Apple tarzı) */
+.rb-stack i{background:var(--blue)!important}
+.rb-col.dim .rb-stack i{opacity:.45}
+/* K-18: Cam'da yan boşluk diğer tasarımlarla aynı */
+html:not(.ds-ios):not(.wide) body #screen{padding-left:10px;padding-right:10px}
+/* K-20: bütçe satırlarında ilerleme çubuğu metne yakın */
+#screen .cz-wrap2 .row .prog{margin-top:2px!important}#screen .cz-wrap2 .row:has(.prog){row-gap:6px!important}
+/* K-5: kart dışı bölüm başlığı */
+.section-head.cz-gh{grid-column:1/-1;margin:14px 0 -4px;padding-left:2px}
+
+/* Ö7: Bugün kartı: bakiye bloğu yukarıda toplu, boşluk kalmasın */
+html.wide .today-panel .tp-bal{justify-content:flex-start!important;gap:6px}
+html.wide .today-panel .tp-foot{margin-top:18px!important}
+</style>
 </head>
 <body>
 <div id="cz-splash" aria-hidden="true"></div>
@@ -3173,6 +3314,296 @@ html.ds-ios[data-theme] #screen .tx-days.glass::before,html.ds-ios[data-theme] #
 <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 <div id="ptr" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></div>
 <div id="print"></div>
+<script id="cz-fnfix-js">
+/* =====================================================================
+   Cüzdan · işlev düzeltmeleri (fnfix)
+   App.init()'ten hemen ÖNCE CzFnFix() ile kurulur (Persist.load / Cloud sarmalayıcıları açılıştan önce gerekli).
+   Veri biçimi değişmez; tüm eklemeler geriye uyumludur.
+   ===================================================================== */
+function CzFnFix(){
+'use strict';
+if(window.CzFix)return;
+const Fix=window.CzFix={};
+/* Cihaza özel ayarlar: buluta gönderilmez (buluttaki eski değer korunur), buluttan gelince yerel değer korunur */
+const DEV_KEYS=Fix.DEV_KEYS=new Set(['theme','design','iosLiquid','widgets','v8w','badgesSeen','rates','ratesAt','autoRates','aiAuth','aiApi','aiModel','aiModels','aiDiag',
+  'privacy','motion','moodColors','dockMini','accent','zoom','walletIsland','oled','density','gwFlow','appIcon','clipLast','payShortcut','lastBackup','backupEnc','recapSeen','czyRecapOff','lastRefresh']);
+const COLS=['accounts','transactions','budgets','recurring','loans','goals','templates','categories','debts'];
+const isDemo=Fix.isDemo=()=>{try{return localStorage.getItem('cuzdan_demo')==='1'}catch(e){return false}};
+const eq=(a,b)=>a===b||JSON.stringify(a)===JSON.stringify(b);
+
+/* ---------- küçük IndexedDB anahtar-değer deposu (fiş deposunu paylaşır) ---------- */
+const KV=Fix.KV={get:k=>Attach.op('readonly',st=>st.get(k)).catch(()=>null),set:(k,v)=>Attach.op('readwrite',st=>st.put(v,k)),del:k=>Attach.op('readwrite',st=>st.delete(k)).catch(()=>{})};
+
+/* ---------- Otomatik yedek: her toplu değiştirmeden (sıfırlama, demo, geri yükleme, buluttan çekme, birleştirme) önce, son 3 ---------- */
+const AB=Fix.AB={KEY:'cuzdan_autobackup',reason:null,last:'',
+  async list(){const v=await KV.get(this.KEY);return Array.isArray(v)?v:[]},
+  save(state,reason){if(!state||(!(state.accounts||[]).length&&!(state.transactions||[]).length))return Promise.resolve();
+    let data;try{data=JSON.stringify(state)}catch(e){return Promise.resolve()}if(data===this.last)return Promise.resolve();this.last=data;
+    const item={at:Date.now(),reason:reason||'replace',tx:(state.transactions||[]).length,acc:(state.accounts||[]).length,data};
+    this._q=(this._q||Promise.resolve()).then(async()=>{const l=await this.list();l.unshift(item);await KV.set(this.KEY,l.slice(0,3))}).catch(e=>console.warn('autobackup',e));return this._q}};
+{const _d=Store.dispatch;Store.dispatch=function(a){if(a&&a.type==='state/replace'){AB.save(Store.get(),AB.reason||'replace');AB.reason=null}return _d.apply(this,arguments)}}
+const RS={replace:'Toplu değişiklik',pull:'Buluttan güncelleme öncesi',merge:'Birleştirme öncesi',reset:'Sıfırlama öncesi',demo:'Örnek veri öncesi',restore:'Geri yükleme öncesi','account-delete':'Hesap silme öncesi'};
+Fix.restoreAuto=i=>AB.list().then(l=>{const x=l[i];if(!x)return;let d;try{d=JSON.parse(x.data)}catch(e){Toast.show('⚠️ Yedek okunamadı');return}
+  try{Backup.restore(d)}catch(e){Toast.show('⚠️ Yedek bozuk görünüyor')}});
+{const _bo=BackupSheet.open;BackupSheet.open=function(){const r=_bo.apply(this,arguments);
+  AB.list().then(l=>{const sh=document.querySelector('#sheet .action-list');if(!sh||!l.length||document.getElementById('cz-ab'))return;
+    const box=document.createElement('div');box.id='cz-ab';box.className='glass list action-list';box.style.cssText='padding:0 12px;margin-top:12px';
+    box.innerHTML='<p class="muted xs" style="margin:10px 2px 4px;line-height:1.45">Otomatik yedekler · toplu değişikliklerden önce bu telefonda alınır (son 3)</p>'+
+      l.map((x,i)=>`<button class="row pressable" onclick="CzFix.restoreAuto(${i})"><div class="mid"><b>${U.esc(new Date(x.at).toLocaleString('tr-TR'))}</b><span>${U.esc(RS[x.reason]||x.reason)} · ${+x.tx||0} işlem · ${+x.acc||0} hesap</span></div></button>`).join('');
+    sh.after(box)});return r}}
+
+/* ---------- Ö7: bozuk kayıt sessizce ezilmesin ---------- */
+{const _load=Persist.load,_save=Persist.save;
+  Persist.load=function(){let raw=null;try{raw=localStorage.getItem(this.KEY)}catch(e){}
+    if(raw){let ok=false;try{const s=JSON.parse(raw);ok=!!(s&&s.version)}catch(e){}
+      if(!ok){Fix.corrupt=raw;let saved=false;try{localStorage.setItem('cuzdan_v2_corrupt',raw);saved=true}catch(e){}
+        Persist._hold=!saved;KV.set('cuzdan_v2_corrupt',raw).then(()=>{Persist._hold=false}).catch(()=>{})}}
+    return _load.call(this)};
+  Persist.save=function(s){if(this._hold){clearTimeout(this._ht);this._ht=setTimeout(()=>this.save(Store.get()),400);return}return _save.call(this,s)}}
+Fix.corruptSheet=()=>{if(!Fix.corrupt)return;Sheet.open(Sheet.head('Kayıtlı veriler okunamadı',{left:'Kapat',right:''})+
+  `<p class="muted sm" style="margin:0 4px 12px;line-height:1.5">Bu telefondaki kayıt bozuk görünüyor; uygulama boş başladı. Bozuk verinin ham kopyası saklandı, silinmedi. Bulut eşitlemesi açıksa verilerin buluttan geri gelir. Değilse yedekten geri yükle.</p>
+  <button class="btn primary pressable" onclick="Sheet.close(true);BackupSheet.open()">${C.ic('upload')}Yedekten geri yükle</button>
+  <button class="btn pressable" style="margin-top:8px" onclick="Exporter.download(CzFix.corrupt,'cuzdan-bozuk-kayit.json','application/json')">${C.ic('download')}Ham kopyayı indir</button>`)};
+
+/* ---------- Ö8: başka sekmede yapılan değişikliği al (bayat sekme üzerine yazmasın) ---------- */
+addEventListener('storage',e=>{if(e.key!==Persist.KEY||!e.newValue)return;try{const s=JSON.parse(e.newValue);if(!s||!s.version)return;Store.init(Persist.migrate(s));App.render()}catch(x){}});
+
+/* ---------- Ö4: bildirim metni güvenli HTML'e indirgenir (b/strong/i/em/small/span/br, sadece class) ---------- */
+const SAFE=new Set(['B','STRONG','I','EM','SMALL','SPAN','BR']);
+const clean=Fix.clean=html=>{const t=document.createElement('template');t.innerHTML=String(html??'');
+  const walk=n=>{[...n.childNodes].forEach(c=>{if(c.nodeType===1){if(!SAFE.has(c.tagName)){c.replaceWith(document.createTextNode(c.textContent));return}
+    [...c.attributes].forEach(a=>{if(a.name!=='class')c.removeAttribute(a.name)});walk(c)}else if(c.nodeType!==3)c.remove()})};
+  walk(t.content);const d=document.createElement('div');d.appendChild(t.content);return d.innerHTML};
+{const _t=Toast.show;Toast.show=function(msg,...rest){return _t.call(this,clean(msg),...rest)}}
+
+/* ---------- Kü1: silmede geri al ---------- */
+App.deleteTx=function(id){const s=Store.get(),t=D.tx(s,id);if(!t)return;const refs=(D.refundMap(s)[id]||[]);
+  if(!confirm(refs.length?'İşlem ve bağlı iade kayıtları silinsin mi?':'Bu işlem silinsin mi?'))return;
+  const ids=new Set([id,...refs.map(x=>x.id)]),recs=s.recurring.filter(r=>Object.values(r.paid||{}).some(v=>ids.has(v)));
+  const att=t.attachmentId;let undone=false;Store.dispatch({type:'remove',col:'transactions',id});
+  const timer=att?setTimeout(()=>{if(!undone)Attach.del(att).catch(()=>{})},9000):null;
+  Sheet.close(true);if(this.current()?.name==='tx')this.back(true);
+  Toast.show('İşlem silindi',6000,{label:'Geri al',fn:()=>{undone=true;clearTimeout(timer);
+    Store.dispatch({type:'batch',actions:[{type:'upsert',col:'transactions',item:t},...refs.map(x=>({type:'upsert',col:'transactions',item:x})),...recs.map(r=>({type:'upsert',col:'recurring',item:r}))]});
+    Toast.show('↩︎ İşlem geri alındı')}})};
+
+/* ---------- Ö6: bankayla eşitleme düzeltmeleri harcama analitiğine girmez ---------- */
+{const _al=D.allocations;D.allocations=U.memo(s=>_al(s).filter(x=>x.tx.source!=='adjust'))}
+
+/* ---------- Kü12: hesap silme ve kesim günü değişikliği uyarıları ---------- */
+AccForm.remove=function(){const s=Store.get(),id=this.draft.id,n=s.transactions.filter(t=>t.accountId===id).length,inc=s.transactions.filter(t=>t.kind==='transfer'&&t.toAccountId===id).length;
+  let msg=n?`Bu hesaba ait ${n} işlem de silinecek. Emin misin?`:'Hesap silinsin mi?';
+  if(inc)msg+=`\n\nBu hesaba yapılmış ${inc} transfer, gönderen hesapta "hedefi silinmiş transfer" olarak kalır; gönderen hesabın bakiyesi değişmez.`;
+  if(!confirm(msg))return;AB.save(s,'account-delete');Store.dispatch({type:'remove',col:'accounts',id});Sheet.close();App.back(true);Toast.show('Hesap silindi')};
+{const _as=AccForm.save;AccForm.save=function(keep){const d=this.draft;
+  if(d&&d.id&&d.type==='credit'&&Sheet.el('#ac-cut')){const old=D.account(Store.get(),d.id),nc=parseInt(Sheet.val('#ac-cut'));
+    if(old&&old.credit&&nc>=1&&nc<=31&&nc!==+old.credit.cutDay){const has=Object.keys(Store.get().paidStatements||{}).some(k=>k.startsWith(d.id+'|'));
+      if(!confirm('Kesim günü değişince geçmiş ekstreler yeni güne göre yeniden hesaplanır'+(has?'; elle "ödendi" işaretlediğin ekstreler başka döneme kayabilir':'')+'. Devam edilsin mi?'))return false}}
+  return _as.apply(this,arguments)}}
+
+/* ---------- Kü13: silinmiş hesap önerilmesin ---------- */
+{const _b=PayCapture.build;PayCapture.build=function(o,s=Store.get()){const r=_b.call(this,o,s);
+  if(r&&r.accountId&&!D.account(s,r.accountId)){const a=s.accounts.find(a=>a.type==='credit')||s.accounts[0];r.accountId=a?a.id:''}return r}}
+
+/* ---------- Kü9: geri yükleme bu cihazın PIN'ini korur; demo modundan çıkar ---------- */
+{const _r=Backup.restore;Backup.restore=function(d){if(d&&d.cuzdan==='ekstre')return _r.call(this,d);
+  if(!d||!Array.isArray(d.accounts)||!Array.isArray(d.transactions))throw new Error('bad');
+  const demo=isDemo();AB.reason='restore';const r=_r.call(this,{...d,security:Store.get().security});AB.reason=null;
+  if(r&&demo){try{localStorage.removeItem('cuzdan_demo')}catch(e){}Cloud.setMeta({dirty:true,at:Date.now()});Fix.demoBar();if(Cloud.user)Cloud.first().catch(e=>Cloud.fail(e))}
+  return r}}
+
+/* ---------- Kü11: PIN deneme sınırı kalıcı + kilitliyken veriler gizli ---------- */
+{const PL='cuzdan_pinlock';
+  const ld=()=>{try{const o=JSON.parse(localStorage.getItem(PL)||'{}');Security.fails=Math.max(Security.fails||0,+o.f||0);Security.blockedUntil=Math.max(Security.blockedUntil||0,+o.u||0);Security._rounds=+o.r||0}catch(e){}};
+  const sv=()=>{try{localStorage.setItem(PL,JSON.stringify({f:Security.fails||0,u:Security.blockedUntil||0,r:Security._rounds||0}))}catch(e){}};
+  const _press=LockScreen.press;LockScreen.press=async function(k){ld();const bu=Security.blockedUntil||0;const r=await _press.call(this,k);
+    if((Security.blockedUntil||0)>bu&&Security.blockedUntil>Date.now()+20000){Security._rounds=(Security._rounds||0)+1;Security.blockedUntil=Date.now()+Math.min(3600e3,30000*2**(Security._rounds-1))}
+    if(Security.unlocked){Security.fails=0;Security._rounds=0;Security.blockedUntil=0}sv();return r};
+  const _lock=Security.lock;Security.lock=function(){const r=_lock.apply(this,arguments);if(!this.unlocked)document.documentElement.classList.add('cz-locked');return r};
+  const _un=LockScreen.unlock;LockScreen.unlock=function(){document.documentElement.classList.remove('cz-locked');return _un.apply(this,arguments)}}
+{const st=document.createElement('style');st.id='cz-fnfix-css';
+  st.textContent='html.cz-locked body>*:not(#lock):not(#toasts):not(script):not(style):not(#cz-fnfix-css){visibility:hidden!important}'+
+    '#cz-demo-bar{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 6px);z-index:2147483000;display:flex;gap:8px;align-items:center;'+
+    'padding:6px 6px 6px 12px;border-radius:999px;background:rgba(255,159,10,.95);color:#1c1c1e;font:600 12.5px/1.2 -apple-system,system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.3);max-width:calc(100vw - 32px)}'+
+    '#cz-demo-bar button{border:0;border-radius:999px;background:#1c1c1e;color:#fff;font:inherit;padding:6px 10px;cursor:pointer;white-space:nowrap}';
+  (document.head||document.documentElement).appendChild(st)}
+
+/* ---------- Kü14: erişilebilirlik ---------- */
+/* (tutar alanlarına aria-label yerinde eklendi) */
+
+/* ===================== BULUT ===================== */
+/* senkron tabanı: buluttaki son bilinen sürümün kopyası (3 yollu birleştirme için) */
+Fix.base=null;
+Fix.loadBase=function(){if(this._bl)return this._bl;this._bl=KV.get('cuzdan_syncbase').then(v=>{if(v&&v.data&&!this.base){try{this.base={rev:v.rev,uid:v.uid,state:JSON.parse(v.data)}}catch(e){}}}).catch(()=>{});return this._bl};
+Fix.saveBase=function(rev,uid,state){let data;try{data=JSON.stringify(state)}catch(e){return}this.base={rev,uid,state:JSON.parse(data)};KV.set('cuzdan_syncbase',{rev,uid,data}).catch(()=>{})};
+/* base → cur arasındaki yerel değişiklikleri remote üzerine uygula (kayıt düzeyinde; aynı kayıtta yerel kazanır) */
+const delta=Fix.delta=(base,cur,remote)=>{const out={...remote,settings:{...(remote.settings||{})},paidStatements:{...(remote.paidStatements||{})}};
+  for(const k of COLS){const B=new Map((base[k]||[]).map(x=>[x.id,x])),Cm=new Map((cur[k]||[]).map(x=>[x.id,x])),R=new Map((remote[k]||[]).map(x=>[x.id,x]));
+    const inb=k==='transactions'?new Set((remote[k]||[]).filter(x=>x.inboxId).map(x=>x.inboxId)):null;
+    for(const[id,x]of Cm){const b=B.get(id);if(b&&eq(b,x))continue;if(!R.has(id)&&inb&&x.inboxId&&inb.has(x.inboxId))continue;R.set(id,x)}
+    for(const id of B.keys())if(!Cm.has(id))R.delete(id);
+    out[k]=[...R.values()]}
+  const bs=base.settings||{},cs=cur.settings||{};
+  for(const k of new Set([...Object.keys(bs),...Object.keys(cs)])){if(DEV_KEYS.has(k))continue;if(!eq(bs[k],cs[k])){if(cs[k]===undefined)delete out.settings[k];else out.settings[k]=cs[k]}}
+  DEV_KEYS.forEach(k=>{if(k in cs)out.settings[k]=cs[k]});
+  const bp=base.paidStatements||{},cp=cur.paidStatements||{};
+  for(const k of new Set([...Object.keys(bp),...Object.keys(cp)]))if(!!bp[k]!==!!cp[k]){if(cp[k])out.paidStatements[k]=cp[k];else delete out.paidStatements[k]}
+  out.security=cur.security;if(cur.ai)out.ai=cur.ai;return out};
+
+/* Kü4: cihaz ayarları */
+{const _unpack=Cloud.unpack;Cloud.unpack=async function(txt){const r=await _unpack.call(this,txt);const rs=r.settings||{},snap={};
+  DEV_KEYS.forEach(k=>{if(k in rs)snap[k]=rs[k]});try{localStorage.setItem('cuzdan_cloud_dev',JSON.stringify(snap))}catch(e){}
+  const cur=Store.get(),ls=(cur&&cur.settings)||{},st={...rs};
+  if(cur&&(cur.accounts.length||cur.transactions.length))DEV_KEYS.forEach(k=>{if(k in ls)st[k]=ls[k]});
+  return{...r,settings:st}}}
+{const _pack=Cloud.pack;Cloud.pack=async function(s){let snap=null;try{snap=JSON.parse(localStorage.getItem('cuzdan_cloud_dev')||'null')}catch(e){}
+  if(snap&&s&&s.settings){const st={...s.settings};DEV_KEYS.forEach(k=>{if(k in snap)st[k]=snap[k]});s={...s,settings:st}}return _pack.call(this,s)}}
+{const _oc=Cloud.onChange;Cloud.onChange=function(a){if(isDemo())return;
+  if(a&&a.type==='settings/update'&&a.payload){const ks=Object.keys(a.payload);if(ks.length&&ks.every(k=>DEV_KEYS.has(k)))return}return _oc.apply(this,arguments)}}
+{const _m=Cloud.merge;Cloud.merge=function(a,b){const o=_m.call(this,a,b),seen=new Set();
+  o.transactions=(o.transactions||[]).filter(t=>{if(!t.inboxId)return true;if(seen.has(t.inboxId))return false;seen.add(t.inboxId);return true});return o}}
+
+/* durum kancası: ilk eşitleme tamamlandı mı (Siri gelen kutusu bunu bekler), Kü3 eski çakışma penceresi */
+{const _set=Cloud.set;Cloud.set=function(st,err){_set.apply(this,arguments);
+  if(st==='ok'){this._synced=true;this._fails=0;clearTimeout(this._ft);
+    if(document.getElementById('cloud-conf')){try{Sheet.close(true)}catch(e){}}
+    setTimeout(()=>{try{CzInbox.flush()}catch(e){}},60)}
+  else if(st==='signedout'||st==='off'||st==='demo')this._synced=false}}
+{const _badge=Cloud.badge;Cloud.badge=function(){if(this.status==='demo')return '<span id="cloud-st" class="cloud-st" style="color:var(--orange)"><i style="background:var(--orange)"></i>Örnek veri · eşitleme kapalı</span>';return _badge.apply(this,arguments)}}
+
+/* Ö2: bağlantı kurulamadıysa yeniden dene */
+{const _conn=Cloud.connect;Cloud.connect=async function(){if(this._connecting)return;this._connecting=true;let r;try{r=await _conn.apply(this,arguments)}finally{this._connecting=false}
+  if(!this.ready&&this.cfg()){clearTimeout(this._rt);const n=this._cr=(this._cr||0)+1;
+    if(n<=6)this._rt=setTimeout(()=>{if(!this.ready&&navigator.onLine)this.connect()},Math.min(60000,4000*2**(n-1)));
+    else this.set('error','Buluta bağlanılamadı. İnternet geldiyse uygulamayı kapatıp yeniden aç.')}
+  else if(this.ready)this._cr=0;return r};
+  const re=()=>{if(!Cloud.ready&&!Cloud._connecting&&Cloud.cfg()&&navigator.onLine){Cloud._cr=0;Cloud.connect()}};
+  addEventListener('online',re);document.addEventListener('visibilitychange',()=>{if(!document.hidden)re()})}
+
+/* Kü2: yazma hatasında artan aralıkla tekrar dene */
+{const _fail=Cloud.fail;Cloud.fail=function(e){_fail.apply(this,arguments);
+  if(this.user&&!isDemo()&&this.meta().dirty){const n=this._fails=(this._fails||0)+1;clearTimeout(this._ft);
+    this._ft=setTimeout(()=>{if(this.user&&this.meta().dirty)this.schedule(100)},Math.min(300000,5000*2**Math.min(n-1,6)))}}}
+
+/* demo modunda bulut tamamen devre dışı */
+{const _first=Cloud.first;Cloud.first=async function(){if(isDemo()){this.set('demo');return}await Fix.loadBase();const r=await _first.apply(this,arguments);
+  /* güncellemeden sonraki ilk açılış: birleştirme tabanı yoksa buluttaki mevcut sürümü taban olarak al */
+  try{const lm=this.meta(),u=this.user;if(u&&this.status==='ok'&&(!Fix.base||Fix.base.rev!==lm.base||Fix.base.uid!==u.uid)){const rm=await this.api.readMeta(u.uid);
+    if(rm&&rm.rev===lm.base){const st=await this.unpack(await this.api.readAll(u.uid,rm));if(this.meta().base===rm.rev&&(!Fix.base||Fix.base.rev!==rm.rev))Fix.saveBase(rm.rev,u.uid,st)}}}catch(e){}
+  return r}}
+{const _or=Cloud.onRemote;Cloud.onRemote=function(rm){if(isDemo())return;return _or.apply(this,arguments)}}
+
+/* Ö1: meta belgesi üzerinden karşılaştır-ve-yaz (transaction) */
+Fix.writeCAS=async function(uid,chunks,meta,rm){const api=Cloud.api,sdk=api===FirebaseAdapter?FirebaseAdapter.sdk:null;
+  if(!sdk||!sdk.Fs||!sdk.Fs.runTransaction)return api.write(uid,chunks,meta,rm?.chunks||0);
+  const{Fs,db}=sdk,ref=i=>FirebaseAdapter.ref(uid,i),mref=ref('meta'),exp=rm?rm.rev:null;
+  await Fs.runTransaction(db,async tr=>{const cur=await tr.get(mref),cd=cur.exists()?cur.data():null;
+    if((cd?cd.rev:null)!==exp)throw Object.assign(new Error('stale'),{code:'cuzdan/stale'});
+    const old=cd?(+cd.chunks||0):0;chunks.forEach((d,i)=>tr.set(ref('c'+i),{d}));for(let i=chunks.length;i<old;i++)tr.delete(ref('c'+i));
+    tr.set(mref,{...meta,updatedAt:Fs.serverTimestamp()})})};
+
+Cloud.push=async function(force,_n=0){if(isDemo())return;if(this.status==='locked'&&!force)return;
+  if(!this.user||this.busy){if(this.busy)this.schedule(1500);return}this.busy=true;let retry=false;
+  try{const uid=this.user.uid,lm=this.meta();this.set('syncing');
+    const rm=await this.api.readMeta(uid);
+    if(rm&&!force&&rm.rev>lm.base&&rm.device!==this.dev()){this.busy=false;if(lm.dirty&&!this.empty())return this.conflict(rm);return this.pull(rm,'☁️ Buluttaki verilerin yüklendi')}
+    const snap=Store.get(),str=await this.pack(snap),chunks=this.split(str),rev=Math.max(rm?.rev||0,lm.base)+1;
+    try{await Fix.writeCAS(uid,chunks,{rev,chunks:chunks.length,size:str.length,device:this.dev(),app:'cuzdan',v:SCHEMA_VERSION,enc:!!this.pass(),
+      counts:{tx:snap.transactions.length,acc:snap.accounts.length}},rm)}
+    catch(e){if(e&&e.code==='cuzdan/stale'&&_n<3){retry=true;return}throw e}
+    const changed=this.meta().at>lm.at;this.setMeta({base:rev,dirty:changed,uid,last:Date.now()});Fix.saveBase(rev,uid,snap);this.set('ok');
+    if(changed)this.schedule(800);setTimeout(()=>this.syncFiles().catch(()=>{}),500)}
+  finally{this.busy=false;if(retry)setTimeout(()=>this.push(force,_n+1).catch(e=>this.fail(e)),150)}};
+
+/* K2: çekme sırasında yapılan yerel değişiklikler korunur */
+Cloud.pull=async function(rm,msg){if(isDemo())return;this.set('syncing');const start=Store.get();
+  const txt=await this.api.readAll(this.user.uid,rm);let remote;
+  try{remote=await this.unpack(txt)}catch(e){if(e&&(e.code==='cuzdan/needpass'||e.code==='cuzdan/badpass')){this.set('locked',e.code==='cuzdan/badpass'?'Şifreleme parolası yanlış':'Bulut verilerin şifreli');CloudSheet.askPass(rm,msg,e.code==='cuzdan/badpass');return}throw e}
+  const cur=Store.get(),changed=cur!==start,payload=changed?delta(start,cur,remote):remote;
+  AB.reason='pull';this.applying=true;try{Store.dispatch({type:'state/replace',payload})}finally{this.applying=false}
+  this.setMeta({base:rm.rev,dirty:changed,uid:this.user.uid,last:Date.now(),...(changed?{at:Date.now()}:{})});Fix.saveBase(rm.rev,this.user.uid,remote);
+  this.set('ok');if(msg)Toast.show(msg);if(changed)this.schedule(300)};
+
+/* Ö1/K2: iki tarafta da değişiklik varsa ve taban biliniyorsa otomatik birleştir; bilinmiyorsa eski seçim penceresi */
+Fix.autoMerge=async function(rm){if(this._merging)return;this._merging=true;
+  try{Cloud.set('syncing');const uid=Cloud.user.uid,txt=await Cloud.api.readAll(uid,rm),remote=await Cloud.unpack(txt);
+    const merged=delta(this.base.state,Store.get(),remote);AB.reason='merge';Cloud.applying=true;try{Store.dispatch({type:'state/replace',payload:merged})}finally{Cloud.applying=false}
+    Cloud.setMeta({base:rm.rev,dirty:true,uid,at:Date.now()});this.saveBase(rm.rev,uid,remote);this._merging=false;
+    await Cloud.push();Toast.show('☁️ Diğer cihazdaki değişikliklerle birleştirildi')}
+  finally{this._merging=false}};
+{const _conf=Cloud.conflict;Cloud.conflict=function(rm){if(isDemo())return;const self=this;
+  (async()=>{await Fix.loadBase();const lm=self.meta(),b=Fix.base;
+    if(Fix._merging)return;
+    if(b&&self.user&&b.uid===self.user.uid&&lm.uid===self.user.uid&&b.rev===lm.base){try{await Fix.autoMerge(rm);return}catch(e){console.warn('automerge',e)}}
+    _conf.call(self,rm)})()}}
+
+/* ---------- K3: Siri gelen kutusu — önce yerel kayıt + bulut, sonra silme ---------- */
+{const IBD='cuzdan_inbox_done';
+  const ibDone=()=>{try{return new Set(JSON.parse(localStorage.getItem(IBD)||'[]'))}catch(e){return new Set()}};
+  const ibSave=set=>{try{localStorage.setItem(IBD,JSON.stringify([...set].slice(-400)))}catch(e){}};
+  Fix.waitClean=async ms=>{const t0=Date.now();while(Date.now()-t0<ms){if(Cloud.user&&!Cloud.busy&&!Cloud.meta().dirty&&Cloud.status==='ok')return true;await new Promise(r=>setTimeout(r,250))}return false};
+  const _take=CzInbox.take;
+  CzInbox.take=async function(uid,refs){this._pend={uid,refs};if(this._busy){this._again=true;return}
+    const s0=Store.get(),sdk=FirebaseAdapter.sdk;if(isDemo()||!Cloud._synced||!s0.accounts.length||!sdk)return;
+    this._busy=true;let allOk=false;
+    try{const{Fs,db}=sdk,done=ibDone(),have=new Set(s0.transactions.filter(t=>t.inboxId).map(t=>t.inboxId));
+      refs.forEach(r=>{if(have.has(r.id))done.add(r.id)});
+      const fresh=refs.filter(r=>!done.has(r.id));
+      if(fresh.length){const before=new Set(Store.get().transactions.map(t=>t.id));
+        FirebaseAdapter.sdk={...sdk,Fs:{...Fs,runTransaction:async(d,fn)=>fn({get:r=>Fs.getDoc(r),delete:()=>{},set:()=>{},update:()=>{}})}};
+        let p;try{p=_take.call(this,uid,fresh)}finally{FirebaseAdapter.sdk=sdk}
+        await p;fresh.forEach(r=>done.add(r.id));ibSave(done);
+        const st=Store.get(),nc=st.accounts.find(a=>a.type!=='credit'),
+          fix=st.transactions.filter(t=>!before.has(t.id)&&t.source==='siri'&&t.kind==='income'&&D.isCredit(st,t.accountId));
+        if(nc&&fix.length)Store.dispatch({type:'batch',actions:fix.map(t=>({type:'upsert',col:'transactions',item:{...t,accountId:nc.id}}))});
+        if(Cloud.user&&Cloud.meta().dirty)Cloud.schedule(200)}
+      if(await Fix.waitClean(20000)){allOk=true;
+        for(const r of refs){if(!done.has(r.id))continue;try{await Fs.runTransaction(db,async tr=>{const x=await tr.get(r);if(x.exists())tr.delete(r)})}catch(e){allOk=false;console.warn('inbox del',e)}}}}
+    catch(e){console.warn('inbox',e)}
+    finally{this._busy=false;if(this._again){this._again=false;const q=this._pend;if(q)setTimeout(()=>this.take(q.uid,q.refs),100)}else if(allOk&&this._pend&&this._pend.refs===refs)this._pend=null}};
+  CzInbox.flush=function(){const q=this._pend;if(q&&q.refs&&q.refs.length)this.take(q.uid,q.refs)}}
+
+/* ---------- Ö9: kestirme anahtarı uyarısı + iptal ---------- */
+Fix.revokeKey=async function(){const u=FirebaseAdapter.sdk?.auth?.currentUser;if(!u){Toast.show('Önce bulut hesabınla giriş yap');return}
+  if(!confirm('Kestirme anahtarını iptal etmenin tek yolu Firebase şifreni değiştirmek: şifre değişince tüm anahtarlar ve diğer cihazlardaki oturumlar geçersiz olur.\n\nŞifre sıfırlama e-postası gönderilsin mi? Sonra yeni şifreyle tekrar giriş yap ve kestirmeye yeni anahtarı yapıştır.'))return;
+  try{await FirebaseAdapter.reset(u.email);Toast.show('✉️ Şifre sıfırlama e-postası gönderildi',5000)}catch(e){Toast.show(Cloud.human(e))}};
+{const _row=CzInbox.row;CzInbox.row=function(){const h=_row.apply(this,arguments),i=h.lastIndexOf('</div></div>');if(i<0)return h;
+  const w=`<p class="cz-key-warn" style="margin:8px 0 0;font-size:12.5px;line-height:1.45;color:var(--orange)">⚠️ Bu anahtar bulut hesabına <b>tam erişim</b> verir: sahibi tüm verilerini okuyabilir, değiştirebilir, silebilir. Kimseyle paylaşma, ekran görüntüsünü gönderme, kestirmeyi başkasına iletme. Siri'nin okuduğu kısa özet (bakiye, borç, yaklaşan ödemeler) şifresiz saklanır.</p><button class="mini-btn" style="margin-top:6px" onclick="CzFix.revokeKey()">Anahtarı iptal et</button>`;
+  return h.slice(0,i)+w+h.slice(i)}}
+
+/* ---------- K4: demo modu buluta hiç dokunmaz; sıfırlama buluttan ayrı sorulur ---------- */
+Fix.demoBar=function(){let el=document.getElementById('cz-demo-bar');if(!isDemo()){if(el)el.remove();return}
+  if(!document.body)return;if(!el){el=document.createElement('div');el.id='cz-demo-bar';el.setAttribute('role','status');
+    el.innerHTML='<span>Örnek veriler · eşitleme kapalı</span><button type="button" onclick="CzFix.exitDemo()">Gerçek verilerime dön</button>';document.body.appendChild(el)}};
+App.loadDemo=async function(){const s=Store.get();
+  if(isDemo()){App.render('fade');return}
+  if((s.accounts.length||s.transactions.length)&&!confirm('Örnek veriler yüklensin mi?\n\nGerçek verilerin bu telefonda saklanır ve "Gerçek verilerime dön" ile aynen geri gelir. Örnek veriler buluta gönderilmez; bulut ve diğer cihazlar etkilenmez.'))return;
+  try{await KV.set('cuzdan_predemo',JSON.stringify(s))}catch(e){Toast.show('⚠️ Gerçek verilerin saklanamadı; örnek veriler yüklenmedi');return}
+  try{localStorage.setItem('cuzdan_demo','1')}catch(e){}clearTimeout(Cloud.timer);if(Cloud.ready)Cloud.set('demo');
+  AB.reason='demo';Cloud.applying=true;try{Store.dispatch({type:'state/replace',payload:Demo.build(s)})}finally{Cloud.applying=false}
+  Sheet.close();UI.tab='home';UI.stack=[];this.render('fade');Fix.demoBar();Toast.show('✨ Örnek veriler yüklendi · eşitleme kapalı')};
+Fix.exitDemo=async function(){let raw=null;try{raw=await KV.get('cuzdan_predemo')}catch(e){}
+  let st=null;try{st=raw?Persist.migrate(JSON.parse(raw)):null}catch(e){}
+  const cur=Store.get();if(!st)st={...emptyState(),settings:cur.settings,security:cur.security};
+  st={...st,security:cur.security};
+  Cloud.applying=true;try{Store.dispatch({type:'state/replace',payload:st})}finally{Cloud.applying=false}
+  try{localStorage.removeItem('cuzdan_demo')}catch(e){}KV.del('cuzdan_predemo');Fix.demoBar();Sheet.close(true);UI.stack=[];App.render('fade');Toast.show('✓ Gerçek verilerine dönüldü');
+  if(Cloud.user)Cloud.first().catch(e=>Cloud.fail(e));else if(Cloud.ready)Cloud.set('signedout')};
+App.resetAll=async function(){if(isDemo()){if(confirm('Örnek verilerden çıkıp gerçek verilerine dönülsün mü?'))Fix.exitDemo();return}
+  if(!confirm('Bu telefondaki tüm veriler silinecek. Emin misin?'))return;const s=Store.get();
+  let cloudToo=false;
+  if(Cloud.user)cloudToo=confirm('Buluttaki verilerini de silmek istiyor musun?\n\nTamam: bulut ve bağlı diğer cihazlardaki veriler de silinir.\nVazgeç (önerilen): sadece bu telefon silinir; buluttaki verilerin korunur ve bu telefonda bulut oturumu kapatılır.');
+  const payload={...emptyState(),settings:s.settings,security:s.security};AB.reason='reset';
+  if(cloudToo)Store.dispatch({type:'state/replace',payload});
+  else{Cloud.applying=true;try{Store.dispatch({type:'state/replace',payload})}finally{Cloud.applying=false}
+    if(Cloud.user){clearTimeout(Cloud.timer);try{await Cloud.api.signOut()}catch(e){}Cloud.setMeta({uid:null,base:0,dirty:false})}}
+  Sheet.close();UI.stack=[];App.render('fade');Toast.show(cloudToo?'Veriler silindi (bulut dahil)':Cloud.cfg()&&s.accounts.length?'Bu telefondaki veriler silindi · bulut korunuyor':'Veriler silindi')};
+
+/* açılış sonrası */
+{const _i=App.init;App.init=function(){const r=_i.apply(this,arguments);try{Fix.demoBar()}catch(e){}if(Fix.corrupt)setTimeout(()=>Fix.corruptSheet(),1200);return r}}
+}
+
+</script>
 <script>
 
 /* ---------- 10_core.js ---------- */
@@ -3212,7 +3643,7 @@ const U={
   short:n=>PRIVACY?'•':Math.abs(n)>=1000?(n/1000).toLocaleString('tr-TR',{maximumFractionDigits:1})+'k':String(Math.round(n)),
   num:n=>String(U.r2(n)).replace('.',','),
   parseNum(s){s=String(s??'').trim().replace(/\s|₺|\$|€/g,'');if(!s)return NaN;
-    if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+    if(s.includes(',')&&s.includes('.')&&s.lastIndexOf('.')>s.lastIndexOf(','))s=s.replace(/,/g,'');else if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
     else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
     return parseFloat(s)},
   dim:(y,m)=>new Date(y,m+1,0).getDate(),
@@ -3238,7 +3669,7 @@ const U={
   /* durum (state) referansına bağlı çok girişli önbellek: aynı state + aynı argümanlar → aynı sonuç */
   memo(fn){const wm=new WeakMap();return(s,...a)=>{let m=wm.get(s);if(!m){m=new Map();wm.set(s,m)}
     const k=a.length?JSON.stringify(a):'';if(m.has(k))return m.get(k);const r=fn(s,...a);m.set(k,r);return r}},
-  split(total,n){const base=Math.floor(total/n*100)/100;const out=Array(n).fill(base);out[0]=U.r2(total-base*(n-1));return out},
+  split(total,n){n=Math.max(1,n|0);const c=Math.round((+total||0)*100),b=Math.floor(c/n),out=Array(n).fill(b/100);out[0]=(c-b*(n-1))/100;return out},
   debounce(fn,ms=180){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}},
   b64url:buf=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),
   unb64url(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))},
@@ -3687,11 +4118,11 @@ D.matrix=U.memo((s,accId='',months=12)=>{const cards=s.accounts.filter(a=>a.type
 /* ---------- Takvim ---------- */
 D.calendar=U.memo((s,y,m)=>{const days={},from=U.monthStart(y,m),to=U.monthEnd(y,m),ym=from.slice(0,7);
   for(let d=1;d<=U.dim(y,m);d++)days[U.iso(new Date(y,m,d))]={spent:0,income:0,events:[],txs:[]};
-  for(const t of s.transactions){const day=days[t.date];if(!day)continue;day.txs.push(t);if(t.kind==='expense')day.spent+=t.amount;if(t.kind==='income')day.income+=t.amount}
+  for(const t of s.transactions){const day=days[t.date];if(!day)continue;day.txs.push(t);if(t.kind==='expense'&&t.source!=='adjust')day.spent+=t.amount;if(t.kind==='income')day.income+=t.amount}
   for(const a of s.accounts.filter(a=>a.type==='credit')){const st=D.statements(s,a.id);
     for(let i=st.open-2;i<=st.open+6;i++){const x=D.stmtAt(s,a.id,i);if(x.total<=0)continue;
       if(days[x.due])days[x.due].events.push({type:'stmt',title:a.name+' ekstresi',sub:D.stmtName(i),amount:x.remaining>0?x.remaining:x.total,done:x.remaining<=0.009,color:gcol(a.color),accId:a.id,idx:i,projected:i>=st.open});
-      if(days[x.cut]&&i>=st.open-1)days[x.cut].events.push({type:'cut',title:a.name+' hesap kesimi',amount:x.total,color:gcol(a.color),info:true})}}
+      if(days[x.cut]&&i>=st.open-1)days[x.cut].events.push({type:'cut',title:a.name,amount:x.total,color:gcol(a.color),info:true})}}
   for(const r of s.recurring){const d=U.iso(new Date(y,m,Math.min(r.day,U.dim(y,m))));if(days[d])days[d].events.push({type:'rec',id:r.id,ym,title:r.name,amount:r.amount,income:r.type==='income',done:!!r.paid?.[ym],color:cat(r.category).color})}
   for(const l0 of s.loans){const l=D.loan(s,l0.id);l.schedule.forEach(x=>{if(days[x.date])days[x.date].events.push({type:'loan',id:l.id,title:l.name+' taksiti',sub:(x.k+1)+'/'+l.count,amount:x.amount,done:x.paid,color:'#8e8e93'})})}
   for(const x of (s.debts||[])){const d=D.debt(s,x.id);if(d.due&&!d.done&&days[d.due])days[d.due].events.push({type:'debt',title:(d.dir==='lent'?d.person+' ödeyecek':d.person+' kişisine ödeme'),amount:d.remaining,color:d.dir==='lent'?'#30d158':'#ff453a',income:d.dir==='lent',id:d.id,person:d.person})}
@@ -3707,9 +4138,9 @@ D.monthReport=U.memo((s,y,m)=>{const from=U.monthStart(y,m),to=U.monthEnd(y,m),p
   const by=D.sumBy(alloc),pby=D.sumBy(prevAlloc);
   const cats=Object.keys({...by,...pby}).map(k=>({key:k,cur:U.r2(by[k]||0),prev:U.r2(pby[k]||0)})).filter(x=>x.cur>0||x.prev>0).sort((a,b)=>b.cur-a.cur);
   const daily=Array.from({length:U.dim(y,m)},(_,i)=>{const d=U.iso(new Date(y,m,i+1));return U.r2(alloc.filter(x=>x.date===d).reduce((a,x)=>a+x.amount,0))});
-  const merch={};inMonth.filter(t=>t.kind==='expense').forEach(t=>{const k=(t.merchant||cat(t.category).name).trim();merch[k]=merch[k]||{name:k,count:0,total:0,cat:t.category};merch[k].count++;merch[k].total+=t.amount});
+  const merch={};inMonth.filter(t=>t.kind==='expense'&&t.source!=='adjust').forEach(t=>{const k=(t.merchant||cat(t.category).name).trim();merch[k]=merch[k]||{name:k,count:0,total:0,cat:t.category};merch[k].count++;merch[k].total+=t.amount});
   const payments=U.r2(inMonth.filter(t=>t.kind==='payment').reduce((a,t)=>a+t.amount,0));
-  const biggest=inMonth.filter(t=>t.kind==='expense').sort((a,b)=>b.amount-a.amount)[0]||null;
+  const biggest=inMonth.filter(t=>t.kind==='expense'&&t.source!=='adjust').sort((a,b)=>b.amount-a.amount)[0]||null;
   return{y,m,from,to,income,expense,prevExpense,net:U.r2(income-expense),saveRate:income>0?(income-expense)/income:null,cats,daily,
     merchants:Object.values(merch).sort((a,b)=>b.total-a.total).slice(0,10),payments,biggest,txCount:inMonth.length,txs:inMonth.sort((a,b)=>a.date.localeCompare(b.date))}});
 
@@ -3756,7 +4187,7 @@ D.insights=U.memo(s=>{const out=[];const t=new Date();
   for(const tx of s.transactions){if(tx.kind!=='expense')continue;
     if(tx.warrantyMonths){const d=U.daysUntil(U.addMonths(tx.date,tx.warrantyMonths));if(d>=0&&d<=30)out.push({sev:'info',icon:'🛡️',title:'Garanti bitiyor',text:`${tx.merchant||'Ürün'} garantisi ${d} gün içinde bitiyor.`,go:['tx',{id:tx.id}]})}
     if(tx.source==='ocr'&&!D.refundMap(s)[tx.id]){const d=14-(-U.daysUntil(tx.date));if(d>=0&&d<=3&&tx.amount>=500)out.push({sev:'info',icon:'↩️',title:'İade süresi doluyor',text:`${tx.merchant||'Alışveriş'} için iade hakkı ${d} gün içinde bitiyor (14 gün varsayımı).`,go:['tx',{id:tx.id}]})}}
-  for(const x of (s.debts||[])){const d=D.debt(s,x.id);if(d.overdue)out.push({sev:d.dir==='owe'?'danger':'warn',key:'debt:'+d.id,icon:'people',title:d.dir==='owe'?d.person+' kişisine borcunun vadesi geçti':d.person+' ödemeyi geciktirdi',text:`Kalan ${U.money(d.remaining)} · vade ${U.fmtDate(d.due)}`,on:`DebtForm.person('${d.person.replace(/'/g,"\\'")}')`})}
+  for(const x of (s.debts||[])){const d=D.debt(s,x.id);if(d.overdue)out.push({sev:d.dir==='owe'?'danger':'warn',key:'debt:'+d.id,icon:'people',title:d.dir==='owe'?d.person+' kişisine borcunun vadesi geçti':d.person+' ödemeyi geciktirdi',text:`Kalan ${U.money(d.remaining)} · vade ${U.fmtDate(d.due)}`,on:'DebtForm.person('+JSON.stringify(String(d.person??''))+')'})}
   D.subCandidates(s).slice(0,2).forEach(c=>out.push({sev:'info',icon:'repeat',title:'Abonelik olabilir: '+c.name,text:`Son ${c.months} ayda her ay ~${U.money(c.amount)}. Düzenli ödemelere ekleyelim mi?`,on:"App.go('plan','rec')"}));
   const mc=D.monthCompare(s);if(t.getDate()>=5){
     Object.keys({...mc.curBy,...mc.prevBy}).map(k=>{const c=mc.curBy[k]||0,p=mc.prevBy[k]||0;return{k,c,p,pct:p?(c-p)/p*100:null}})
@@ -3770,7 +4201,7 @@ D.coachPayload=s=>{const t=new Date(),tot=a=>Math.round(a.reduce((x,y)=>x+y.amou
   const aylar=[0,1,2].map(k=>{const d=new Date(t.getFullYear(),t.getMonth()-k,1);const to=k===0?U.today():U.monthEnd(d.getFullYear(),d.getMonth());const items=D.spendIn(s,U.iso(d),to);
     return{ay:U.MONTHS[d.getMonth()]+' '+d.getFullYear(),devam_ediyor:k===0,toplam:tot(items),kategoriler:Object.fromEntries(Object.entries(D.sumBy(items)).map(([c,v])=>[cat(c).name,Math.round(v)]))}});
   const from60=U.addDays(U.today(),-60),merch={};
-  s.transactions.filter(x=>x.kind==='expense'&&x.date>=from60).forEach(x=>{const k=(x.merchant||cat(x.category).name).trim();merch[k]=merch[k]||{adet:0,toplam:0};merch[k].adet++;merch[k].toplam+=x.amount});
+  s.transactions.filter(x=>x.kind==='expense'&&x.source!=='adjust'&&x.date>=from60).forEach(x=>{const k=(x.merchant||cat(x.category).name).trim();merch[k]=merch[k]||{adet:0,toplam:0};merch[k].adet++;merch[k].toplam+=x.amount});
   const nw=D.netWorth(s);
   return{bugun:U.today(),ayin_gunu:t.getDate(),ay_uzunlugu:U.dim(t.getFullYear(),t.getMonth()),aylar,
     son_30_gun_gelir:Math.round(s.transactions.filter(x=>x.kind==='income'&&x.date>=U.addDays(U.today(),-30)).reduce((a,x)=>a+x.amount,0)),
@@ -3847,7 +4278,7 @@ const Exporter={
     a.dispatchEvent(new MouseEvent('click',{bubbles:false,cancelable:true,view:window}));   // belge düzeyindeki tıklama dinleyicilerine takılmasın
     setTimeout(()=>a.remove(),500);setTimeout(()=>URL.revokeObjectURL(url),8000)},
   csv(s,list,name){const head=['Tarih','Tür','Açıklama','Kategori','Hesap','Karşı hesap','Tutar','Para birimi','Taksit','Not','Kaynak'];
-    const q=v=>{v=String(v??'');return /[;"\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+    const q=v=>{v=String(v??'');if(/^[=+\-@\t\r]/.test(v)&&!/^-?[\d.,]+$/.test(v))v="'"+v;return /[;"\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
     const rows=list.map(t=>{const a=D.account(s,t.accountId),b=D.account(s,t.toAccountId),sg=D.txSign(t)||-1;
       return[t.date,KINDS[t.kind]||t.kind,t.merchant||'',['expense','income','refund'].includes(t.kind)?cat(t.category).name:'',a?.name||(t.kind==='payment'?'Dış hesap':''),
         b?.name||(t.goalId?(s.goals.find(g=>g.id===t.goalId)?.name||''):t.loanId?(s.loans.find(l=>l.id===t.loanId)?.name||''):''),
@@ -4082,7 +4513,7 @@ const StatementImport={
       const ex=x.kind==='interest'||x.kind==='fee';
       return{...base,type:'expense',amount,date,installments:1,...(valid(r.cut_date)&&D.stmtIdx(c,date)<cutIdx?{billIdx:cutIdx}:{}),category:ex?'fees':base.category,label:ex?(x.kind==='interest'?'Faiz / vergi':'Ücret'):'Tek çekim'}});
     /* mükerrer tespiti: aynı kartta ±3 gün içinde aynı tutar */
-    rows.forEach(row=>{if(row.installments>1){const st=D.stmtIdx(c,row.date),dup=s.transactions.find(t=>t.kind==='expense'&&t.accountId===accId&&(t.installments|0)===row.installments&&Math.abs(t.amount-row.amount)<0.05&&D.stmtIdx(c,t.date)===st);if(dup){row.dup=true;row.sel=false}}});
+    rows.forEach(row=>{if(row.installments>1){const st=D.stmtIdx(c,row.date),dup=s.transactions.find(t=>t.kind==='expense'&&t.accountId===accId&&(t.installments|0)===row.installments&&Math.abs(t.amount-row.amount)<=Math.max(0.05,row.installments*row.installments*0.01)&&D.stmtIdx(c,t.date)===st);if(dup){row.dup=true;row.sel=false}}});
     rows.forEach(row=>{if(row.dup)return;const dup=s.transactions.find(t=>(t.accountId===accId||t.toAccountId===accId)&&Math.abs(t.amount-row.amount)<0.01&&Math.abs(U.daysUntil(t.date)-U.daysUntil(row.date))<=3&&(row.type==='payment'?t.kind==='payment':row.type==='refund'?t.kind==='refund':t.kind==='expense'));
       if(dup){row.dup=true;row.sel=false}});
     return{ok:true,rows,meta:{card:r.card_name,cut:r.cut_date,due:r.due_date,total:r.statement_total,min:r.min_payment}}},
@@ -4296,7 +4727,7 @@ C.mobileTools=s=>{const n=s.accounts.length?D.insights(s).filter(i=>i.sev==='dan
 C.tabHead=(title,sub,right='',cls='')=>`<header class="topbar gw-head ${cls}"><div><div class="t-sub">${sub||''}</div><h1>${title}</h1></div><div class="top-actions">${right}</div></header>`;
 C.pageHead=(title,sub,right='')=>`<div class="page-head"><button class="back pressable" onclick="App.back()"><b>‹</b>Geri</button>${right}</div>
   <h1 class="page-title">${title}</h1>${sub?`<div class="page-sub">${sub}</div>`:''}`;
-C.chips=(opts,val,fn)=>`<div class="chips">${opts.map(([k,l])=>`<button class="chip pressable ${k===val?'on':''}" onclick="${fn}('${k}')">${l}</button>`).join('')}</div>`;
+C.chips=(opts,val,fn)=>`<div class="chips">${opts.map(([k,l])=>`<button class="chip pressable ${k===val?'on':''}" onclick="${fn}(${U.esc(JSON.stringify(String(k)))})">${U.esc(l)}</button>`).join('')}</div>`;
 C.segmented=(opts,val,fn)=>{const i=Math.max(0,opts.findIndex(o=>o[0]===val)),w=100/opts.length;
   return `<div class="seg"><span class="thumb" style="width:calc(${w}% - 1.33px);transform:translateX(${i*100}%)"></span>${opts.map(([k,l])=>`<button onclick="${fn}('${k}')">${l}</button>`).join('')}</div>`};
 C.ring=(pct,size=72,color='var(--blue)',inner='',stroke=8)=>{const r=(size-stroke)/2,c=2*Math.PI*r,p=Math.max(0,Math.min(1,pct||0));
@@ -4324,7 +4755,7 @@ C.lineChart=(pts,{h=150,color='var(--blue)',labels=true,id='lc',fmt='money'}={})
 
 /* --- Isı haritası (ayın günleri harcamaya göre renklenir) --- */
 C.heatmap=(daily,y,m)=>{const mx=Math.max(1,...daily),lead=(new Date(y,m,1).getDay()+6)%7;
-  return `<div class="heat">${['Pt','Sa','Ça','Pe','Cu','Ct','Pz'].map(d=>`<span class="wd">${d}</span>`).join('')}${'<span></span>'.repeat(lead)}
+  return `<div class="heat">${['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'].map(d=>`<span class="wd">${d}</span>`).join('')}${'<span></span>'.repeat(lead)}
     ${daily.map((v,i)=>{const p=v?Math.round(18+v/mx*82):0;return `<span class="c ${p>55?'hot':''}" style="${v?`background:color-mix(in srgb,var(--blue) ${p}%,var(--fill))`:''}" title="${U.money(v,{dec:false})}">${i+1}</span>`}).join('')}</div>
     <div class="heat-legend">az ${[20,45,70,100].map(p=>`<i style="background:color-mix(in srgb,var(--blue) ${p}%,var(--fill))"></i>`).join('')} çok</div>`};
 
@@ -4335,13 +4766,13 @@ C.sankey=(income,cats)=>{const exp=cats.reduce((a,c)=>a+c.value,0);if(exp<=0&&in
   if(income>exp)dst.push({name:'Kalan',value:U.r2(income-exp),color:'#30d158',save:true});
   const T=Math.max(income,exp),W=340,H=Math.max(170,dst.length*30),G=6,k=Math.min((H-G*(src.length-1))/T,(H-G*(dst.length-1))/T);
   let y=0;src.forEach(n=>{n.y=y;n.h=Math.max(2,n.value*k);y+=n.h+G});y=0;dst.forEach(n=>{n.y=y;n.h=Math.max(2,n.value*k);y+=n.h+G});
-  const x1=16,x2=196,mx=(x1+x2)/2;let ribbons='';
+  {let p=-99;dst.forEach(n=>{n.ly=Math.max(n.y+n.h/2,p+26,10);p=n.ly});let q=H-14;for(let i=dst.length-1;i>=0;i--){if(dst[i].ly>q)dst[i].ly=q;q=dst[i].ly-26}}const x1=16,x2=196,mx=(x1+x2)/2;let ribbons='';
   let si=0,sOff=0;for(const t of dst){let need=t.value,tOff=0;while(need>0.009&&si<src.length){const s=src[si],avail=s.value-sOff,take=Math.min(avail,need);
     const ys0=s.y+sOff*k,ys1=ys0+take*k,yt0=t.y+tOff*k,yt1=yt0+take*k;
     ribbons+=`<path d="M${x1} ${ys0}C${mx} ${ys0} ${mx} ${yt0} ${x2} ${yt0}L${x2} ${yt1}C${mx} ${yt1} ${mx} ${ys1} ${x1} ${ys1}Z" fill="${t.color}" opacity=".32"/>`;
     sOff+=take;tOff+=take;need-=take;if(sOff>=s.value-0.009){si++;sOff=0}}}
   const nodes=src.map(n=>`<rect x="6" y="${n.y}" width="10" height="${n.h}" rx="3" fill="${n.color}"/>`).join('')+dst.map(n=>`<rect x="${x2}" y="${n.y}" width="10" height="${n.h}" rx="3" fill="${n.color}"/>
-    <text x="${x2+16}" y="${n.y+n.h/2-1}" dominant-baseline="middle">${U.esc(n.name)}</text><text class="v" x="${x2+16}" y="${n.y+n.h/2+11}" dominant-baseline="middle">${U.money(n.value,{dec:false})}</text>`).join('');
+    <text x="${x2+16}" y="${n.ly-1}" dominant-baseline="middle">${U.esc(n.name)}</text><text class="v" x="${x2+16}" y="${n.ly+11}" dominant-baseline="middle">${U.money(n.value,{dec:false})}</text>`).join('');
   const lt=src.map(n=>`<text x="22" y="${n.y+12}" style="font-weight:700">${U.esc(n.name)}</text><text class="v" x="22" y="${n.y+25}">${U.money(n.value,{dec:false})}</text>`).join('');
   return `<svg class="sankey" viewBox="0 0 ${W} ${H}">${ribbons}${nodes}${lt}</svg>`};
 
@@ -4396,7 +4827,7 @@ C.accTiles=s=>{const rest=s.accounts.filter(a=>a.type!=='credit');
     <button class="acc-tile glass pressable add-tile" onclick="AccForm.open()"><div><span>+</span>Hesap ekle</div></button></div>`};
 
 /* --- İçgörüler: kaydırılabilir şerit --- */
-C.insightCard=i=>`<div class="insight glass sev-${i.sev} ${i.go||i.on?'pressable':''}" ${i.on?`onclick="${U.esc(i.on)}"`:i.go?`onclick="App.push('${i.go[0]}',${U.esc(JSON.stringify(i.go[1]))})"`:''}><span class="ic">${C.ic(i.icon)}</span><div><b>${U.esc(i.title)}</b><p>${i.text}</p></div></div>`;
+C.insightCard=i=>`<div class="insight glass sev-${i.sev} ${i.go||i.on?'pressable':''}" ${i.on?`onclick="${U.esc(i.on)}"`:i.go?`onclick="App.push('${i.go[0]}',${U.esc(JSON.stringify(i.go[1]))})"`:''}><span class="ic">${C.ic(i.icon)}</span><div><b>${U.esc(i.title)}</b><p>${U.esc(i.text)}</p></div></div>`;
 C.insights=s=>{const list=D.insights(s).slice(0,6);if(!list.length)return '';
   return C.section('Akıllı Özet',`<span class="muted sm">${list.length} uyarı</span>`,`<div class="strip" data-dots="ins">${list.map(C.insightCard).join('')}</div>
     ${list.length>1?`<div class="dots-ind" id="dots-ins">${list.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('')}</div>`:''}`)};
@@ -4409,7 +4840,7 @@ C.coach=s=>{const ai=s.ai||{},busy=ai.pending?.coach,err=ai.errors?.coach,c=ai.c
   else if(busy)body=`<div class="shimmer" style="width:92%"></div><div class="shimmer" style="width:70%"></div><div class="shimmer" style="width:84%"></div><p class="muted xs">Gemini son 3 ayını inceliyor…</p>`;
   else if(d)body=`<div class="ai-headline">${U.esc(d.headline)}</div>
     ${(d.tips||[]).map(t=>`<div class="tip"><span class="pr" style="background:${PR[t.priority]||'var(--blue)'}"></span><div><b>${U.esc(t.title)}</b><p>${U.esc(t.detail)}</p>${t.monthly_saving>0?`<span class="save-pill">≈ ${U.money(t.monthly_saving,{dec:false})}/ay tasarruf</span>`:''}</div></div>`).join('')}
-    ${d.subscriptions?.length?`<div class="ai-sub">ABONELİKLER</div>${d.subscriptions.map(x=>{const v=V[x.verdict]||V.review;const rr=Store.get().recurring.find(r=>U.norm(r.name)===U.norm(x.name));return `<div class="tip"><span style="color:var(--${v[1]==='red'?'red':v[1]==='orange'?'orange':'green'})">${C.ic(v[0])}</span><div><b>${U.esc(x.name)} <span class="badge ${v[1]}">${v[2]}</span></b><p>${U.esc(x.reason)}</p>${x.verdict!=='keep'?`<button class="mini-btn" style="margin-top:6px" onclick="LetterSheet.open('${U.esc(x.name).replace(/'/g,"\\'")}',${rr?rr.amount:0})">İptal metni hazırla</button>`:''}</div></div>`}).join('')}`:''}`;
+    ${d.subscriptions?.length?`<div class="ai-sub">ABONELİKLER</div>${d.subscriptions.map(x=>{const v=V[x.verdict]||V.review;const rr=Store.get().recurring.find(r=>U.norm(r.name)===U.norm(x.name));return `<div class="tip"><span style="color:var(--${v[1]==='red'?'red':v[1]==='orange'?'orange':'green'})">${C.ic(v[0])}</span><div><b>${U.esc(x.name)} <span class="badge ${v[1]}">${v[2]}</span></b><p>${U.esc(x.reason)}</p>${x.verdict!=='keep'?`<button class="mini-btn" style="margin-top:6px" onclick="LetterSheet.open(${U.esc(JSON.stringify(String(x.name??'')))},${rr?rr.amount:0})">İptal metni hazırla</button>`:''}</div></div>`}).join('')}`:''}`;
   else body=`<p class="muted sm">Son 3 ayının özetini Gemini'ye gönderip kişisel tavsiyeler al. Kart numarası veya işlem listesi gönderilmez, sadece özet.</p><button class="btn primary pressable" onclick="AIActions.coach()">${C.ic('sparkles')}Analiz et</button>`;
   return `<div class="section"><div class="glass ai-card"><div class="ai-head"><span class="ai-orb ${busy?'busy':''}"></span>
     <div style="flex:1;min-width:0"><b>AI Finans Koçu</b><div class="muted xs">${d&&!busy?'Gemini · '+C.relTime(c.at):'Google Gemini ile'}</div></div>
@@ -4430,7 +4861,7 @@ C.spending=(s,ui)=>{const[from,to,label]=D.periodRange(ui.period);const by=D.sum
   const total=U.r2(items.reduce((a,b)=>a+b.amount,0)),sel=ui.seg!==null&&ui.seg<items.length?ui.seg:null;
   return `<div class="section"><div class="glass spend"><div class="spend-top"><div><div style="font-weight:700;font-size:17px">Harcama Dağılımı</div><div class="muted xs">${label}</div></div>
     ${C.segmented([['week','Hafta'],['month','Ay'],['year','Yıl']],ui.period,'App.setPeriod')}</div>
-    ${items.length?`<div class="donut-wrap">${C.donut(items,total,sel)}<div class="legend">${items.slice(0,6).map((it,i)=>`<button class="${sel!==null&&sel!==i?'dim':''}" onclick="App.selSeg(${i})"><span class="sw" style="background:${it.color}"></span><span class="nm">${it.name}</span><span class="pc">%${Math.round(it.amount/total*100)}</span></button>`).join('')}</div></div>`
+    ${items.length?`<div class="donut-wrap">${C.donut(items,total,sel)}<div class="legend">${items.slice(0,6).map((it,i)=>`<button class="${sel!==null&&sel!==i?'dim':''}" onclick="App.selSeg(${i})"><span class="sw" style="background:${it.color}"></span><span class="nm">${U.esc(it.name)}</span><span class="pc">%${Math.round(it.amount/total*100)}</span></button>`).join('')}</div></div>`
       :`<p class="muted sm" style="padding:30px 0;text-align:center">Bu dönemde harcama yok.</p>`}</div></div>`};
 
 C.installments=s=>{const L=D.installmentLoad(s);if(!L||!L.cols.some(c=>c.tot))return '';
@@ -4462,7 +4893,7 @@ C.txVis=(s,t,ctx)=>{const c=cat(t.category),a=D.account(s,t.accountId),b=D.accou
     case 'transfer':return{icon:'transfer',color:'#32ade6',title:t.merchant||'Transfer',sub:(a?.name||'?')+' → '+(b?.name||'?'),sign:ctx?(t.toAccountId===ctx?1:-1):0,amt:ctx&&t.toAccountId===ctx?(t.toAmount??t.amount):t.amount,cur:ctx&&t.toAccountId===ctx?b?.currency:a?.currency};
     case 'payment':return{icon:'send',color:'#0a84ff',title:'Kart borcu ödemesi',sub:(a?.name||'Dış hesap')+' → '+(b?.name||'Kart'),sign:ctx&&t.toAccountId===ctx?1:-1};
     case 'refund':{const o=t.refOf&&D.tx(s,t.refOf);return{icon:'refund',color:'#30d158',title:'İade · '+(o?.merchant||t.merchant||'Alışveriş'),sub:(a?.name||'')+(o?' · '+cat(o.category).name:''),sign:1}}
-    case 'goal':{const g=s.goals.find(x=>x.id===t.goalId);return{icon:g?.icon||'piggy',color:gcol(g?.color),title:(g?.name||'Kumbara'),sub:(t.dir==='out'?'Kumbaradan → ':'Kumbaraya ← ')+(a?.name||''),sign:ctx===t.goalId?(t.dir==='out'?-1:1):(t.dir==='out'?1:-1)}}
+    case 'goal':{const g=s.goals.find(x=>x.id===t.goalId);return{icon:g?.icon||'piggy',color:gcol(g?.color),title:(g?.name||'Kumbara'),sub:t.dir==='out'?'Kumbaradan → '+(a?.name||''):(a?.name||'')+' → Kumbara',sign:ctx===t.goalId?(t.dir==='out'?-1:1):ctx?(t.dir==='out'?1:-1):0}}
     case 'loan':{const l=s.loans.find(x=>x.id===t.loanId);return{icon:'bank',color:'#8e8e93',title:(l?.name||'Kredi')+' taksiti',sub:a?.name||'',sign:-1}}
     case 'debt':{const d=(s.debts||[]).find(x=>x.id===t.debtId);const lbl=t.settle?(t.dir==='in'?'Tahsilat':'Borç ödemesi'):(t.dir==='out'?'Borç verildi':'Borç alındı');return{icon:'people',color:t.dir==='in'?'#30d158':'#ff453a',title:(d?.person||t.merchant||'Kişi')+' · '+lbl,sub:(a?.name||'Hesaba işlenmedi')+(d?.note?' · '+d.note:''),sign:t.dir==='in'?1:-1}}
     default:return{icon:c.icon,color:c.color,title:t.merchant||c.name,sub:c.name+(a?' · '+a.name:'')+(t.installments>1?' · '+t.installments+' taksit':''),sign:-1}}};
@@ -4531,7 +4962,7 @@ C.statement=(s,acc,st,open)=>{const exp=open,o=D.openIdx(acc.credit);
 
 /* --- Bütçe satırı --- */
 C.budgetRow=b=>{const c=cat(b.category),col=b.over?'var(--red)':b.ratio>.8||b.willExceed?'var(--orange)':'var(--green)';
-  return `<button class="row pressable" style="flex-wrap:wrap" onclick="BudgetForm.open('${b.id}')">${C.icb(c.icon,c.color)}<div class="mid"><b>${c.name}</b>
+  return `<button class="row pressable" style="flex-wrap:wrap" onclick="BudgetForm.open('${b.id}')">${C.icb(c.icon,c.color)}<div class="mid"><b>${U.esc(c.name)}</b>
     <span>${U.money(b.spent,{dec:false})} / ${U.money(b.limit,{dec:false})}${b.exhaustDay?' · ayın '+U.dayLoc(b.exhaustDay)+' biter':b.over?'':' · günlük '+U.money(b.daily,{dec:false})}</span></div>
     <div class="end"><b class="num" style="color:${col}">${b.over?'Aşıldı':U.money(b.left,{dec:false})}</b><span class="muted xs">${b.over?U.money(-b.left,{dec:false})+' fazla':'kaldı'}</span></div>
     <div class="prog" style="width:100%;margin:10px 0 2px 50px"><span style="width:${Math.min(100,b.ratio*100)}%;background:${col}"></span></div></button>`};
@@ -4568,7 +4999,7 @@ const Screens={
     const spent=U.r2(Object.values(days).reduce((a,v)=>a+v.spent,0));
     const dv=days[sel];
     const evHtml=dv.events.map(e=>{const btn=e.done||e.info?'':e.type==='stmt'&&!e.projected?`<button class="mini-btn" onclick="PaySheet.open('${e.accId}',${e.idx})">Öde</button>`:e.type==='rec'?`<button class="mini-btn" onclick="RecurringForm.pay('${e.id}')">${e.income?'Aldım':'Öde'}</button>`:e.type==='loan'?`<button class="mini-btn" onclick="LoanForm.pay('${e.id}')">Öde</button>`:e.type==='debt'?`<button class="mini-btn" onclick="DebtForm.settle('${e.id}')">${e.income?'Tahsil et':'Öde'}</button>`:'';
-      return `<div class="row">${C.icb({stmt:'card',cut:'scissors',rec:'repeat',loan:'bank',warranty:'shield',debt:'people'}[e.type],e.color)}<div class="mid"><b>${U.esc(e.title)}</b><span>${e.sub?U.esc(e.sub)+' · ':''}${e.done?'✓ tamamlandı':e.info?'bilgi':e.projected?'tahmini':'bekliyor'}</span></div>
+      return `<div class="row">${C.icb({stmt:'card',cut:'scissors',rec:'repeat',loan:'bank',warranty:'shield',debt:'people'}[e.type],e.color)}<div class="mid"><b>${U.esc(e.title)}</b><span>${e.sub?U.esc(e.sub)+' · ':''}${e.done?'✓ tamamlandı':e.info?'Hesap kesimi':e.projected?'tahmini':'bekliyor'}</span></div>
         <div class="end"><b class="num ${e.income?'pos':''}">${e.amount!=null?U.money(e.amount):''}</b>${btn}</div></div>`}).join('');
     return `<div class="cal-nav"><button class="pressable" onclick="App.calMove(-1)">‹</button><b>${U.MONTHS[m]} ${y}</b><button class="pressable" onclick="App.calMove(1)">›</button></div>
       <div class="glass cal">${cells}</div>
@@ -4618,7 +5049,7 @@ const Screens={
       ${r.expense>0?C.section('Harcama ısı haritası','',`<div class="glass" style="padding:14px">${C.heatmap(r.daily,y,m)}</div>`):''}
       ${(r.income>0||r.expense>0)?C.section('Para akışı','<span class="muted sm">gelir → harcama</span>',`<div class="glass" style="padding:14px 12px">${C.sankey(r.income,r.cats.filter(x=>x.cur>0).map(x=>({name:cat(x.key).name,value:x.cur,color:cat(x.key).color})))}</div>`):''}
       ${C.section('Para nereye gidiyor','<span class="muted sm">önceki aya göre</span>',r.cats.length?`<div class="glass" style="padding:6px 16px">${r.cats.map(x=>{const c=cat(x.key),mxc=Math.max(...r.cats.map(z=>Math.max(z.cur,z.prev)),1),d=x.prev?Math.round((x.cur-x.prev)/x.prev*100):null;
-        return `<div class="cmp"><span class="e" style="color:${c.color}">${C.ic(c.icon)}</span><div class="mid"><b>${c.name}</b><div class="bar2"><span style="width:${x.cur/mxc*100}%;background:${c.color}"></span></div><div class="bar2" style="margin-top:3px"><span style="width:${x.prev/mxc*100}%;background:var(--text3)"></span></div></div>
+        return `<div class="cmp"><span class="e" style="color:${c.color}">${C.ic(c.icon)}</span><div class="mid"><b>${U.esc(c.name)}</b><div class="bar2"><span style="width:${x.cur/mxc*100}%;background:${c.color}"></span></div><div class="bar2" style="margin-top:3px"><span style="width:${x.prev/mxc*100}%;background:var(--text3)"></span></div></div>
           <div class="end num">${U.money(x.cur,{dec:false})}<small class="${d===null?'muted':d>0?'neg':'pos'}">${d===null?'yeni':(d>0?'↑':'↓')+Math.abs(d)+'%'}</small></div></div>`}).join('')}</div>`:C.empty('📊','Bu ay harcama yok.'))}
       ${r.merchants.length?C.section('En çok harcanan yerler','',`<div class="glass list">${r.merchants.map((x,i)=>`<div class="row"><span class="ic" style="background:${cat(x.cat).color}24;color:${cat(x.cat).color};font-weight:800">${i+1}</span><div class="mid"><b>${U.esc(x.name)}</b><span>${x.count} işlem</span></div><div class="end"><b class="num">${U.money(x.total,{dec:false})}</b></div></div>`).join('')}</div>`):''}
       ${C.section('Net varlık · '+nwh.length+' ay','',`<div class="glass" style="padding:16px 14px 10px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b class="num" style="font-size:22px">${U.money(last.value,{dec:false})}</b>
@@ -4653,7 +5084,7 @@ const Pages={
     const l4=a.last4?String(a.last4).replace(/\D/g,'').slice(-4):'';
     const sub=[m.shared?'Ortak limit · '+U.esc(m.root.name):U.esc(a.bank||'Kredi Kartı'),l4?`<span class="num">•••• ${U.esc(l4)}</span>`:''].filter(Boolean).join(' · ');
     let body='';
-    if(tab==='stmts')body=(list.length?list.map(x=>C.statement(s,a,x,ui.openStmt===x.idx||(ui.openStmt==null&&x.idx===st.open-1))).join(''):C.empty('receipt','Henüz ekstre yok.'))+
+    if(tab==='stmts')body=(list.length?(()=>{const f=x=>C.statement(s,a,x,ui.openStmt===x.idx||(ui.openStmt==null&&x.idx===st.open-1)),now=list.filter(x=>x.idx<=st.open),fut=list.filter(x=>x.idx>st.open).reverse(),op=!!(UI.czFut&&UI.czFut[a.id]);return now.map(f).join('')+(fut.length?`<div class="cz-fut ${op?'open':''}"><button class="cz-fut-h pressable" aria-expanded="${op}" onclick="UI.czFut=UI.czFut||{};UI.czFut['${a.id}']=!UI.czFut['${a.id}'];App.render()"><span>Gelecek ekstreler</span><span class="cz-fut-n">${fut.length}${C.ic('chev')}</span></button>${op?fut.map(f).join(''):''}</div>`:'')})():C.empty('receipt','Henüz ekstre yok.'))+
       `<div class="cd-foot"><button class="chip pressable" onclick="App.push('future',{acc:'${m.root.id}'})">${C.ic('calendar')}Ekstre özeti ›</button></div>`;
     else if(tab==='inst'){const rows=D.matrix(s,a.id,24)?.rows||[];
       body=`<!--cd-inst-cal-->`+(rows.length?`<div class="glass list">${rows.map(r=>`<button class="row pressable" style="flex-wrap:wrap" onclick="App.push('tx',{id:'${r.tx.id}'})">${C.icb(cat(r.tx.category).icon,cat(r.tx.category).color)}
@@ -4719,7 +5150,7 @@ const Pages={
       warr=C.section('Garanti & iade','',`<div class="countdown">${ret>=0&&!refunds.length?`<div><span class="muted xs">İade hakkı</span><b>${ret} gün</b><span class="faint xs">14 gün varsayımı</span></div>`:''}
         ${w!=null?`<div><span class="muted xs">Garanti</span><b>${w>=0?(w>60?Math.round(w/30)+' ay':w+' gün'):'Bitti'}</b><span class="faint xs">${U.fmtDate(U.addMonths(t.date,t.warrantyMonths),'y')}</span></div>`:''}</div>`)}
     const planHtml=plan?C.section('Taksit planı',`<span class="muted sm">${plan.paid}/${plan.rows.length} ödendi</span>`,`<div class="glass list">${plan.rows.map(r=>`<div class="row"><span class="ic" style="background:${r.state==='paid'?'rgba(48,209,88,.18)':'var(--fill)'}">${r.state==='paid'?'✓':r.k+1}</span>
-      <div class="mid"><b>${r.k+1}. taksit · ${D.stmtName(r.idx)}</b><span>Son ödeme ${U.fmtDate(r.stmt.due)}</span></div><div class="end"><b class="num">${U.money(r.amount)}</b>${C.badge(r.state==='paid'?'paid':r.state==='due'?(r.stmt.status):r.state)}</div></div>`).join('')}</div>`):'';
+      <div class="mid"><b>${r.k+1}. taksit</b><span>${D.stmtName(r.idx)} ekstresi · son ödeme ${U.fmtDate(r.stmt.due)}</span></div><div class="end"><b class="num">${U.money(r.amount)}</b>${C.badge(r.state==='paid'?'paid':r.state==='due'?(r.stmt.status):r.state)}</div></div>`).join('')}</div>`):'';
     const vat=t.vat&&(t.vat.total||t.vat.lines?.length)?C.section('KDV','',`<div class="glass list info">${(t.vat.lines||[]).map(l=>`<div class="row"><div class="mid">KDV %${l.rate}</div><div class="end num">${U.money(l.amount)}</div></div>`).join('')}
       ${t.vat.total?`<div class="row"><div class="mid">Toplam KDV</div><div class="end num">${U.money(t.vat.total)}</div></div><div class="row"><div class="mid">KDV hariç</div><div class="end num">${U.money(t.amount-t.vat.total)}</div></div>`:''}</div>`):'';
     const items=t.items?.length?C.section('Kalemler',`<span class="muted sm">${t.items.length} kalem</span>`,`<div class="glass list info">${t.items.map(i=>`<div class="row"><div class="mid">${U.esc(i.name)}${i.qty>1?' × '+i.qty:''}</div><div class="end num">${U.money(i.price)}</div></div>`).join('')}</div>`):'';
@@ -4734,7 +5165,7 @@ const Pages={
         ${t.kind==='expense'&&!refunds.some(r=>r.amount>=t.amount-0.01)?`<button class="btn pressable" onclick="RefundSheet.open('${t.id}')">${C.ic('refund')}İade / iptal et</button>`:''}
         ${plan&&plan.canClose?`<button class="btn pressable" onclick="App.closeInstallments('${t.id}')">${C.ic('arrowup')}Kalan taksitleri bu döneme al</button>`:''}
         ${t.kind==='expense'?`<button class="btn pressable" onclick="SplitSheet.open('${t.id}')">${C.ic('split')}Hesabı böl</button>`:''}
-        ${t.kind==='debt'&&t.debtId?`<button class="btn pressable" onclick="DebtForm.person('${U.esc((s.debts||[]).find(x=>x.id===t.debtId)?.person||'').replace(/'/g,"\\'")}')">${C.ic('people')}Kişinin hesabını aç</button>`:''}
+        ${t.kind==='debt'&&t.debtId?`<button class="btn pressable" onclick="DebtForm.person(${U.esc(JSON.stringify(String((s.debts||[]).find(x=>x.id===t.debtId)?.person||'')))})">${C.ic('people')}Kişinin hesabını aç</button>`:''}
         ${['expense','income'].includes(t.kind)?`<button class="btn pressable" onclick="TemplateForm.fromTx('${t.id}')">${C.ic('bolt')}Hızlı ekle şablonu yap</button>`:''}
         <button class="btn danger pressable" onclick="App.deleteTx('${t.id}')">${C.ic('trash')}İşlemi sil</button></div>`},
 
@@ -4802,7 +5233,7 @@ const F={
   catOpts:(cats,sel)=>cats.map(k=>`<option value="${k}" ${k===sel?'selected':''}>${U.esc(cat(k).name)}</option>`).join(''),
   emojis:(sel,fn)=>{const cur=ICONS[sel]?sel:EMOJI_ALIAS[sel]||sel;return `<div class="icon-pick">${ICON_CHOICES.map(e=>`<button class="pressable ${e===cur?'on':''}" onclick="${fn}('${e}')">${C.ic(e)}</button>`).join('')}</div>`},
   swatches:(sel,fn)=>`<div class="swatches">${GRADIENTS.map((g,i)=>`<button class="swatch pressable ${sel===i?'on':''}" style="background:${grad(i)}" onclick="${fn}(${i})"></button>`).join('')}</div>`,
-  money:v=>v===''||v==null?'':String(v).replace('.',','),
+  money:v=>v===''||v==null?'':typeof v==='number'?String(v).replace('.',','):String(v),
   nonCredit:()=>Store.get().accounts.filter(a=>a.type!=='credit'),
   credit:()=>Store.get().accounts.filter(a=>a.type==='credit')
 };
@@ -4836,7 +5267,7 @@ const TxForm={draft:null,aiMeta:null,
     const fx=k==='transfer'&&acc&&to&&acc.currency!==to.currency;
     Sheet.open(Sheet.head(title,{onRight:'TxForm.save()'})+
       `${d.id||d._rec?'':C.segmented([['expense','Harcama'],['income','Gelir'],['transfer','Transfer']],k,'TxForm.setKind')}
-      <input class="amount-in num" id="tx-amount" inputmode="decimal" placeholder="0" value="${F.money(d.amount)}" autocomplete="off">
+      <input class="amount-in num" id="tx-amount" aria-label="Tutar" inputmode="decimal" placeholder="0" value="${F.money(d.amount)}" autocomplete="off">
       <div class="amount-cur">${acc?.currency&&acc.currency!=='TRY'?acc.currency:'Türk Lirası'}</div>${this.banner()}
       ${k==='transfer'?`<div class="grid2"><label class="field"><span>Nereden</span><select class="input" onchange="TxForm.set('accountId',this.value)">${F.accOpts(nc,d.accountId)}</select></label>
         <label class="field"><span>Nereye</span><select class="input" onchange="TxForm.set('toAccountId',this.value)">${F.accOpts(nc.filter(a=>a.id!==d.accountId),d.toAccountId)}</select></label></div>
@@ -4956,7 +5387,7 @@ const PaySheet={st:null,
     if(!p.amount&&q.length)p.amount=q[0][0];
     Sheet.open(Sheet.head('Kart Borcu Öde',{onRight:'PaySheet.save()',right:'Öde'})+
       `<label class="field"><span>Kart</span><select class="input" onchange="PaySheet.set('cardId',this.value)">${F.accOpts(F.credit(),a.id)}</select></label>
-      <input class="amount-in num" id="pay-amt" inputmode="decimal" value="${F.money(p.amount)}" placeholder="0"><div class="amount-cur">Türk Lirası</div>
+      <input class="amount-in num" id="pay-amt" aria-label="Ödeme tutarı" inputmode="decimal" value="${F.money(p.amount)}" placeholder="0"><div class="amount-cur">Türk Lirası</div>
       ${q.length?`<div class="quick-amts">${q.map(([v,l])=>`<button class="pressable" onclick="PaySheet.quick(${v})">${U.money(v)}<small>${l}</small></button>`).join('')}</div>`:'<div class="preview">Bu kartta ödenecek borç görünmüyor. Yine de ön ödeme yapabilirsin.</div>'}
       <div class="grid2"><label class="field"><span>Ödeme kaynağı</span><select class="input" id="pay-src">${F.accOpts(nc,p.src,`<option value="" ${!p.src?'selected':''}>🌐 Başka bir yerden</option>`)}</select></label>
       <label class="field"><span>Tarih</span><input class="input" type="date" id="pay-date" value="${p.date}"></label></div>
@@ -4976,7 +5407,7 @@ const RefundSheet={id:null,
   open(id){const s=Store.get(),t=D.tx(s,id);if(!t)return;this.id=id;const done=(D.refundMap(s)[id]||[]).reduce((a,r)=>a+r.amount,0),left=U.r2(t.amount-done),cr=D.isCredit(s,t.accountId);
     Sheet.open(Sheet.head('İade / İptal',{onRight:'RefundSheet.save()',right:'İade et'})+
       `<div class="preview"><b>${U.esc(t.merchant||cat(t.category).name)}</b> · ${U.money(t.amount)}${t.installments>1?' · '+t.installments+' taksit':''}${done?'<br>Daha önce iade: '+U.money(done):''}</div>
-      <input class="amount-in num" id="rf-amt" inputmode="decimal" value="${F.money(left)}"><div class="amount-cur">İade tutarı</div>
+      <input class="amount-in num" id="rf-amt" aria-label="İade tutarı" inputmode="decimal" value="${F.money(left)}"><div class="amount-cur">İade tutarı</div>
       <label class="field"><span>İade tarihi</span><input class="input" type="date" id="rf-date" value="${U.today()}"></label>
       <div class="preview">${cr?(t.installments>1?'Tam iadede henüz ekstreye yansımamış taksitler iptal edilir; faturalanmış taksitler karta alacak olarak döner ve limitin açılır.':'İade tutarı karta alacak olarak yansır, limitin açılır.')+' Kısmi iadede tutar, iade tarihinin ekstresinden düşülür.':'İade tutarı '+U.esc(D.account(s,t.accountId)?.name||'hesaba')+' geri eklenir.'}</div>`)},
   save(){const s=Store.get(),t=D.tx(s,this.id),amt=U.parseNum(Sheet.val('#rf-amt'));const done=(D.refundMap(s)[t.id]||[]).reduce((a,r)=>a+r.amount,0);
@@ -5059,7 +5490,7 @@ const RecurringForm={d:null,
       <label class="field"><span>Kategori</span><select class="input" id="rc-cat">${F.catOpts(inc?incomeCats():expenseCats(),d.category)}</select></label></div>
       <label class="field"><span>Hesap</span><select class="input" id="rc-acc">${F.accOpts(inc?F.nonCredit():s.accounts,d.accountId,'<option value="">Seçilmedi</option>')}</select></label>
       <div class="field"><span>Simge</span>${F.emojis(d.icon,'RecurringForm.setIcon')}</div>
-      ${d.id&&d.type!=='income'?`<button class="btn pressable" onclick="LetterSheet.open('${U.esc(d.name).replace(/'/g,"\\'")}',${+d.amount||0})">${C.ic('doc')}İptal metni hazırla</button>`:''}
+      ${d.id&&d.type!=='income'?`<button class="btn pressable" onclick="LetterSheet.open(${U.esc(JSON.stringify(String(d.name??'')))},${+d.amount||0})">${C.ic('doc')}İptal metni hazırla</button>`:''}
       ${d.id?`<button class="btn danger pressable" onclick="RecurringForm.remove()">Sil</button>`:''}`)},
   sync(){const d=this.d;if(!Sheet.el('#rc-name'))return;d.name=Sheet.val('#rc-name');d.amount=Sheet.val('#rc-amt');d.day=Sheet.val('#rc-day');d.category=Sheet.val('#rc-cat');d.accountId=Sheet.val('#rc-acc')},
   setType(t){this.sync();this.d.type=t;this.d.category=t==='income'?'gift':'subscription';if(t==='income'&&D.isCredit(Store.get(),this.d.accountId))this.d.accountId=F.nonCredit()[0]?.id||'';this.render()},
@@ -5328,7 +5759,7 @@ Screens.debts=s=>{const tot=D.debtTotals(s),people=D.people(s);
   if(!people.length)return C.empty('heart','Arkadaşına verdiğin ya da ondan aldığın borçları burada tut; vadesi gelince hatırlatayım.<br>Ortak harcamaları işlem detayındaki <b>"Hesabı böl"</b> ile paylaştırabilirsin.',`<button class="btn primary pressable" onclick="DebtForm.open()">Borç / alacak ekle</button>`);
   return `<div class="stats"><div class="stat glass"><div class="l">Alacağın</div><div class="v num pos">${U.money(tot.lent,{dec:false})}</div><div class="s">sana borçlu olanlar</div></div>
     <div class="stat glass"><div class="l">Borcun</div><div class="v num ${tot.owe?'neg':''}">${U.money(tot.owe,{dec:false})}</div><div class="s">senin ödeyeceklerin</div></div></div>
-    <div class="section"><div class="glass list">${people.map(p=>`<button class="row pressable" onclick="DebtForm.person('${U.esc(p.name).replace(/'/g,"\\'")}')">
+    <div class="section"><div class="glass list">${people.map(p=>`<button class="row pressable" onclick="DebtForm.person(${U.esc(JSON.stringify(String(p.name??'')))})">
       <span class="ic" style="background:${p.net>=0?'rgba(48,209,88,.15)':'rgba(255,69,58,.15)'};color:${p.net>=0?'var(--green)':'var(--red)'};font-weight:800">${U.esc(p.name[0]?.toUpperCase()||'?')}</span>
       <div class="mid"><b>${U.esc(p.name)}</b><span>${p.open?p.open+' açık kayıt':'Hepsi kapandı'}${p.items.some(d=>d.overdue)?' · vadesi geçti':''}</span></div>
       <div class="end"><b class="num ${p.net>0?'pos':p.net<0?'neg':''}">${p.net?U.money(Math.abs(p.net),{dec:false}):'—'}</b><span class="muted xs">${p.net>0?'sana borçlu':p.net<0?'sen borçlusun':'denk'}</span></div></button>`).join('')}</div></div>`};
@@ -5782,8 +6213,8 @@ D.rainbow=U.memo((s,mode)=>{const T=U.today(),t=new Date(),cols=[];
 C.rainbow=(s,mode,sel,{h=150,fn='App.rbSel'}={})=>{const R=D.rainbow(s,mode);const S=sel!=null&&R.cols[sel]?R.cols[sel]:null;
   const bars=R.cols.map((c,i)=>`<button class="rb-col ${sel===i?'on':''} ${sel!=null&&sel!==i?'dim':''}" onclick="${fn}(${i})" aria-label="${U.esc(c.title)}: ${U.money(c.total,{raw:true})}">
       <span class="rb-v">${c.total?U.short(c.total):''}</span><span class="rb-stack ${c.future?'fut':''}">${R.order.filter(k=>c.by[k]>0).map(k=>`<i style="height:${c.by[k]/R.max*100}%;background:${cat(k).color}"></i>`).join('')}</span><span class="rb-l">${c.label}</span></button>`).join('');
-  const sum=S?`<div class="rb-sum"><b>${U.esc(S.title)}</b> · ${U.money(S.total,{dec:false})}<div class="rb-cats">${R.order.filter(k=>S.by[k]>0).slice(0,4).map(k=>`<span><i style="background:${cat(k).color}"></i>${cat(k).name} ${U.money(S.by[k],{dec:false})}</span>`).join('')}</div></div>`
-    :`<div class="rb-sum"><b>Toplam ${U.money(R.total,{dec:false})}</b> · ortalama ${U.money(R.total/R.active,{dec:false})}/${mode==='week'?'gün':mode==='month'?'hafta':'ay'}<div class="rb-cats">${R.order.slice(0,4).map(k=>`<span><i style="background:${cat(k).color}"></i>${cat(k).name}</span>`).join('')}</div></div>`;
+  const sum=S?`<div class="rb-sum"><b>${U.esc(S.title)}</b> · ${U.money(S.total,{dec:false})}<div class="rb-cats">${R.order.filter(k=>S.by[k]>0).slice(0,4).map(k=>`<span><i style="background:${cat(k).color}"></i>${U.esc(cat(k).name)} ${U.money(S.by[k],{dec:false})}</span>`).join('')}</div></div>`
+    :`<div class="rb-sum"><b>Toplam ${U.money(R.total,{dec:false})}</b> · ortalama ${U.money(R.total/R.active,{dec:false})}/${mode==='week'?'gün':mode==='month'?'hafta':'ay'}<div class="rb-cats">${R.order.slice(0,4).map(k=>`<span><i style="background:${cat(k).color}"></i>${U.esc(cat(k).name)}</span>`).join('')}</div></div>`;
   return `<div class="rb" style="--rbh:${h}px">${bars}</div>${sum}`};
 
 /* ---------- Eğilimler (Apple Sağlık tarzı) ---------- */
@@ -6451,7 +6882,7 @@ const Backup={IT:250000,
 const BackupSheet={
   open(){const s=Store.get(),lb=s.settings.lastBackup,days=lb?Math.floor((Date.now()-lb)/864e5):null;
     Sheet.open(Sheet.head('Yedekle',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
-      `<p class="muted sm" style="margin:0 4px 10px;line-height:1.5">Veriler sadece bu telefonda duruyor. Telefon kaybolur ya da Safari verileri silinirse hepsi gider. Yedeği <b>Dosyalar → iCloud Drive</b>'a kaydet. ${lb?`Son yedek: <b>${days===0?'bugün':days+' gün önce'}</b>.`:'<b>Henüz yedek almadın.</b>'}</p>
+      `<p class="muted sm" style="margin:0 4px 10px;line-height:1.5">${Cloud.user?'Veriler bu telefonda ve bulutta duruyor; yine de ayrı bir yedek almak en güvenlisi.':'Veriler sadece bu telefonda duruyor. Telefon kaybolur ya da Safari verileri silinirse hepsi gider.'} Yedeği <b>Dosyalar → iCloud Drive</b>'a kaydet. ${lb?`Son yedek: <b>${days===0?'bugün':days+' gün önce'}</b>.`:'<b>Henüz yedek almadın.</b>'}</p>
       <div class="glass" style="padding:4px 14px 14px">
         <label class="field"><span>Yedek şifresi</span><input class="input" id="bk-p1" type="password" autocomplete="new-password" placeholder="en az 6 karakter"></label>
         <label class="field"><span>Şifre (tekrar)</span><input class="input" id="bk-p2" type="password" autocomplete="new-password"></label>
@@ -6921,7 +7352,7 @@ const CloudSheet={
     Sheet.open(Sheet.head('Bulut eşitleme',{left:'Kapat',right:''})+'<i data-full hidden></i>'+
       `<div class="glass" style="padding:14px"><div class="set-row" style="padding-top:0"><div>${U.esc(Cloud.user.email||'')}<small>Proje: ${U.esc(c.projectId)}</small></div>${Cloud.badge()}</div>
         <p class="muted xs" style="line-height:1.5">${lm.last?'Son eşitleme: '+new Date(lm.last).toLocaleString('tr-TR'):'Henüz eşitlenmedi'}${lm.dirty?' · gönderilmeyi bekleyen değişiklik var':''}${Cloud.err?'<br><span style="color:var(--red)">'+U.esc(Cloud.err)+'</span>':''}</p></div>
-      <div class="glass" style="padding:2px 14px;margin-top:12px"><div class="set-row"><div>Uçtan uca şifreleme<small>${Cloud.pass()?'Açık · Firebase verini okuyamaz':'Kapalı · veriler Firebase kurallarıyla korunuyor'}</small></div>
+      <div class="glass" style="padding:2px 14px;margin-top:12px"><div class="set-row"><div>Uçtan uca şifreleme<small>${Cloud.pass()?'Açık · Veriler şifreli. Siri kestirmesinin okuduğu kısa özet (bakiye, borç, yaklaşan ödemeler) şifresiz saklanır':'Kapalı · veriler Firebase kurallarıyla korunuyor'}</small></div>
         <label class="switch"><input type="checkbox" ${Cloud.pass()?'checked':''} onchange="this.checked?CloudSheet.encOn():CloudSheet.encOff()"><span></span></label></div></div>
       <button class="btn primary pressable" style="margin-top:12px" onclick="Cloud.push().then(()=>{Toast.show('☁️ Eşitlendi');CloudSheet.open()}).catch(e=>{Cloud.fail(e);CloudSheet.open()})">${C.ic('upload')}Şimdi eşitle</button>
       <button class="btn pressable" style="margin-top:8px" onclick="CloudSheet.logout()">Çıkış yap</button>
@@ -7243,7 +7674,7 @@ const GW={KEY:'cuzdan_glass',kind:null,
   renderPop(){const el=document.getElementById('gw-pop');if(!el)return;const x=`<button class="gw-x" onclick="GW.close()" aria-label="Kapat">${C.ic('close')}</button>`;
     if(this.kind==='bell'){const s=Store.get(),list=s.accounts.length?D.insights(s):[];
       el.innerHTML=`<div class="gw-pop-h"><h3>Bildirimler</h3>${x}</div><div class="gw-pop-s">${list.length?list.length+' akıllı uyarı ve öneri':'Hesaplarındaki son durum'}</div>`+(list.length?`<div class="gw-nl">${list.map(i=>{const act=i.on?i.on:i.go?`App.push('${i.go[0]}',${JSON.stringify(i.go[1])})`:'';
-        return `<button class="gw-ni" ${act?`onclick="GW.close();${U.esc(act)}"`:''}><span class="gw-chip sev-${i.sev}">${C.ic(i.icon)}</span><span><b>${U.esc(i.title)}</b><p>${i.text}</p></span></button>`}).join('')}</div>`
+        return `<button class="gw-ni" ${act?`onclick="GW.close();${U.esc(act)}"`:''}><span class="gw-chip sev-${i.sev}">${C.ic(i.icon)}</span><span><b>${U.esc(i.title)}</b><p>${U.esc(i.text)}</p></span></button>`}).join('')}</div>`
         :`<div class="gw-ok"><span class="gw-chip sev-good">${C.ic('check')}</span><b>Her şey yolunda</b>Gecikmiş ödeme veya bütçe uyarısı yok.</div>`);return}
     const v=this.get(),pr=this.presetOf(v);
     el.innerHTML=`<div class="gw-pop-h"><h3>Cam görünümü</h3>${x}</div><div class="gw-pop-s">Panellerin bulanıklığını, saydamlığını ve kenar ışığını ayarla. Bu cihazda saklanır.</div>
@@ -8827,6 +9258,7 @@ App.go=function(tab,sub){if(tab===UI.tab&&!UI.stack.length&&!sub)return _go(tab,
   nav.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b===on));
   ind.style.width=on.offsetWidth+'px';ind.style.transform=`translateX(${on.offsetLeft}px)`;
   const id=++pend;requestAnimationFrame(()=>requestAnimationFrame(()=>{if(id===pend)_go(tab,sub)}))}}
+try{CzFnFix()}catch(e){console.error('fnfix',e)}
 App.init();
 
 </script>
@@ -9145,6 +9577,80 @@ void main() {
     raf = requestAnimationFrame(tick);
   };
   img.onerror = fallback; img.src = svgUrl(MARK);
+})();
+</script>
+<script id="cz-uxfix-js">
+/* cz-uxfix · UI/UX denetimi düzeltmeleri (sarmalayıcılar; orijinal kod değişmez) */
+(function(){
+  const CH=up=>'<span class="cz-dchev'+(up?' up':'')+'" aria-hidden="true">'+C.ic('chev')+'</span>';
+  const TXT=[["Taksit Matrix'i","Taksit tablosu"],["Widget'ları düzenle","Ana sayfayı düzenle"],["bir widget'a basılı tutarak","bir bölüme basılı tutarak"]];
+  const post=h=>{if(typeof h!=='string')return h;for(const[a,b]of TXT)if(h.includes(a))h=h.split(a).join(b);
+    h=h.replace(/(<div class="rb-sum"><b>Toplam[^<]*<\/b>[^<]*)<div class="rb-cats">[\s\S]*?<\/div><\/div>/g,'$1</div>');
+    return h.replace(/▼ detay/g,CH(false)).replace(/▲ gizle/g,CH(true))};
+
+  /* --- Sayfa çıktılarına ortak metin düzeltmeleri --- */
+  for(const o of [Screens,Pages])for(const k of Object.keys(o)){const f=o[k];if(typeof f!=='function')continue;o[k]=function(){return post(f.apply(this,arguments))}}
+
+  /* --- Sheet: ortak metinler + filtre çipleri tek satıra sığsın --- */
+  {const _o=Sheet.open;Sheet.open=function(html,...r){html=post(html);
+    if(typeof html==='string'&&html.includes('TxFilter.set'))html=html.replace(/>AI ile</g,'>Yapay zekâ<').replace(/>Transfer &amp; ödeme</g,'>Transfer<').replace(/>Transfer & ödeme</g,'>Transfer<');
+    return _o.call(this,html,...r)}}
+
+  /* --- Ö12: "Gelecek" varsayılan durum, rozet gösterilmez --- */
+  {const _b=C.badge;C.badge=st=>st==='future'?'':_b(st)}
+
+  /* --- Ö10: Ödemeler satırı: başlık kart adı, alt satır "Ekim ekstresi · asgari …" --- */
+  {const _u=C.upItem;C.upItem=x=>_u(x&&x.kind==='stmt'&&/ ekstresi$/.test(x.title||'')?{...x,title:x.title.replace(/ ekstresi$/,''),sub:String(x.sub||'').replace(/^(\S+) · /,'$1 ekstresi · ').replace(/ ekstresi · asgari ([\d.,]+ ?₺?)$/,' · asgari $1')}:x)}
+
+  /* --- Ö10: Hesabın kendi sayfasında satır alt metninde hesap adı tekrarlanmasın --- */
+  {const _v=C.txVis;C.txVis=(s,t,ctx)=>{const v=_v(s,t,ctx);try{if(ctx&&v&&v.sub){const a=D.account(s,ctx);if(a&&(t.accountId===ctx||t.toAccountId===ctx)){const n=a.name;
+      if(t.kind==='goal')v.sub=t.dir==='out'?'Kumbaradan':'Kumbaraya';
+      else if(/ → /.test(v.sub)){const[l,r]=v.sub.split(' → ');v.sub=l===n?'→ '+r:r.split(' · ')[0]===n?'← '+l:v.sub}
+      else{const x=v.sub.split(' · ').filter(p=>p!==n).join(' · ');if(x!==v.sub)v.sub=x||ACCOUNT_TYPES[a.type]?.name||''}}}}catch(e){}return v}}
+
+  /* --- Ö9: çizgi grafik eksen yazıları HTML'de (SVG genişleyince büyümesin) --- */
+  {const _l=C.lineChart;C.lineChart=(pts,o={})=>{const h=_l(pts,o);if(!h)return h;const W=340,ax=[];
+    const out=h.replace(/<text x="([\d.]+)" y="[\d.]+" text-anchor="(start|middle|end)">([^<]*)<\/text>/g,(m,x,a,t)=>{ax.push(`<span class="cz-ax-${a}" style="left:${(+x/W*100).toFixed(2)}%">${t}</span>`);return ''});
+    if(!ax.length)return h;const i=out.lastIndexOf('</svg>');return out.slice(0,i+6)+`<div class="cz-ax" aria-hidden="true">${ax.join('')}</div>`+out.slice(i+6)}}
+
+  /* --- K-8: Nakit kartında "Nakit" üç kez yazıyordu --- */
+  if(typeof CzWalletTheme!=='undefined'&&CzWalletTheme.pass){const _p=CzWalletTheme.pass;CzWalletTheme.pass=function(s,a){let h=_p.apply(this,arguments);
+    if(a&&a.type==='cash')h=h.replace('<div class="cc-lbl">Nakit</div>','<div class="cc-lbl">Bakiye</div>').replace(/<div class="cc-foot"><span>[^<]*<\/span>/,'<div class="cc-foot"><span></span>');return h}}
+
+  /* --- Planla: gözbaşı yok, Borç ayrı segment, takvim açıklaması --- */
+  {const _pl=Screens.plan;Screens.plan=function(s,ui){let h=_pl.apply(this,arguments);if(typeof h!=='string')return h;
+    h=h.replace('<div class="t-sub">Takvim, bütçe ve hedefler</div>','<div class="t-sub"></div>');
+    const tab=ui.planTab;if(tab==='goals'||tab==='debts'){try{
+      const old=C.segmented([['cal','Takvim'],['budget','Bütçe'],['rec','Düzenli'],['goals','Kumbara']],'goals','App.planTab'),
+            nw=C.segmented([['cal','Takvim'],['budget','Bütçe'],['rec','Düzenli'],['goals','Kumbara'],['debts','Borç']],tab,'App.planTab');
+      h=h.replace(old,nw);const debts=C.section('Borç ve alacak',`<button onclick="DebtForm.open()">Ekle</button>`,Screens.debts(s,ui));
+      if(tab==='goals')h=h.replace(debts,'');else{const g=Screens.goals(s,ui);h=h.replace(g,'')}}catch(e){console.warn(e)}}
+    return h}}
+  {const _c=Screens.calendar;Screens.calendar=function(){const h=_c.apply(this,arguments);if(typeof h!=='string')return h;
+    return h.replace('<div class="sumbar">','<div class="cz-cal-leg" aria-label="Takvim işaretleri"><span><i class="cz-m"></i>Ödeme (kart/abonelik rengi)</span><span><i style="background:var(--yellow)"></i>Hesap kesimi</span><span><i style="background:var(--text3)"></i>Tamamlandı</span></div><div class="sumbar">')}}
+
+  /* --- Ö10: bütçe ve hesaplar listelerinde alt satır iki satıra insin --- */
+  {const _b=Screens.budget;Screens.budget=function(){const h=_b.apply(this,arguments);return typeof h==='string'?h.split('<div class="glass list">').join('<div class="glass list cz-wrap2">'):h}}
+  {const _a=Pages.accounts;Pages.accounts=function(){const h=_a.apply(this,arguments);return typeof h==='string'?h.split('<div class="glass list">').join('<div class="glass list cz-wrap2">'):h}}
+
+  /* --- Raporlar: gözbaşı yok --- */
+  {const _r=Screens.reports;Screens.reports=function(){const h=_r.apply(this,arguments);return typeof h==='string'?h.replace('<div class="t-sub">Hesap özeti ve analiz</div>','<div class="t-sub"></div>'):h}}
+
+  /* --- Ana sayfa: kısa selamlama --- */
+  {const _h=Screens.home;Screens.home=function(){let h=_h.apply(this,arguments);if(typeof h!=='string')return h;h=h.replace(/<div class="t-sub">Tekrar hoş geldin, ([^<]*)<\/div>/,'<div class="t-sub">Merhaba, $1</div>');
+    /* K-5: "Birikim hedefleri" başlığı diğer bölümler gibi kartın dışında (mobil) */
+    if(!Split.wide())h=h.replace(/(<section class="w [^"]*"[^>]*>)\s*<section class="glass gw-panel gw-goals"><div class="gw-title"><h2>Birikim hedefleri<\/h2>(<button[^>]*>[^<]*<\/button>)<\/div>/,'<div class="section-head cz-gh">  <h2>Birikim hedefleri</h2>$2</div>$1<section class="glass gw-panel gw-goals cz-goals-nt">');
+    return h}}
+
+  /* --- K-15: İşlemler listesinin sonunda önceki aya geçiş --- */
+  {const _t=Screens.txList;Screens.txList=function(s,ui){const h=_t.apply(this,arguments);try{const f=ui.txf||{};if(typeof h!=='string'||(f.range&&f.range!=='month')||f.q)return h;
+      const base=f.ym||U.today().slice(0,7),d=new Date(+base.slice(0,4),+base.slice(5,7)-2,1);
+      return h+`<button class="cz-prev-m pressable" onclick="App.txMonth(-1);window.scrollTo(0,0)">${U.MONTHS[d.getMonth()]} işlemleri${C.ic('chev')}</button>`}catch(e){return h}}}
+
+  /* --- Ö5: sohbet sayfasında dock gizli, giriş kutusu en altta --- */
+  {const _r=App.render;App.render=function(){const r=_r.apply(this,arguments);try{const c=App.current();document.body.classList.toggle('cz-chat',!!c&&c.name==='chat')}catch(e){}return r}}
+
+  try{App.render()}catch(e){console.warn(e)}
 })();
 </script>
 </body>

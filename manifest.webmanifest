@@ -1,4 +1,5 @@
 {
+  "id": "./",
   "name": "Cüzdan · Kişisel Finans",
   "short_name": "Cüzdan",
   "description": "Kartlar, taksitler, hesaplar ve bütçe tek yerde.",
@@ -13,5 +14,8 @@
     {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
     {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
     {"src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Harcama ekle", "short_name": "Harcama", "url": "./?quick=1", "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png"}]}
   ]
 }
