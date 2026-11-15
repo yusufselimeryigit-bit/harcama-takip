@@ -3301,6 +3301,27 @@ html:not(.ds-ios):not(.wide) body #screen{padding-left:10px;padding-right:10px}
 html.wide .today-panel .tp-bal{justify-content:flex-start!important;gap:6px}
 html.wide .today-panel .tp-foot{margin-top:18px!important}
 </style>
+<style id="cz-flow-css">
+/* Para akışı: Sankey yerine taşmayan sade çubuk + liste */
+.cz-flow{display:flex;flex-direction:column;gap:14px;padding:2px 4px}
+.cz-flow-top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cz-flow-top div{min-width:0}
+.cz-flow-top span{display:block;font-size:12.5px;color:var(--text2);margin-bottom:2px}
+.cz-flow-top b{display:block;font-size:17px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.cz-flow-top b.pos{color:#30d158}.cz-flow-top b.neg{color:#ff453a}
+.cz-flow-bar{display:flex;height:12px;border-radius:999px;overflow:hidden;background:rgba(127,127,127,.18);gap:2px}
+.cz-flow-bar i{display:block;height:100%;min-width:3px}
+.cz-flow-list{list-style:none;margin:0;padding:0}
+.cz-flow-list li{display:grid;grid-template-columns:10px minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:9px 0;border-top:.5px solid rgba(127,127,127,.25);font-size:15px}
+.cz-flow-list li:first-child{border-top:0}
+.cz-flow-list .d{width:10px;height:10px;border-radius:50%}
+.cz-flow-list .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cz-flow-list .p{color:var(--text2);font-size:13px;font-variant-numeric:tabular-nums}
+.cz-flow-list b{font-weight:600;font-variant-numeric:tabular-nums;text-align:right;min-width:72px}
+.cz-flow-list li.save .n,.cz-flow-list li.save b{color:#30d158}
+.cz-flow-list li.gap .n,.cz-flow-list li.gap b{color:#ff453a}
+html.wide .cz-flow{max-width:560px}
+</style>
 </head>
 <body>
 <div id="cz-splash" aria-hidden="true"></div>
@@ -9652,6 +9673,24 @@ void main() {
 
   try{App.render()}catch(e){console.warn(e)}
 })();
+</script>
+<script id="cz-flow-js">
+/* Para akışı: Sankey yerine çubuk + liste (telefonda üst üste binme olmaz) */
+try{(function(){
+  C.sankey=(income,cats)=>{income=+income||0;const list=(cats||[]).filter(c=>c&&c.value>0).slice().sort((a,b)=>b.value-a.value);
+    const exp=U.r2(list.reduce((a,c)=>a+c.value,0));if(exp<=0&&income<=0)return '';
+    const top=list.slice(0,6);let rest=list.slice(6).reduce((a,c)=>a+c.value,0);
+    const di=top.findIndex(c=>c.name==='Diğer');if(rest>0){if(di>=0){top[di]={...top[di],value:top[di].value+rest}}else top.push({name:'Diğer',value:rest,color:'#8e8e93'});}
+    const base=Math.max(income,exp)||1,pct=v=>{const x=v/(income>0?income:exp)*100;return x>0&&x<1?'<%1':'%'+Math.round(x)};
+    const left=U.r2(income-exp);
+    const segs=top.map(c=>`<i style="width:${(c.value/base*100).toFixed(2)}%;background:${c.color}"></i>`).join('')+(left>0?`<i style="width:${(left/base*100).toFixed(2)}%;background:rgba(48,209,88,.45)"></i>`:'');
+    const rows=top.map(c=>`<li><span class="d" style="background:${c.color}"></span><span class="n">${U.esc(c.name)}</span><span class="p">${pct(c.value)}</span><b>${U.money(c.value,{dec:false})}</b></li>`).join('')
+      +(left>0?`<li class="save"><span class="d" style="background:#30d158"></span><span class="n">Kalan</span><span class="p">${pct(left)}</span><b>${U.money(left,{dec:false})}</b></li>`:'')
+      +(left<0&&income>0?`<li class="gap"><span class="d" style="background:#ff453a"></span><span class="n">Gelirden fazla harcama</span><span class="p"></span><b>${U.money(-left,{dec:false})}</b></li>`:'');
+    const head=income>0?`<div class="cz-flow-top"><div><span>Gelir</span><b>${U.money(income,{dec:false})}</b></div><div><span>Harcama</span><b>${U.money(exp,{dec:false})}</b></div><div><span>${left<0?'Açık':'Kalan'}</span><b class="${left<0?'neg':'pos'}">${U.money(Math.abs(left),{dec:false})}</b></div></div>`:`<div class="cz-flow-top" style="grid-template-columns:1fr"><div><span>Bu dönem harcama</span><b>${U.money(exp,{dec:false})}</b></div></div>`;
+    return `<div class="cz-flow" role="group" aria-label="Para akışı">${head}<div class="cz-flow-bar" aria-hidden="true">${segs}</div><ul class="cz-flow-list">${rows}</ul></div>`};
+  try{App.render&&App.render()}catch(e){}
+})()}catch(e){console.warn('cz-flow',e)}
 </script>
 </body>
 </html>
