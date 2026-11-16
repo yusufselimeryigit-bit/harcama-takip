@@ -3322,6 +3322,160 @@ html.wide .today-panel .tp-foot{margin-top:18px!important}
 .cz-flow-list li.gap .n,.cz-flow-list li.gap b{color:#ff453a}
 html.wide .cz-flow{max-width:560px}
 </style>
+<style id="cz-swipe">
+/* =====================================================================
+   cz-swipe · kaydırma eylemi rötuşları + Apple Pay tarzı işlem makbuzu (cz-receipt)
+   ===================================================================== */
+
+/* ---------- Kaydırma: masaüstü "…" düğmesi (yalnız fare/izleme dörtgeni) ---------- */
+.czsw-more{display:none}
+@media (hover:hover) and (pointer:fine){
+  .swipe-fg{position:relative}
+  .czsw-more{display:flex;position:absolute;right:10px;top:50%;width:28px;height:28px;margin-top:-14px;border-radius:50%;
+    align-items:center;justify-content:center;gap:2.5px;background:var(--fill2,var(--fill));color:var(--text2);
+    opacity:0;transform:scale(.8);transition:opacity .16s ease,transform .2s cubic-bezier(.2,.9,.3,1.2);z-index:2;cursor:pointer}
+  .czsw-more i{width:3.5px;height:3.5px;border-radius:50%;background:currentColor;display:block}
+  .czsw-more:hover{color:var(--text)}
+  .swipe-fg .row .end{transition:transform .2s cubic-bezier(.2,.9,.3,1)}
+  .swipe:not(.open-l):not(.open-r):hover .czsw-more,.swipe .czsw-more:focus-visible{opacity:1;transform:none}
+  .swipe:not(.open-l):not(.open-r):hover .swipe-fg .row .end{transform:translateX(-32px)}
+  .swipe.dragging .czsw-more{opacity:0}
+}
+@media (prefers-reduced-motion:reduce){.czsw-more,.swipe-fg .row .end{transition:none!important}}
+
+/* ---------- Makbuz ---------- */
+.czrc-h1{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;margin:0!important;padding:0!important}
+.czrc{max-width:620px;margin:0 auto}
+.czrc-hero{text-align:center;padding:6px 16px 22px;display:flex;flex-direction:column;align-items:center}
+.czrc-logo{width:var(--czrc-logo,76px);height:var(--czrc-logo,76px);margin:0 auto 14px;position:relative}
+.czrc-logo .ic,.czrc-logo .ic.czl,.czrc-logo .ic.brand,html .czrc-logo .ic.czl.big{width:100%!important;height:100%!important;border-radius:50%!important;margin:0!important;
+  display:grid;place-items:center;font-size:34px;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.08)}
+.czrc-logo .ic svg.i{width:36px;height:36px}
+.czrc-logo .ic.czl b{font-size:28px;letter-spacing:-.02em}
+.czrc-logo .ic.czl.n1 b,.czrc-logo .ic.czl.mono b{font-size:34px}
+.czrc-logo .ic.czl.n3 b{font-size:24px}.czrc-logo .ic.czl.n4 b{font-size:20px}.czrc-logo .ic.czl.n5 b{font-size:16px}
+.czrc-amt{font-family:var(--cz-round,var(--font));font-size:46px;line-height:1.04;font-weight:700;letter-spacing:-.035em;font-variant-numeric:tabular-nums;color:var(--text)}
+.czrc-amt.pos{color:var(--green)}
+.czrc-name{font-size:19px;font-weight:600;letter-spacing:-.01em;margin-top:8px;line-height:1.25;max-width:100%;overflow-wrap:anywhere}
+.czrc-date{font-size:15px;color:var(--text2);margin-top:4px}
+.czrc-acc{font-size:15px;color:var(--text2);margin-top:2px}
+.czrc-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px}
+.czrc-chip,.czrc-st{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;border-radius:14px;font-size:13px;font-weight:600;white-space:nowrap}
+.czrc-chip{color:var(--c);background:color-mix(in srgb,var(--c) 16%,transparent)}
+.czrc-chip svg.i{width:15px;height:15px}
+.czrc-st{color:var(--text2);background:var(--fill)}
+.czrc-st.ok{color:var(--green);background:color-mix(in srgb,var(--green) 14%,transparent)}
+.czrc-st.ref{color:var(--orange);background:color-mix(in srgb,var(--orange) 15%,transparent)}
+.czrc-st svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+.czrc .czrc-sec{margin-top:18px}
+.czrc .czrc-list .row,.czrc .czrc-acts .row{min-height:48px}
+.czrc .czrc-list .row .mid{display:flex;flex-direction:column;gap:1px;flex:0 0 auto;max-width:44%}
+.czrc .czrc-list .row .mid span{font-size:12.5px;color:var(--text3);font-weight:400}
+.czrc .czrc-list .row .end{flex:1 1 auto;display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0;max-width:none;color:var(--text)}
+.czrc .czrc-list button.row{color:inherit;font:inherit;background:none;border:0;cursor:pointer}
+.czrc-chev{width:8px;height:13px;flex:none;fill:none;stroke:var(--text3);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-left:2px;opacity:.75}
+.czrc-pl .czrc-chev{transition:transform .25s cubic-bezier(.2,.9,.3,1)}
+.czrc-pl.open .czrc-chev{transform:rotate(90deg)}
+.czrc-cat{width:22px;height:22px;border-radius:7px;display:inline-grid;place-items:center;color:#fff;background:var(--c);flex:none}
+.czrc-cat svg.i{width:13px;height:13px}
+.czrc .czrc-noterow{align-items:flex-start}
+.czrc-note{font-weight:500;text-align:right;white-space:pre-wrap;overflow-wrap:anywhere}
+
+.czrc-plan{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s cubic-bezier(.2,.9,.3,1),margin .32s;margin-top:0}
+.czrc-plan>.czrc-plan-in{overflow:hidden;min-height:0}
+.czrc-plan.open{grid-template-rows:1fr;margin-top:10px}
+
+/* içgörü kartı */
+.czrc-ins{padding:16px 16px 6px;border-radius:var(--r-lg)}
+.czrc-ins-t{font-size:15.5px;line-height:1.4;color:var(--text2);margin:0}
+.czrc-ins-t b{color:var(--text);font-weight:600}
+.czrc-bars{display:flex;align-items:flex-end;gap:10px;height:76px;margin:16px 2px 6px}
+.czrc-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+.czrc-bar i{display:block;width:100%;max-width:28px;margin-top:auto;border-radius:5px;background:var(--fill2,var(--fill));min-height:3px}
+.czrc-bar.on i{background:var(--primary)}
+.czrc-bar span{font-size:11px;color:var(--text3);line-height:1}
+.czrc-bar.on span{color:var(--text);font-weight:600}
+.czrc-ins-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 0;margin-top:8px;border-top:.5px solid var(--sep)}
+.czrc-ins-row>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.czrc-ins-row span{font-size:12px;color:var(--text3)}
+.czrc-ins-row b{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.czrc-link{display:flex;align-items:center;justify-content:space-between;width:calc(100% + 32px);margin:0 -16px;padding:13px 16px;border-top:.5px solid var(--sep);
+  color:var(--primary);font-size:15.5px;font-weight:500;background:none;text-align:left}
+.czrc-link .czrc-chev{stroke:var(--text3)}
+
+/* eylemler */
+.czrc .czrc-acts .row{gap:12px;color:var(--primary)}
+.czrc .czrc-acts .row .mid b{font-weight:500;font-size:16px;color:var(--primary)}
+.czrc-ai{width:26px;display:grid;place-items:center;flex:none;color:var(--primary)}
+.czrc-ai svg.i{width:20px;height:20px}
+.czrc .czrc-acts .czrc-del{justify-content:center}
+.czrc .czrc-acts .czrc-del .mid{text-align:center;flex:1}
+.czrc .czrc-acts .czrc-del .mid b{color:var(--red)}
+
+/* Apple Wallet: siyah zemin, Wallet hücreleri */
+html.ds-wallet .czrc-amt{font-weight:700}
+html.ds-wallet .czrc-bar:not(.on) i{background:#3a3a3c}
+html.ds-wallet .czrc-bar.on i{background:#0a84ff}
+html.ds-wallet .czrc-logo .ic{box-shadow:0 0 0 .5px rgba(255,255,255,.12)}
+/* Saf iOS açık */
+html.ds-ios[data-theme=light] .czrc-logo .ic{box-shadow:inset 0 0 0 .5px rgba(0,0,0,.08)}
+html.ds-ios[data-theme=light] .czrc-bar:not(.on) i{background:#e5e5ea}
+/* Cam: cam yüzeyler korunur; yalnız kahraman kartsız */
+html:not(.ds-ios) .czrc-amt{font-weight:600}
+
+/* masaüstü */
+html.wide .czrc-hero{padding-top:18px}
+html.wide .czrc .czrc-acts .row:hover,html.wide .czrc .czrc-list button.row:hover{background:var(--fill)}
+
+@media (prefers-reduced-motion:reduce){.czrc-plan,.czrc-pl .czrc-chev{transition:none!important}}
+
+</style>
+<style id="cz-wcard">
+/* ===== Apple Wallet tarzı kart açılımı (Apple Wallet + Saf iOS) ===== */
+html.wx-flip #screen .wallet,html.wx-flip #screen .wallet>.wslot{transition:none!important}
+#screen .wallet.wx-open{display:flex;flex-direction:column;height:auto!important;transition:none;margin:-20px -24px 0;padding:24px 24px 0;
+  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 30px),transparent)}
+#screen .wallet.wx-open.single{-webkit-mask-image:none;mask-image:none;padding-bottom:0}
+#screen .wallet.wx-open>.wslot{position:relative;flex:none;will-change:auto;transition:none}
+#screen .wallet.wx-open>.wslot.wx-sel{cursor:pointer;touch-action:pan-y}
+#screen .wallet.wx-open>.wslot.wx-pile{cursor:pointer}
+html.ds-wallet[data-theme] #screen .czwt-deck.wx-open>.wslot.wx-pile .ccard:not(.cc-back){box-shadow:0 -6px 16px -8px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.08)}
+html.ds-ios:not(.ds-wallet) #screen .wallet.wx-open>.wslot.wx-pile .ccard:not(.cc-back){box-shadow:0 -4px 12px -6px rgba(0,0,0,.28)}
+@media (hover:hover){#screen .wallet.wx-open>.wslot.wx-pile:hover{translate:0 -4px;transition:translate .25s cubic-bezier(.32,.72,0,1)}}
+#screen .wallet .wx-ghost{position:absolute;left:0;right:0;margin:0;pointer-events:none;z-index:2}
+
+.wx-panel{position:relative;z-index:5;order:-1;padding:18px 2px 2px;color:var(--text)}
+.wx-kv{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 4px}
+.wx-kv>div{min-width:0}
+.wx-l{display:block;font-size:13px;font-weight:500;color:var(--text2);letter-spacing:-.005em}
+.wx-v{display:block;margin-top:3px;font-size:24px;line-height:1.15;font-weight:700;letter-spacing:-.025em;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wx-v.pos{color:var(--green)}.wx-v.neg{color:var(--red)}
+.wx-kv small{display:block;margin-top:2px;font-size:12.5px;color:var(--text2);font-variant-numeric:tabular-nums}
+.wx-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding:0 2px}
+.wx-chip{display:inline-flex;white-space:nowrap;max-width:100%;align-items:center;gap:5px;min-height:30px;padding:5px 12px;border-radius:15px;background:var(--fill);font-size:13px;line-height:1.25;color:var(--text2)}
+.wx-chip b{color:var(--text);font-weight:600}
+.wx-chip svg.i{width:15px;height:15px;opacity:.8}
+.wx-chip.red{background:rgba(255,69,58,.14);color:#ff453a}.wx-chip.red b{color:inherit}
+.wx-chip.orange{background:rgba(255,159,10,.15);color:#ff9f0a}.wx-chip.orange b{color:inherit}
+html.ds-ios:not(.ds-wallet)[data-theme="light"] .wx-chip.red{color:#d70015}
+html.ds-ios:not(.ds-wallet)[data-theme="light"] .wx-chip.orange{color:#c93400}
+.wx-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.wx-act{display:flex;align-items:center;justify-content:center;gap:7px;height:44px;border-radius:22px;background:var(--fill);color:var(--blue);font-size:15px;font-weight:600;letter-spacing:-.01em;transition:transform .15s cubic-bezier(.32,.72,0,1),opacity .15s}
+.wx-act svg.i{width:18px;height:18px}
+.wx-act.pri{background:var(--blue);color:#fff}
+.wx-act:active{transform:scale(.97);opacity:.85}
+.wx-h{display:flex;align-items:baseline;justify-content:space-between;margin:22px 4px 2px}
+.wx-h h3{margin:0;font-size:17px;font-weight:650;letter-spacing:-.015em}
+.wx-tx{margin:0 -2px}
+.wx-empty{margin:10px 4px 4px;font-size:14px;color:var(--text2)}
+.wx-more{display:flex;align-items:center;justify-content:center;gap:2px;width:100%;height:46px;margin-top:4px;border-radius:12px;color:var(--blue);font-size:15px;font-weight:600}
+.wx-more svg.i{width:16px;height:16px}
+.wx-more:active{opacity:.6}
+html.ds-wallet[data-theme] .wx-panel{--fill:rgba(255,255,255,.09)}
+html.ds-wallet[data-theme] .wx-act.pri{background:#0a84ff}
+@media (prefers-reduced-motion:reduce){#screen .wallet.wx-open>.wslot.wx-pile:hover{translate:none}.wx-act{transition:none}}
+</style>
 </head>
 <body>
 <div id="cz-splash" aria-hidden="true"></div>
@@ -9691,6 +9845,271 @@ try{(function(){
     return `<div class="cz-flow" role="group" aria-label="Para akışı">${head}<div class="cz-flow-bar" aria-hidden="true">${segs}</div><ul class="cz-flow-list">${rows}</ul></div>`};
   try{App.render&&App.render()}catch(e){}
 })()}catch(e){console.warn('cz-flow',e)}
+</script>
+<script id="cz-receipt">
+/* =====================================================================
+   cz-receipt · (1) iOS Mail tarzı kaydırma eylemleri için son rötuşlar
+                (2) İşlem detayı: Apple Pay / Wallet makbuzu görünümü
+   Mevcut Gesture (cz-uxfix) ve CzLogo.del (geri alınabilir silme) yeniden kullanılır.
+   ===================================================================== */
+(function(){
+'use strict';
+if(typeof Pages==="undefined"||typeof C==='undefined'||!Pages.tx)return;
+
+/* ---------- 1 · Kaydırma ---------- */
+
+/* Silme bildirimi 6 sn açık kalsın (kaydırarak silme 5 sn idi; detaydan silme zaten 6 sn) */
+{const _t=Toast.show;Toast.show=function(msg,ms,action){
+  if(action&&action.label==='Geri al'&&/silindi/.test(String(msg))&&(ms||0)<6000){ms=6000;
+    try{if(typeof CzLogo!=='undefined'&&CzLogo._undoUntil)CzLogo._undoUntil=Date.now()+6000}catch(e){}
+    return _t.call(this,msg,ms,action)}
+  return _t.apply(this,arguments)}}
+
+/* Masaüstü: satırın üzerine gelince küçük "…" düğmesi (dokunmatikte gizli; mevcut bağlam menüsünü açar) */
+const moreBtn=id=>`<button type="button" class="czsw-more" tabindex="-1" aria-label="İşlem seçenekleri" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();event.preventDefault();CzRcpt.more(this,'${id}')"><i></i><i></i><i></i></button>`;
+const withMore=(h,t)=>{if(typeof h!=='string'||!t||!t.id)return h;const k=h.lastIndexOf('</div></div>');return k<0?h:h.slice(0,k)+moreBtn(t.id)+h.slice(k)};
+['txRow','gwTx'].forEach(n=>{const f=C[n];if(typeof f!=='function')return;C[n]=function(s,t){return withMore(f.apply(this,arguments),t)}});
+
+/* ---------- 2 · Makbuz ---------- */
+const CzRcpt=window.CzRcpt={
+  fold:x=>{try{return CzLogo.fold(CzLogo.info(x).name)}catch(e){return String(x||'').toLocaleLowerCase('tr').trim()}},
+  name:x=>{try{return CzLogo.info(x).name||x}catch(e){return x}},
+  /* Türkçe bulunma eki: MediaMarkt'ta, Kırtasiye'de, A101'de, Eylül 2026'da */
+  loc(w,abl){const s=String(w||'').trim();if(!s)return s;const core=s.replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşüÂâÎîÛû]+$/,'')||s;let suf;
+    if(/[0-9]$/.test(core)){const n=core.match(/[0-9]+$/)[0];const D1={'1':'de','2':'de','3':'te','4':'te','5':'te','6':'da','7':'de','8':'de','9':'da'};
+      const T={'1':'da','2':'de','3':'da','4':'ta','5':'de','6':'ta','7':'te','8':'de','9':'da'};
+      if(n.slice(-1)!=='0')suf=D1[n.slice(-1)];else if(/^0+$/.test(n))suf='da';else if(/000$/.test(n))suf='de';else if(/00$/.test(n))suf='de';else suf=T[n.slice(-2,-1)]||'de'}
+    else{const low=core.toLocaleLowerCase('tr'),vs=low.match(/[aeıioöuüâîû]/g);const v=vs?vs[vs.length-1]:'e';
+      suf=(/[çfhkpsşt]$/.test(low)?'t':'d')+(/[aıouâû]/.test(v)?'a':'e')}
+    return s+"'"+suf+(abl?'n':'')},
+  weekday:d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('tr-TR',{weekday:'long'})}catch(e){return ''}},
+  stats(s,t){const src=t.merchant;if(!src||!['expense','income'].includes(t.kind))return null;
+    const key=this.fold(src);if(!key)return null;const cur=D.account(s,t.accountId)?.currency||'TRY';
+    const same=s.transactions.filter(x=>x.kind===t.kind&&x.merchant&&x.source!=='adjust'&&(D.account(s,x.accountId)?.currency||'TRY')===cur&&this.fold(x.merchant)===key);
+    const ym=t.date.slice(0,7),mon=same.filter(x=>x.date.slice(0,7)===ym),sum=a=>U.r2(a.reduce((p,x)=>p+(+x.amount||0),0));
+    const [Y,M]=ym.split('-').map(Number),bars=[];for(let i=5;i>=0;i--){const d=new Date(Y,M-1-i,1),k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+      bars.push({k,m:d.getMonth(),v:sum(same.filter(x=>x.date.slice(0,7)===k)),on:k===ym})}
+    const total=sum(same);
+    return{cur,name:this.name(src),ym,monSum:sum(mon),monN:mon.length,all:same.length,avg:same.length?U.r2(total/same.length):0,total,bars}},
+  all(name){try{UI.txf={...UI.txf,q:String(name||''),kind:'all',type:'',range:'all',ym:'',acc:'',cat:''}}catch(e){}
+    App.go('txs');setTimeout(()=>{const q=document.getElementById('tx-q');if(q)q.value=String(name||'')},0)},
+  /* masaüstü "…": bağlam menüsü düğmenin altında, sağa hizalı */
+  more(btn,id){try{Gesture.closeAll&&Gesture.closeAll()}catch(e){}Ctx.open('tx:'+id,btn.closest('.swipe-fg'));
+    const m=document.getElementById('ctx');if(!m)return;const r=btn.getBoundingClientRect(),w=m.offsetWidth,h=m.offsetHeight;
+    m.style.left=Math.max(16,Math.min(innerWidth-w-16,r.right-w))+'px';m.style.top=(r.bottom+6+h>innerHeight-16?Math.max(16,r.top-h-6):r.bottom+6)+'px'},
+  plan(btn){UI.czrPlan=!UI.czrPlan;const el=document.querySelector('.czrc-plan');if(el)el.classList.toggle('open',!!UI.czrPlan);
+    if(btn){btn.setAttribute('aria-expanded',UI.czrPlan?'true':'false');btn.classList.toggle('open',!!UI.czrPlan)}
+    if(UI.czrPlan&&el&&el.scrollIntoView){setTimeout(()=>{const r=el.getBoundingClientRect();if(r.bottom>innerHeight-90)window.scrollBy({top:Math.min(r.top-120,r.bottom-innerHeight+110),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})},60)}}
+};
+
+const _tx=Pages.tx;
+Pages.tx=function(s,ui,p){const orig=_tx.apply(this,arguments);if(typeof orig!=='string')return orig;
+  try{return build(s,ui,p,orig)}catch(e){console.warn('cz-receipt',e);return orig}};
+
+const ICON_SIZE=76;
+function build(s,ui,p,orig){
+  const t=D.tx(s,p.id);if(!t)return orig;
+  const v=C.txVis(s,t),a=D.account(s,t.accountId),plan=D.txPlan(s,t),refunds=D.refundMap(s)[t.id]||[];
+  const cur=a?.currency||'TRY',esc=U.esc,canEdit=['expense','income','transfer'].includes(t.kind);
+
+  /* mevcut sayfayı ayrıştır: ek bölümler (taksit planı, garanti, KDV, kalemler, belge) ve eylem düğmeleri korunur */
+  const tpl=document.createElement('template');tpl.innerHTML=orig;const kids=[...tpl.content.children];
+  const head=kids.filter(e=>e.classList.contains('page-head')).map(e=>e.outerHTML).join('');
+  const secs=kids.filter(e=>e.classList.contains('section'));
+  const actSec=secs.filter(e=>e.querySelector(':scope > .btn')).pop();
+  const extra=secs.filter(e=>e!==actSec&&e.querySelector(':scope > .section-head'));
+  let planSec='',more='';
+  extra.forEach(e=>{const h=(e.querySelector('.section-head h2')?.textContent||'').trim();
+    if(h==='Taksit planı'){e.querySelector('.section-head')?.remove();planSec=e.innerHTML}
+    else{if(h==='Belge')e.querySelector('.section-head h2').textContent='Fiş ve belge';more+=e.outerHTML}});
+
+  /* üst bölüm */
+  const sign=v.sign>0?'+':'';const refSum=U.r2(refunds.reduce((x,r)=>x+r.amount,0));
+  const future=t.date>U.today();
+  let st=['ok','Onaylandı'];
+  if(t.kind==='expense'&&refSum>=t.amount-0.01)st=['ref','İade edildi'];else if(refSum>0)st=['ref','Kısmi iade · '+U.money(refSum,{cur})];
+  else if(future)st=['plan','Planlandı'];
+  const c=['expense','income','refund'].includes(t.kind)?cat(t.category):null;
+  let instTxt='';if(plan&&plan.rows.length>1){const n=plan.rows.length,k=plan.rows.filter(r=>r.state!=='future').length;
+    instTxt=k?`Taksit ${Math.min(k,n)}/${n}`:`${n} taksit · ilk taksit ${D.stmtName(plan.rows[0].idx)} ekstresinde`}
+  else if(t.installments>1)instTxt=t.installments+' taksit';
+  const accLine=[a?a.name:(t.kind==='payment'?'Dış hesap':''),instTxt].filter(Boolean).join(' · ');
+  const wd=CzRcpt.weekday(t.date),dateLine=U.fmtDate(t.date,'y')+(wd?' '+wd.charAt(0).toLocaleUpperCase('tr')+wd.slice(1):'')+(t.time?' · '+esc(String(t.time).slice(0,5)):'');
+  const ttl=v.title||KINDS[t.kind]||'İşlem';
+  const hero=`<section class="czrc-hero" aria-label="${esc(ttl)}, ${esc(U.money(t.amount,{cur,raw:true})||'')}">
+      <div class="czrc-logo">${C.vic(v,true)}</div>
+      <div class="czrc-amt num ${v.sign>0?'pos':''}">${sign}${U.money(t.amount,{cur})}</div>
+      <h2 class="czrc-name">${esc(ttl)}</h2>
+      <div class="czrc-date">${dateLine}</div>
+      ${accLine?`<div class="czrc-acc">${esc(accLine)}</div>`:''}
+      <div class="czrc-tags">${c?`<span class="czrc-chip" style="--c:${c.color}">${C.ic(c.icon)}${esc(c.name)}</span>`:''}<span class="czrc-st ${st[0]}">${st[0]==='ok'?'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l2.9 2.9 6-6.4"/></svg>':''}${esc(st[1])}</span></div>
+    </section>`;
+
+  /* gruplu liste */
+  const chev='<svg class="czrc-chev" viewBox="0 0 10 16" aria-hidden="true"><path d="M2 2l6 6-6 6"/></svg>';
+  const R=[];const row=(k,val,o={})=>R.push(`<${o.on?'button type="button"':'div'} class="row czrc-row${o.on?' pressable':''}${o.cls?' '+o.cls:''}"${o.on?` onclick="${o.on}"`:''}${o.attr||''}><div class="mid">${k}${o.sub?`<span>${o.sub}</span>`:''}</div><div class="end">${val}</div>${o.on?chev:''}</${o.on?'button':'div'}>`);
+  if(!['expense','income'].includes(t.kind))row('Tür',esc(KINDS[t.kind]||''));
+  if(a)row(a.type==='credit'?'Kart':'Hesap',esc(a.name),{on:a.type==='credit'?`App.push('card',{id:'${a.id}'})`:`App.push('account',{id:'${a.id}'})`});
+  else if(t.kind==='payment')row('Kaynak','Dış hesap');
+  if(t.toAccountId){const b=D.account(s,t.toAccountId);row('Hedef hesap',esc(b?.name||'—'))}
+  if(c)row('Kategori',`<span class="czrc-cat" style="--c:${c.color}">${C.ic(c.icon)}</span>${esc(c.name)}`);
+  if(t.toAmount!=null&&t.toAmount!==t.amount)row('Alınan tutar',U.money(t.toAmount,{cur:D.account(s,t.toAccountId)?.currency}));
+  if(t.installments>1){const per=U.money(t.amount/t.installments,{cur});
+    if(planSec)row('Taksit planı',`<span class="num">${t.installments} × ${per}</span>`,{sub:`${plan.paid}/${plan.rows.length} ödendi`,on:'CzRcpt.plan(this)',cls:'czrc-pl'+(ui.czrPlan?' open':''),attr:` aria-expanded="${ui.czrPlan?'true':'false'}"`});
+    else row('Taksit',`<span class="num">${t.installments} × ${per}</span>`)}
+  if(t.fx&&t.fx.amount)row('Döviz',U.money(t.fx.amount,{cur:t.fx.cur})+' × '+String(t.fx.rate).replace('.',',')+' ₺');
+  if(t.location||t.place)row('Konum',esc(String(t.location||t.place)));
+  if(t.note)row('Not',`<span class="czrc-note">${esc(t.note)}</span>`,{cls:'czrc-noterow'});
+  row('Kaynak',{ocr:'Fiş tarama',import:'Ekstre içe aktarma',manual:'Elle girildi'}[t.source]||'Elle girildi');
+  const list=`<div class="section czrc-sec"><div class="glass list info czrc-list">${R.join('')}</div></div>`;
+  const planHtml=planSec?`<div class="section czrc-plan${ui.czrPlan?' open':''}"><div class="czrc-plan-in">${planSec}</div></div>`:'';
+
+  /* içgörü kartı */
+  let ins='';const S=CzRcpt.stats(s,t);
+  if(S){const now=U.today().slice(0,7),[yy,mm]=S.ym.split('-').map(Number);
+    const when=S.ym===now?'Bu ay':CzRcpt.loc(U.MONTHS[mm-1]+(yy!==new Date().getFullYear()?' '+yy:''));
+    const nm=esc(S.name),M=x=>U.money(x,{cur:S.cur,dec:false});
+    const verb=t.kind==='income'?`<b>${esc(CzRcpt.loc(S.name,true))}</b> toplam`:`<b>${esc(CzRcpt.loc(S.name))}</b> toplam`;
+    const mx=Math.max(1,...S.bars.map(b=>b.v));
+    ins=`<div class="section czrc-sec"><div class="glass czrc-ins">
+        <p class="czrc-ins-t">${when} ${verb} <b class="num">${M(S.monSum)}</b> · ${S.monN} işlem</p>
+        <div class="czrc-bars" role="img" aria-label="Son 6 ay ${nm}">${S.bars.map(b=>`<div class="czrc-bar${b.on?' on':''}"><i style="height:${b.v?Math.max(6,Math.round(b.v/mx*100)):0}%"></i><span>${U.MONTHS[b.m].slice(0,3)}</span></div>`).join('')}</div>
+        <div class="czrc-ins-row"><div><span>Ortalama</span><b class="num">${M(S.avg)}</b></div><div><span>${t.kind==='income'?'Toplam gelir':'Toplam harcama'}</span><b class="num">${M(S.total)}</b></div><div><span>İşlem</span><b class="num">${S.all}</b></div></div>
+        <button type="button" class="czrc-link pressable" onclick="CzRcpt.all(${esc(JSON.stringify(S.name))})">Tüm ${nm} işlemleri${chev}</button>
+      </div></div>`}
+
+  /* eylemler: iOS gruplu düğmeler */
+  const acts=[],danger=[];
+  if(canEdit)acts.push(`<button type="button" class="row pressable czrc-act" onclick="TxForm.open('${t.id}')"><span class="czrc-ai">${C.ic('edit')}</span><div class="mid"><b>Düzenle</b></div></button>`);
+  if(actSec)[...actSec.querySelectorAll(':scope > .btn')].forEach(b=>{const svg=b.querySelector('svg')?.outerHTML||'';const lbl=b.textContent.trim();const on=b.getAttribute('onclick')||'';
+    if(b.classList.contains('danger'))danger.push(`<button type="button" class="row pressable czrc-act czrc-del" onclick="${esc(on)}"><div class="mid"><b>${esc(lbl)}</b></div></button>`);
+    else acts.push(`<button type="button" class="row pressable czrc-act" onclick="${esc(on)}"><span class="czrc-ai">${svg}</span><div class="mid"><b>${esc(lbl)}</b></div></button>`)});
+  const actsHtml=(acts.length?`<div class="section czrc-sec"><div class="glass list czrc-acts">${acts.join('')}</div></div>`:'')+(danger.length?`<div class="section czrc-sec"><div class="glass list czrc-acts">${danger.join('')}</div></div>`:'');
+
+  return head+`<h1 class="page-title czrc-h1">İşlem detayı</h1><div class="czrc">${hero}${list}${planHtml}${more}${ins}${actsHtml}</div>`}
+
+/* sabit büyüklük için CSS değişkeni */
+document.documentElement.style.setProperty('--czrc-logo',ICON_SIZE+'px');
+})();
+try{if(App.current&&App.current()?.name==='tx')App.render()}catch(e){}
+
+</script>
+<script id="cz-wcard-js">
+/* ===== Apple Wallet tarzı kart açılımı: yığındaki karta dokun → kart üste kayar, diğerleri alta toplanır, altında özet paneli ===== */
+(function(){
+if(typeof App==='undefined'||typeof C==='undefined'||typeof Store==='undefined')return;
+const EASE='cubic-bezier(.32,.72,0,1)',DUR=450,CARD=200,REVEAL=12,LAST=46,GAP=18;
+const WX={_noclick:0,
+  on(){const d=Store.get()?.settings?.design;return d==='wallet'||d==='ios'},
+  reduced(){return typeof Motion!=='undefined'&&Motion.reduced()},
+  deckOf(id){const e=document.querySelector(`#screen .wallet>.wslot[data-id="${id}"]`);return e&&e.closest('.wallet')},
+  /* Kart yığınından sonra gelen ve deste boyu değişince kayan öğeler */
+  followers(deck){const out=[];let cur=deck;
+    while(cur&&cur.id!=='screen'&&cur!==document.body){let s=cur.nextElementSibling;while(s){out.push(s);s=s.nextElementSibling}cur=cur.parentElement}
+    return out.filter(e=>!e.classList.contains('wx-ghost'))},
+  snap(deck){const m={};deck.querySelectorAll(':scope>.wslot').forEach(e=>m[e.dataset.id]=e.getBoundingClientRect().top);
+    const pn=deck.querySelector(':scope>.wx-panel');
+    return{m,fol:this.followers(deck).map(e=>[e,e.getBoundingClientRect().top]),pn:pn?{el:pn,top:pn.getBoundingClientRect().top,op:getComputedStyle(pn).opacity}:null}},
+  topOff(){if(document.documentElement.classList.contains('wide')){const t=document.getElementById('gw-top');return Math.max(24,(t?t.getBoundingClientRect().bottom:0)+16)}const nb=document.getElementById('navbar');
+    return (nb?Math.max(nb.offsetHeight,60):92)+12},
+  tapSel(){if(performance.now()-this._noclick<400)return;this.close()},
+  tapPile(){if(performance.now()-this._noclick<400)return;this.close()},
+  toggle(id){if(UI.wxSel===id)return this.close();return this.open(id)},
+  open(id){if(UI.homeEdit||!this.on())return;const deck=this.deckOf(id);if(!deck)return;
+    const prev=UI.wxSel;const b=this.snap(deck);UI.wxSel=id;try{Haptic.tap()}catch(e){}
+    try{if(!(history.state&&history.state.wx))history.pushState({d:UI.stack.length,wx:1},'')}catch(e){}
+    this.flip(b,id,true,prev)},
+  close(){const id=UI.wxSel;if(!id)return;const deck=this.deckOf(id);UI.wxSel=null;
+    if(!deck){App.render();return}
+    const b=this.snap(deck);try{Haptic.tap()}catch(e){}this.flip(b,id,false)},
+  flip(b,id,opening,prev){const r=document.documentElement,red=this.reduced();
+    r.classList.add('wx-flip');clearTimeout(this._ft);
+    document.querySelectorAll('#screen .wx-ghost').forEach(g=>g.remove());
+    App.render();
+    const deck=this.deckOf(id);
+    if(!deck||red){r.classList.remove('wx-flip');if(opening&&deck)this.scroll(deck,true);return}
+    const done=()=>r.classList.remove('wx-flip');
+    deck.querySelectorAll(':scope>.wslot').forEach((e,i)=>{const o=b.m[e.dataset.id];if(o==null)return;const dy=o-e.getBoundingClientRect().top;
+      const me=e.dataset.id===id;if(Math.abs(dy)<.5&&!me)return;
+      const kf=me?[{translate:`0 ${dy}px`,scale:'1'},{scale:'1.025',offset:.32},{translate:'0 0',scale:'1'}]:[{translate:`0 ${dy}px`},{translate:'0 0'}];
+      e.animate(kf,{duration:me?DUR:DUR+30,easing:EASE,delay:me||!opening?0:Math.min(i,5)*12,fill:'backwards'})});
+    b.fol.forEach(([e,t])=>{if(!e.isConnected)return;const dy=t-e.getBoundingClientRect().top;if(Math.abs(dy)<.5)return;
+      e.animate([{translate:`0 ${dy}px`},{translate:'0 0'}],{duration:DUR,easing:EASE})});
+    const pn=deck.querySelector(':scope>.wx-panel');
+    if(opening&&pn&&!b.pn)pn.animate([{opacity:0,translate:'0 -18px'},{opacity:1,translate:'0 0'}],{duration:420,delay:70,easing:EASE,fill:'backwards'});
+    if(!opening&&b.pn){/* kapanırken panel yerinde solar */
+      const g=b.pn.el.cloneNode(true);g.classList.add('wx-ghost');g.setAttribute('aria-hidden','true');g.removeAttribute('style');
+      g.style.top=(b.pn.top-deck.getBoundingClientRect().top)+'px';deck.appendChild(g);
+      const a=g.animate([{opacity:+b.pn.op||1,translate:'0 0'},{opacity:0,translate:'0 -14px'}],{duration:220,easing:'cubic-bezier(.4,0,1,1)',fill:'forwards'});
+      a.onfinish=()=>g.remove()}
+    this._ft=setTimeout(done,DUR+120);
+    if(opening)this.scroll(deck,false)},
+  scroll(deck,instant){const top=deck.getBoundingClientRect().top,off=this.topOff();
+    if(top<off-4||top>innerHeight*.42){const y=Math.max(0,scrollY+top-off);try{scrollTo({top:y,behavior:instant?'auto':'smooth'})}catch(e){scrollTo(0,y)}}},
+  details(id){const a=D.account(Store.get(),id);if(!a)return;
+    if(a.type==='credit')return _walletTap?_walletTap.call(App,id,true):App.push('card',{id});
+    App.push('account',{id})},
+  /* ---------- Açık deste HTML'i ---------- */
+  decorate(s,h){const id=UI.wxSel;if(!id||!h||!this.on()||h.indexOf(`data-id="${id}"`)<0)return h;
+    const a=D.account(s,id);if(!a){UI.wxSel=null;return h}
+    const t=document.createElement('template');t.innerHTML=h;const w=t.content.querySelector('.wallet');if(!w)return h;
+    const slots=[...w.querySelectorAll(':scope>.wslot')],pile=slots.filter(e=>e.dataset.id!==id);let k=0;
+    w.classList.add('wx-open');w.style.height='';
+    slots.forEach(e=>{const me=e.dataset.id===id;e.classList.add('front');e.classList.add(me?'wx-sel':'wx-pile');
+      e.style.setProperty('--y','0px');e.style.transform='none';
+      if(me){e.style.zIndex='40';e.style.order='-2';e.setAttribute('onclick','WX.tapSel()');e.setAttribute('aria-expanded','true')}
+      else{const i=k++;e.style.zIndex=String(10+i);e.style.order='0';e.style.marginTop=(i===0?GAP:REVEAL-CARD)+'px';
+        if(i===pile.length-1)e.style.marginBottom=(LAST-CARD)+'px';e.setAttribute('onclick','WX.tapPile()');e.setAttribute('aria-label','Kart yığınına dön');e.removeAttribute('tabindex');}});
+    w.insertAdjacentHTML('beforeend',this.panel(s,a));return t.innerHTML},
+  panel(s,a){const M=U.money,cr=a.type==='credit',q=x=>String(x).replace(/'/g,"\\'");let kv='',chips='',acts='';
+    const act=(on,ic,l,pri)=>`<button type="button" class="wx-act pressable ${pri?'pri':''}" onclick="${on}">${C.ic(ic)}<span>${l}</span></button>`;
+    if(cr){const m=D.cardSummary(s,a.id),used=m.shared?m.own:m.used,due=m.dueNow>0;
+      kv=`<div class="wx-kv"><div><span class="wx-l">Güncel borç</span><b class="wx-v num">${M(used)}</b>${m.shared?'<small>bu kartın payı</small>':''}</div>
+        <div><span class="wx-l">Kullanılabilir limit</span><b class="wx-v num">${M(m.available)}</b><small class="num">limit ${M(m.limit,{dec:false})}</small></div></div>`;
+      const dd=due?m.lastDue:m.openDue,n=U.daysUntil(dd),st=n<0?`${-n} gün gecikti`:n===0?'Bugün':n<=3?`${n} gün kaldı`:'',tone=due&&n<0?'red':due&&n<=3?'orange':'';
+      chips=`<div class="wx-chips"><span class="wx-chip">${C.ic('calendar')}<span>Ekstre <b>${U.fmtDate(m.openCut)}</b></span></span>`+
+        `<span class="wx-chip ${tone}">${C.ic(tone?'alert':'clock')}<span>Son ödeme <b>${U.fmtDate(dd)}</b>${st&&due?` · ${st}`:''}</span></span></div>`;
+      acts=act(`PaySheet.open('${q(a.id)}')`,'card','Ödeme yap',1)+act(`TxForm.open(null,{type:'expense',prefill:{accountId:'${q(a.id)}'}})`,'plus','Harcama ekle')}
+    else{const b=D.balance(s,a.id),cur=a.currency||'TRY';let inc=0,out=0;
+      try{const from=U.addDays(U.today(),-30);D.ledger(s,a.id).forEach(x=>{if(x.t.date>=from){if(x.delta>0)inc+=x.delta;else out-=x.delta}})}catch(e){}
+      kv=`<div class="wx-kv"><div><span class="wx-l">${a.type==='cash'?'Nakit':'Bakiye'}</span><b class="wx-v num ${b<0?'neg':''}">${M(b,{cur})}</b>${cur!=='TRY'?`<small class="num">≈ ${M(D.toTRY(s,b,cur),{dec:false})}</small>`:''}</div>`+
+        (a.overdraft?`<div><span class="wx-l">Kullanılabilir</span><b class="wx-v num">${M(b+ +a.overdraft,{cur})}</b><small class="num">KMH ${M(a.overdraft,{dec:false})}</small></div>`
+          :`<div><span class="wx-l">Son 30 gün</span><b class="wx-v num pos">+${M(inc,{cur,dec:false})}</b><small class="num">−${M(out,{cur,dec:false})} çıkış</small></div>`)+`</div>`;
+      acts=act(`TxForm.open(null,{type:'income',prefill:{accountId:'${q(a.id)}'}})`,'plus','Gelir ekle',1)+act(`TxForm.open(null,{type:'expense',prefill:{accountId:'${q(a.id)}'}})`,'minus','Harcama ekle')}
+    const all=s.transactions,txs=all.filter(t=>t.accountId===a.id||t.toAccountId===a.id).sort((x,y)=>y.date.localeCompare(x.date)||all.indexOf(y)-all.indexOf(x)).slice(0,5);
+    const rows=txs.length?`<div class="list wx-tx">${txs.map(t=>C.txRow(s,t,a.id)).join('')}</div>`:`<p class="wx-empty">${cr?'Bu kartta':'Bu hesapta'} henüz işlem yok.</p>`;
+    return `<div class="wx-panel" role="region" aria-label="${U.esc(a.name)} özeti">${kv}${chips}<div class="wx-acts">${acts}</div>
+      <div class="wx-h"><h3>Son işlemler</h3></div>${rows}
+      <button type="button" class="wx-more pressable" onclick="WX.details('${q(a.id)}')"><span>Tüm ayrıntılar</span>${C.ic('chev')}</button></div>`}
+};
+window.WX=WX;
+/* --- Bağlantılar --- */
+const _walletTap=App.walletTap;
+{const _w=C.wallet;C.wallet=(s,ui)=>{const h=_w(s,ui);try{return WX.decorate(s,h)}catch(e){console.warn(e);return h}}}
+App.walletTap=function(id,front){if(WX.on()){if(UI.homeEdit)return;return WX.toggle(id)}return _walletTap.apply(this,arguments)};
+if(typeof CzWalletTheme!=='undefined'){const _t=CzWalletTheme.tap;CzWalletTheme.tap=function(id,front){if(WX.on()){if(UI.homeEdit)return;return WX.toggle(id)}return _t.apply(this,arguments)}}
+{const _op=App.onPop;App.onPop=function(e){const st=(e&&e.state)||{};
+  if(UI.wxSel&&!st.wx&&!UI.stack.length&&!document.getElementById('sheet')){WX.close();return}return _op.apply(this,arguments)}}
+{const _go=App.go;App.go=function(tab){if(UI.wxSel){if(tab==='home'&&UI.tab==='home'&&!UI.stack.length&&!UI.homeEdit){WX.close();return}UI.wxSel=null}return _go.apply(this,arguments)}}
+if(typeof Widgets!=='undefined'&&Widgets.edit){const _e=Widgets.edit;Widgets.edit=function(on){if(on)UI.wxSel=null;return _e.apply(this,arguments)}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&UI.wxSel&&!UI.stack.length&&!document.querySelector('#sheet,#ctx,#story'))WX.close()});
+/* --- Seçili kartı aşağı çekerek kapat --- */
+let g=null;
+document.addEventListener('touchstart',e=>{const el=e.target.closest&&e.target.closest('.wallet.wx-open>.wslot.wx-sel');
+  if(!el||e.touches.length>1||e.target.closest('.cc-flip'))return;const t=e.touches[0];g={el,x0:t.clientX,y0:t.clientY,t0:performance.now(),on:false,dy:0}},{passive:true});
+document.addEventListener('touchmove',e=>{if(!g)return;const t=e.touches[0],dx=t.clientX-g.x0,dy=t.clientY-g.y0;
+  if(!g.on){if(dy<-6||(Math.abs(dx)>10&&Math.abs(dx)>dy)){g=null;return}if(dy>8&&dy>Math.abs(dx))g.on=true;else return}
+  if(e.cancelable)e.preventDefault();g.dy=dy;const r=dy<=0?0:dy<140?dy*.6:84+(dy-140)*.22;g.el.style.translate=`0 ${r}px`;
+  const pn=g.el.parentElement.querySelector(':scope>.wx-panel');if(pn)pn.style.opacity=String(Math.max(.35,1-r/220))},{passive:false});
+const end=()=>{if(!g)return;const st=g;g=null;if(!st.on)return;WX._noclick=performance.now();
+  const v=st.dy/Math.max(1,performance.now()-st.t0);
+  if(st.dy>90||(v>.55&&st.dy>30)){WX.close();return}
+  const cur=getComputedStyle(st.el).translate;st.el.style.translate='';const pn=st.el.parentElement.querySelector(':scope>.wx-panel');
+  if(!WX.reduced())st.el.animate([{translate:cur==='none'?'0 0':cur},{translate:'0 0'}],{duration:380,easing:EASE});
+  if(pn){const o=pn.style.opacity;pn.style.opacity='';if(!WX.reduced()&&o)pn.animate([{opacity:o},{opacity:1}],{duration:300,easing:EASE})}};
+document.addEventListener('touchend',end,{passive:true});document.addEventListener('touchcancel',end,{passive:true});
+})();
+try{App.render()}catch(e){}
 </script>
 </body>
 </html>
