@@ -3476,6 +3476,330 @@ html.ds-wallet[data-theme] .wx-panel{--fill:rgba(255,255,255,.09)}
 html.ds-wallet[data-theme] .wx-act.pri{background:#0a84ff}
 @media (prefers-reduced-motion:reduce){#screen .wallet.wx-open>.wslot.wx-pile:hover{translate:none}.wx-act{transition:none}}
 </style>
+<style id="cz-fx">
+/* ===== cz-fx: kart arka yüzü (3B çevirme) · işlem ekleyince "karta uçuş" · grafikte parmakla değer okuma ===== */
+
+/* --- 1) Çevirme: 0.6 s yaylı, arka yüz gizli; Safari için yüz değişimi dönüşün ortasında --- */
+.flipper .flip-inner{transition:transform .6s cubic-bezier(.4,1.3,.5,1)!important}
+.flipper .flip-inner>.ccard{transition:opacity 0s linear .1s!important}
+.czwt-face>.flipper{height:100%}
+.czwt-face>.flipper .flip-inner>.ccard{width:100%;max-width:none;flex:none}
+
+/* Arka yüz düzeni: manyetik şerit + iki satır bilgi + çağrı merkezi */
+.ccard.czfx-back{display:block!important;padding:0!important;justify-content:normal!important}
+.czfx-back .czfx-stripe{position:absolute;left:0;right:0;top:18px;height:34px;background:linear-gradient(180deg,rgba(0,0,0,.62),rgba(0,0,0,.5));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -1px 0 rgba(0,0,0,.25)}
+.czfx-back .czfx-body{position:absolute;left:18px;right:18px;top:64px}
+.czfx-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px 10px}
+.czfx-grid.c2{grid-template-columns:1fr 1fr}
+.czfx-r{min-width:0}
+.czfx-r>span{display:block;font-size:10.5px;line-height:13px;font-weight:500;color:rgba(255,255,255,.66);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.czfx-r>b{display:block;margin-top:2px;font-size:14px;line-height:17px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.czfx-r>b.dim{color:rgba(255,255,255,.5);font-weight:500}
+.czfx-iban{display:flex;align-items:flex-end;gap:8px;margin-top:10px}
+.czfx-iban .czfx-r{flex:1}
+.czfx-iban .czfx-r>b{font-size:12.5px;letter-spacing:.01em}
+.czfx-copy{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18);color:#fff;border:0;padding:0;cursor:pointer}
+.czfx-copy svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.czfx-copy:active{transform:scale(.92)}
+.czfx-tel{position:absolute;left:18px;right:56px;bottom:14px;display:flex;align-items:center;gap:8px;min-width:0;color:#fff;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.czfx-tel .czfx-ti{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18)}
+.czfx-tel .czfx-ti svg{width:14px;height:14px;fill:currentColor}
+.czfx-tel span.t{display:flex;flex-direction:column;min-width:0}
+.czfx-tel small{font-size:10.5px;line-height:13px;color:rgba(255,255,255,.66);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.czfx-tel b{font-size:13.5px;line-height:17px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+a.czfx-tel:active{opacity:.6}
+.czfx-tel.none .czfx-ti{opacity:.5}
+/* Öndeki çevirme düğmesi için alt satırda yer aç */
+.ccard.czfx-hasflip .cc-foot{padding-right:40px}
+.ccard.czfx-hasflip .cc-flip{z-index:3}
+/* Kart sayfasındaki küçük kart dokunulabilir (ön/arka çevirir) */
+.cd-face{cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* Arkadaki (yığın içi) kartlarda çevirme düğmesi gizli kalsın */
+.wallet .wslot:not(.front) .czfx-hasflip .cc-flip{visibility:hidden}
+
+/* Hareket azaltılmışsa: dönüş yok, yumuşak geçiş */
+@media (prefers-reduced-motion:reduce){
+  .flipper .flip-inner,.flipper.flipped .flip-inner{transition:none!important;transform:none!important}
+  .flipper .flip-inner>.ccard.cc-back{transform:none!important}
+  .flipper .flip-inner>.ccard{transition:opacity .28s ease!important}
+}
+
+/* --- 2) Tutar hapı karta uçar --- */
+.czfx-pill{position:fixed;left:0;top:0;z-index:9000;pointer-events:none;padding:8px 14px;border-radius:999px;white-space:nowrap;
+  font:600 16px/1.1 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  color:var(--text,#fff);background:var(--toast,rgba(44,44,46,.94));box-shadow:0 10px 28px -8px rgba(0,0,0,.45),inset 0 0 0 .5px rgba(255,255,255,.14);
+  will-change:transform,opacity}
+.czfx-pill.inc{color:#30d158}
+html[data-theme=light] .czfx-pill.inc{color:#248a3d}
+
+/* --- 3) Grafikte değer okuma (Borsa uygulaması gibi) --- */
+.czfx-sc{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3;opacity:0;transition:opacity .12s}
+.czfx-on>.czfx-sc,.gw-plot.czfx-on>.czfx-sc{opacity:1}
+.czfx-hair{position:absolute;top:0;width:1px;margin-left:-.5px;background:color-mix(in srgb,var(--text,#fff) 42%,transparent)}
+.czfx-dot{position:absolute;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--czfx-c,var(--blue));
+  box-shadow:0 0 0 2px var(--bg,#000)}
+.czfx-dot.sm{width:7px;height:7px;margin:-3.5px 0 0 -3.5px}
+.czfx-lbl{position:absolute;top:-4px;transform:translate(-50%,-100%);padding:5px 9px;border-radius:9px;white-space:nowrap;
+  font-size:12px;line-height:15px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text);background:var(--toast);
+  box-shadow:inset 0 0 0 .5px var(--border,rgba(255,255,255,.12)),0 8px 22px -12px rgba(0,0,0,.5)}
+.czfx-lbl i{font-style:normal;font-weight:500;color:var(--text2)}
+.czfx-lbl .p{color:var(--chart-inc,var(--blue))}
+/* eski ipuçları yerine yenisi */
+.gw-chart .gw-cur,.gw-chart .gw-tip,.lc-wrap .lc-tip,.lc-wrap .lc-line{display:none!important}
+.gw-plot.czfx-on .gw-pt-dot,.lc-wrap.czfx-on .lchart circle{opacity:.25;transition:opacity .12s}
+.gw-chart,.lc-wrap{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.czfx-scrubbed{font-variant-numeric:tabular-nums}
+
+</style>
+<style id="cz-brand">
+/* ===== cz-brand · v4 · Mağaza logoları (yazı karakteri/kalınlık, kategori simgeleri, tasarıma göre şekil) + Ay özeti hikâyesi ===== */
+/* --- Logo rozetleri --- */
+html .ic.czl.brand{font-weight:var(--czw,800)}
+html .ic.czl.brand>b{font-weight:var(--czw,800)}
+html .ic.czl[style*="--czls"]>b{letter-spacing:var(--czls)}
+html .ic.czl.czf-s{font-family:"New York","Iowan Old Style",ui-serif,Georgia,"Times New Roman",serif}
+html .ic.czl.czf-r{font-family:ui-rounded,"SF Pro Rounded",var(--font),system-ui,sans-serif}
+html .ic.czl.czf-i>b{font-style:italic;transform:translateY(.02em) skewX(-2deg)}
+html .ic.czl.czf-up>b{text-transform:uppercase}
+html .ic.czl.czf-low>b{text-transform:lowercase}
+/* kategori simgesi: kategori renginde zemin, çizgi simge */
+html .ic.czl.czg{display:grid;place-items:center}
+html .ic.czl.czg svg.czg-i{width:54%;height:54%;display:block;color:inherit;stroke-width:1.9}
+html .ic.czl.czg[data-g="pharmacy"] svg.czg-i{fill:currentColor;stroke-width:1.2}
+/* Saf iOS ve Wallet: düz renk (parıltı yok), yalnızca ince kenar çizgisi */
+html.ds-ios .ic.czl.brand{background:var(--bg);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.1)}
+html.ds-ios .ic.czl.brand.lite{box-shadow:inset 0 0 0 .5px rgba(0,0,0,.14)}
+html.ds-ios[data-theme="light"] .ic.czl.brand:not(.lite){box-shadow:inset 0 0 0 .5px rgba(0,0,0,.06)}
+html.ds-ios .ic.czl.mono{box-shadow:none}
+/* Apple Wallet: tüm satırlarda, takvimde ve makbuzda daire */
+html.ds-wallet .ic.czl,html.ds-wallet .gw-recent .row .ic.czl,html.ds-wallet .dhero .ic.czl{border-radius:50%}
+/* Saf iOS ve Cam: her yerde aynı squircle oranı */
+html:not(.ds-wallet) .row .ic.czl,html:not(.ds-wallet) .cal-list .ic.czl{border-radius:29%}
+
+/* --- Ana sayfa kartı: "Ekim özetin hazır ›" --- */
+.czrp-card{display:flex;align-items:center;gap:4px;margin:12px 0 4px;padding:8px 6px 8px 10px;border-radius:var(--r-lg,22px)}
+.czrp-card-main{flex:1;display:flex;align-items:center;gap:12px;background:none;border:0;color:inherit;text-align:left;padding:2px 0;font:inherit;min-width:0;cursor:pointer}
+.czrp-art{width:44px;height:44px;border-radius:12px;background:#1d3fbb;position:relative;flex-shrink:0;display:grid;place-items:center;color:#fff}
+html.ds-wallet .czrp-art{border-radius:50%}
+.czrp-art i{position:absolute;top:7px;height:2px;width:8px;border-radius:1px;background:#fff}
+html.ds-wallet .czrp-art i{top:9px}
+.czrp-art i:nth-child(1){left:9px}.czrp-art i:nth-child(2){left:18px;opacity:.45}.czrp-art i:nth-child(3){left:27px;opacity:.45}
+.czrp-art b{font-size:14px;font-weight:700;letter-spacing:-.01em;margin-top:5px}
+.czrp-card-t{flex:1;display:flex;flex-direction:column;min-width:0;gap:1px}
+.czrp-card-t b{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.czrp-card-t small{font-size:13px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.czrp-card-main>svg{width:14px;height:14px;color:var(--text2);opacity:.55;flex-shrink:0}
+.czrp-card-x{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:none;border:0;color:var(--text2);flex-shrink:0;cursor:pointer}
+.czrp-card-x svg{width:13px;height:13px}
+
+/* --- Hikâye --- */
+#story.czrp{position:fixed;inset:0;z-index:700;background:var(--czrp-bg,#1c1c1e);color:#fff;transition:background-color .45s cubic-bezier(.3,.7,.2,1);
+  animation:czrpIn .32s cubic-bezier(.2,.8,.2,1);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-shadow:none}
+#story.czrp::before,#story.czrp::after{display:none}
+#story.czrp.out{animation:czrpOut .26s cubic-bezier(.3,.7,.2,1) forwards}
+@keyframes czrpIn{from{opacity:0;transform:scale(.96)}}
+@keyframes czrpOut{to{opacity:0;transform:translateY(28px) scale(.97)}}
+#story.czrp[data-tone="light"]{color:#1c1c1e}
+.czrp-bars{position:absolute;left:12px;right:12px;top:calc(var(--sat,0px) + 10px);display:flex;gap:4px;z-index:3}
+.czrp-bars i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.3);overflow:hidden}
+.czrp-bars i b{display:block;height:100%;width:0;background:#fff;border-radius:inherit}
+.czrp-bars i.done b{width:100%}
+.czrp-bars i.cur b{animation:czrpBar 6.5s linear forwards}
+#story.czrp.paused .czrp-bars i.cur b{animation-play-state:paused}
+#story.czrp[data-tone="light"] .czrp-bars i{background:rgba(28,28,30,.14)}
+#story.czrp[data-tone="light"] .czrp-bars i b{background:#1c1c1e}
+@keyframes czrpBar{from{width:0}to{width:100%}}
+.czrp-x{position:absolute;top:calc(var(--sat,0px) + 24px);right:14px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(255,255,255,.16);color:inherit;border:0;z-index:4;cursor:pointer;padding:0}
+.czrp-x svg{width:15px;height:15px}
+#story.czrp[data-tone="light"] .czrp-x{background:rgba(28,28,30,.08)}
+.czrp-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.czrp-stage{position:absolute;inset:calc(var(--sat,0px) + 70px) 26px calc(var(--sab,0px) + 26px);container-type:inline-size}
+.czrp-slide{position:absolute;inset:0;display:flex;flex-direction:column}
+.czrp-slide.entering{animation:czrpEnter .4s cubic-bezier(.2,.8,.2,1) both}
+.czrp-slide.leaving{animation:czrpLeave .2s ease forwards;pointer-events:none}
+@keyframes czrpEnter{from{opacity:0;transform:translateX(var(--dx,0px))}}
+@keyframes czrpLeave{to{opacity:0;transform:translateX(var(--dx,0px))}}
+.czrp-slide.entering .czrp-main>*{animation:czrpUp .55s cubic-bezier(.2,.8,.2,1) both}
+.czrp-slide.entering .czrp-main>*:nth-child(2){animation-delay:.06s}
+.czrp-slide.entering .czrp-main>*:nth-child(3){animation-delay:.12s}
+.czrp-slide.entering .czrp-main>*:nth-child(4){animation-delay:.18s}
+.czrp-slide.entering .czrp-vis,.czrp-slide.entering .czrp-hl,.czrp-slide.entering .czrp-acts{animation:czrpUp .6s .2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes czrpUp{from{opacity:0;transform:translateY(14px)}}
+.czrp-kick{margin:0;font-size:13px;font-weight:600;letter-spacing:.06em;opacity:.72}
+.czrp-main{margin:auto 0}
+.czrp-lead{margin:0 0 8px;font-size:21px;line-height:1.25;font-weight:600;letter-spacing:-.012em;opacity:.92}
+.czrp-big{font-size:min(19cqw,88px);font-weight:700;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.czrp-big.czrp-word{font-size:min(14.5cqw,66px);letter-spacing:-.035em;line-height:1.04;white-space:normal;overflow-wrap:anywhere}
+.czrp-of{font-size:.5em;opacity:.55;letter-spacing:-.02em;margin-left:2px}
+.czrp-sub{margin:14px 0 0;font-size:17px;line-height:1.42;opacity:.9;text-wrap:pretty}
+.czrp-sub b{font-weight:650}
+.num{font-variant-numeric:tabular-nums}
+.czrp-vis{padding-top:28px}
+/* 1 · karşılaştırma */
+.czrp-cmp>div{display:grid;grid-template-columns:62px 1fr auto;align-items:center;gap:12px;margin-top:14px;font-size:15px}
+.czrp-cmp span{opacity:.8}
+.czrp-cmp i{height:16px;border-radius:8px;background:rgba(255,255,255,.14);overflow:hidden;display:block}
+.czrp-cmp i b{display:block;height:100%;width:var(--w);background:#fff;border-radius:inherit;transform-origin:left;animation:czrpGrow .9s .25s cubic-bezier(.2,.8,.2,1) both}
+.czrp-cmp em{font-style:normal;font-weight:600}
+@keyframes czrpGrow{from{transform:scaleX(0)}}
+/* 2 · kategori payları */
+.czrp-stack{display:flex;gap:3px;height:14px;border-radius:7px;overflow:hidden}
+.czrp-stack b{width:var(--w);background:var(--c);transform-origin:left;animation:czrpGrow .8s .25s cubic-bezier(.2,.8,.2,1) both}
+.czrp-stack b:first-child{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
+.czrp-leg{margin-top:16px}
+.czrp-leg>div{display:flex;align-items:center;gap:10px;padding:9px 0;font-size:16px;border-top:.5px solid rgba(255,255,255,.18)}
+.czrp-leg>div:first-child{border-top:0}
+.czrp-leg i{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 1.5px rgba(255,255,255,.5)}
+.czrp-leg span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.czrp-leg em{font-style:normal;font-weight:600}
+/* 3 · logo + ziyaret noktaları */
+.czrp-logo{width:84px;height:84px;margin:0 0 22px}
+.czrp-logo .ic,.czrp-who .ic,.czrp-row .ic{width:100%!important;height:100%!important;border-radius:50%!important;margin:0!important;box-shadow:none!important}
+html .czrp-logo .ic.czl.mono,html .czrp-who .ic.czl.mono,html .czrp-row .ic.czl.mono{background:rgba(255,255,255,.9);color:color-mix(in srgb,var(--c) 70%,#000)}
+.czrp-dots{display:flex;flex-wrap:wrap;gap:9px}
+.czrp-dots i{width:16px;height:16px;border-radius:50%;background:#fff;opacity:.92;animation:czrpPop .4s cubic-bezier(.2,.8,.2,1) both}
+.czrp-dots i:nth-child(n){animation-delay:calc(.25s + var(--i,0)*0s)}
+.czrp-dots small{font-size:14px;font-weight:600;opacity:.8;align-self:center}
+@keyframes czrpPop{from{opacity:0;transform:scale(.4)}}
+/* 4 · kim */
+.czrp-who{display:flex;align-items:center;gap:12px;margin-top:20px}
+.czrp-who>.ic{width:46px!important;height:46px!important;flex-shrink:0}
+.czrp-who>span:not(.ic){display:flex;flex-direction:column;min-width:0;font-size:18px}
+.czrp-who b{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.czrp-who small{font-size:15px;opacity:.78;margin-top:2px}
+/* 5 · hafta */
+.czrp-wk{display:flex;gap:8px;height:150px;align-items:stretch}
+.czrp-wk>div{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+.czrp-wk i{flex:1;width:100%;display:flex;align-items:flex-end;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden}
+.czrp-wk i b{width:100%;height:var(--h);min-height:4px;background:rgba(255,255,255,.42);border-radius:9px;transform-origin:bottom;animation:czrpRise .8s .25s cubic-bezier(.2,.8,.2,1) both}
+.czrp-wk .on i b{background:#fff}
+.czrp-wk span{font-size:12px;opacity:.7}
+.czrp-wk .on span{opacity:1;font-weight:700}
+@keyframes czrpRise{from{transform:scaleY(0)}}
+.czrp-note{margin:16px 0 0;font-size:15px;opacity:.86}
+/* 6 · taksitler */
+.czrp-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid rgba(255,255,255,.18)}
+.czrp-row>.ic{width:38px!important;height:38px!important;flex-shrink:0}
+.czrp-row>span:not(.ic){flex:1;min-width:0;display:flex;flex-direction:column;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.czrp-row small{font-weight:400;font-size:13px;opacity:.75;margin-top:1px}
+.czrp-row em{font-style:normal;font-weight:600;font-size:15px}
+.czrp-tot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:16px 18px;border-radius:20px;background:rgba(0,0,0,.22)}
+.czrp-tot span{display:flex;flex-direction:column;font-size:15px;font-weight:600}
+.czrp-tot small{font-weight:400;font-size:13px;opacity:.75;margin-top:2px}
+.czrp-tot b{font-size:26px;font-weight:700;letter-spacing:-.03em;white-space:nowrap}
+/* 7 · bütçe */
+.czrp-bud{margin-top:16px}
+.czrp-bud>div{display:flex;justify-content:space-between;gap:10px;font-size:15px}
+.czrp-bud em{font-style:normal;opacity:.82}
+.czrp-bud i{display:block;height:8px;border-radius:4px;background:rgba(255,255,255,.16);margin-top:8px;overflow:hidden}
+.czrp-bud i b{display:block;height:100%;width:var(--w);background:#fff;border-radius:inherit;transform-origin:left;animation:czrpGrow .8s .25s cubic-bezier(.2,.8,.2,1) both}
+.czrp-bud.over i b{background:#ffb4a8}
+/* 8 · kapanış */
+#story.czrp[data-k="end"] .czrp-lead{font-size:min(11cqw,44px);font-weight:700;letter-spacing:-.035em;line-height:1.05;opacity:1}
+#story.czrp[data-k="end"] .czrp-main{margin:min(5vh,40px) 0 0}
+#story.czrp[data-k="empty"] .czrp-main{margin:auto 0}
+.czrp-hl{margin-top:22px}
+.czrp-hl>div{padding:16px 0;border-top:.5px solid rgba(28,28,30,.16)}
+.czrp-hl small{display:block;font-size:13px;font-weight:600;opacity:.58;letter-spacing:.01em}
+.czrp-hl b{display:block;font-size:min(9cqw,34px);font-weight:700;letter-spacing:-.03em;margin-top:4px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.czrp-hl span{display:block;font-size:15px;opacity:.62;margin-top:3px}
+.czrp-acts{display:flex;gap:10px;margin-top:auto;padding-top:16px}
+.czrp-acts button{flex:1;height:52px;border-radius:26px;border:0;font:600 17px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.czrp-acts svg{width:18px;height:18px}
+.czrp-b1{background:#1c1c1e;color:#fff}
+.czrp-b2{background:rgba(28,28,30,.08);color:#1c1c1e}
+#story.czrp button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+/* Masaüstü: ortada 9:16 kart */
+#czrp-scrim{position:fixed;inset:0;z-index:699;background:rgba(0,0,0,.74);animation:czrpFade .25s ease}
+#czrp-scrim.out{opacity:0;transition:opacity .25s}
+@keyframes czrpFade{from{opacity:0}}
+html.wide #story.czrp{inset:0;margin:auto;width:min(420px,calc((100vh - 48px)*9/16));height:min(calc(100vh - 48px),860px);border-radius:28px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
+html.wide #story.czrp .czrp-bars{top:12px}html.wide #story.czrp .czrp-x{top:24px}
+html.wide #story.czrp .czrp-stage{inset:66px 30px 24px}
+.czrp-side{position:absolute;top:50%;width:34px;height:34px;margin-top:-17px;border-radius:50%;border:0;display:grid;place-items:center;background:rgba(255,255,255,.14);color:inherit;z-index:4;cursor:pointer;opacity:0;transition:opacity .2s}
+#story.czrp:hover .czrp-side,.czrp-side:focus-visible{opacity:1}
+.czrp-side svg{width:14px;height:14px}.czrp-side.p{left:6px}.czrp-side.p svg{transform:rotate(180deg)}.czrp-side.n{right:6px}
+#story.czrp[data-tone="light"] .czrp-side{background:rgba(28,28,30,.08)}
+/* Hareketi azalt: geçiş/çubuk animasyonu yok, otomatik ilerleme yok */
+#story.czrp.rm,#story.czrp.rm *{animation:none!important;transition:none!important}
+@media (prefers-reduced-motion:reduce){#story.czrp,#story.czrp *,#czrp-scrim{animation:none!important;transition:none!important}}
+
+</style>
+<style id="cz-press">
+/* =====================================================================
+   cz-press · iOS uzun basma menüsü (peek) + kademeli sayfalar + aşağı çekip yenile
+   ===================================================================== */
+
+/* uzun basılan öğelerde iOS'un kendi büyüteç / seçim / paylaş balonu çıkmasın */
+.swipe-fg,.wslot,[data-acc],button.row[onclick*="App.push('account'"],button.row[onclick*="App.push('card'"]{
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+
+/* ---------- 1) Peek: arka plan buzlanır, öğe yerinde kalkar, menü açılır ---------- */
+#czp-bd{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.34);
+  -webkit-backdrop-filter:blur(14px) saturate(1.15);backdrop-filter:blur(14px) saturate(1.15);
+  opacity:0;transition:opacity .24s ease;touch-action:none;-webkit-tap-highlight-color:transparent}
+#czp-bd.on{opacity:1}
+html[data-theme=light] #czp-bd{background:rgba(0,0,0,.14)}
+.czp-lift{position:relative;scale:var(--czp-s,1.03);transition:scale .42s cubic-bezier(.3,1.45,.45,1),box-shadow .3s ease!important;
+  box-shadow:0 22px 48px rgba(0,0,0,.42),0 4px 12px rgba(0,0,0,.2)!important;will-change:scale}
+.czp-lift.czp-plate{background:#1c1c1e!important;border-radius:var(--czp-r,14px);overflow:hidden}
+html[data-theme=light] .czp-lift.czp-plate{background:#fff!important}
+html[data-theme=light] .czp-lift{box-shadow:0 18px 44px rgba(0,0,0,.2),0 3px 10px rgba(0,0,0,.08)!important}
+.wslot.czp-lift{z-index:80!important}
+.czp-lift.czp-down{scale:1;transition:scale .26s cubic-bezier(.3,.7,.3,1),box-shadow .26s ease!important;box-shadow:none!important}
+
+#ctx.czp-menu{position:fixed;z-index:302;width:254px;max-width:calc(100vw - 24px);border-radius:24px;overflow:hidden;padding:0;
+  background:rgba(40,40,42,.8);-webkit-backdrop-filter:blur(36px) saturate(1.9);backdrop-filter:blur(36px) saturate(1.9);
+  box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 .5px 0 rgba(255,255,255,.12);color:#fff;
+  transform-origin:var(--czp-ox,0) var(--czp-oy,0);animation:czpIn .42s cubic-bezier(.3,1.32,.5,1) both}
+html[data-theme=light] #ctx.czp-menu{background:rgba(246,246,248,.8);color:#000;box-shadow:0 22px 56px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.06)}
+#ctx.czp-menu.out{animation:czpOut .17s ease-in forwards;pointer-events:none}
+.czp-menu .czp-g+.czp-g{border-top:8px solid rgba(0,0,0,.26)}
+html[data-theme=light] .czp-menu .czp-g+.czp-g{border-top-color:rgba(0,0,0,.07)}
+.czp-menu button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:46px;padding:11px 18px;margin:0;
+  font:inherit;font-size:17px;letter-spacing:-.2px;line-height:1.2;text-align:left;color:inherit;background:transparent;border:0;border-radius:0;
+  box-shadow:none;-webkit-tap-highlight-color:transparent;cursor:pointer}
+.czp-menu .czp-g button+button{box-shadow:inset 0 .5px 0 rgba(255,255,255,.12)}
+html[data-theme=light] .czp-menu .czp-g button+button{box-shadow:inset 0 .5px 0 rgba(60,60,67,.18)}
+.czp-menu button svg.i{width:20px;height:20px;flex:none;opacity:.95}
+.czp-menu button:active,.czp-menu button:focus-visible,.czp-menu button.hl{background:rgba(255,255,255,.12);outline:0}
+html[data-theme=light] .czp-menu button:active,html[data-theme=light] .czp-menu button:focus-visible,html[data-theme=light] .czp-menu button.hl{background:rgba(0,0,0,.07)}
+.czp-menu button.danger{color:#ff453a}
+html[data-theme=light] .czp-menu button.danger{color:#ff3b30}
+@keyframes czpIn{from{opacity:0;transform:scale(.42)}45%{opacity:1}to{opacity:1;transform:none}}
+@keyframes czpOut{to{opacity:0;transform:scale(.88)}}
+
+/* ---------- 2) Kademeli sayfa (yalnız telefon) ---------- */
+html:not(.wide) .sheet.czp-drag{transition:none!important;user-select:none;-webkit-user-select:none}
+html:not(.wide) .sheet-backdrop .sheet .grab-zone{touch-action:none}
+
+/* ---------- 3) Aşağı çekip yenile ---------- */
+html:not(.wide){overscroll-behavior-y:contain}
+#ptr{display:none!important}
+#czp-ptr{position:fixed;left:50%;top:0;z-index:46;width:28px;height:28px;margin-left:-14px;pointer-events:none;opacity:0;color:rgba(235,235,245,.6)}
+html[data-theme=light] #czp-ptr{color:rgba(60,60,67,.6)}
+#czp-ptr svg{width:28px;height:28px;display:block;transform:rotate(var(--czp-rot,0deg))}
+#czp-ptr line{stroke:currentColor;stroke-width:2.6;stroke-linecap:round;opacity:0;transition:opacity .08s}
+#czp-ptr line.on{opacity:.75}
+#czp-ptr.spin line{transition:none}
+#czp-ptr.spin svg{animation:czpSpin .8s steps(8) infinite}
+#czp-ptr.spin line:nth-child(1){opacity:1}#czp-ptr.spin line:nth-child(2){opacity:.86}#czp-ptr.spin line:nth-child(3){opacity:.73}
+#czp-ptr.spin line:nth-child(4){opacity:.6}#czp-ptr.spin line:nth-child(5){opacity:.48}#czp-ptr.spin line:nth-child(6){opacity:.38}
+#czp-ptr.spin line:nth-child(7){opacity:.3}#czp-ptr.spin line:nth-child(8){opacity:.24}
+@keyframes czpSpin{from{transform:rotate(var(--czp-rot,0deg))}to{transform:rotate(calc(var(--czp-rot,0deg) + 360deg))}}
+
+@media (prefers-reduced-motion:reduce){
+  #ctx.czp-menu{animation:czpFade .16s ease both}#ctx.czp-menu.out{animation:czpFadeOut .12s ease forwards}
+  .czp-lift,.czp-lift.czp-down{transition:box-shadow .2s ease!important;scale:1}
+  #czp-ptr.spin svg{animation-duration:1.6s}
+}
+@keyframes czpFade{from{opacity:0}to{opacity:1}}
+@keyframes czpFadeOut{to{opacity:0}}
+
+</style>
 </head>
 <body>
 <div id="cz-splash" aria-hidden="true"></div>
@@ -10110,6 +10434,999 @@ const end=()=>{if(!g)return;const st=g;g=null;if(!st.on)return;WX._noclick=perfo
 document.addEventListener('touchend',end,{passive:true});document.addEventListener('touchcancel',end,{passive:true});
 })();
 try{App.render()}catch(e){}
+</script>
+<script id="cz-fx-js">
+/* ===== cz-fx: kart arka yüzü (3B çevirme) · yeni işlemde tutarın karta uçması · grafikte parmakla değer okuma ===== */
+(function(){
+if(typeof App==='undefined'||typeof C==='undefined'||typeof Store==='undefined'||typeof D==='undefined')return;
+const RM=()=>typeof Motion!=='undefined'?Motion.reduced():!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const esc=x=>U.esc(String(x==null?'':x));
+const TEL='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>';
+const COPY='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="13" height="13" rx="2.5"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>';
+
+const CzFx={
+  /* Bankaların çağrı merkezleri (CzWallet banka anahtarlarıyla) */
+  PHONES:{ziraat:['Ziraat','0850 220 00 00'],garanti:['Garanti BBVA','444 0 333'],isbank:['İş Bankası','0850 724 0 724'],yapikredi:['Yapı Kredi','0850 222 0 444'],
+    akbank:['Akbank','444 25 25'],qnb:['QNB','0850 222 0 900'],halk:['Halkbank','0850 222 0 400'],vakif:['VakıfBank','0850 222 0 724'],deniz:['DenizBank','0850 222 0 800'],enpara:['Enpara','0850 222 3672']},
+  bank(a){if(typeof CzWallet==='undefined'||!a)return null;let b=null;
+    try{b=CzWallet.bankOf(a)||CzWallet.detect(a.bank)||CzWallet.detect(a.name);
+      if(!b&&a.credit&&a.credit.sharedWith){const r=D.account(Store.get(),a.credit.sharedWith);if(r)b=CzWallet.detect(r.bank)||CzWallet.detect(r.name)}}catch(e){}
+    return b},
+  phone(a){const b=this.bank(a),p=b&&this.PHONES[b.k];return p?{name:p[0],num:p[1]}:null},
+  last4(a){try{if(typeof CzWallet!=='undefined')return CzWallet.last4(a)}catch(e){}const d=String(a.last4||'').replace(/\D/g,'');return d.length>=4?d.slice(-4):''},
+  ibanNorm:v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,''),
+  ibanFmt(v){const n=this.ibanNorm(v);return n.replace(/(.{4})/g,'$1 ').trim()},
+  ibanOk(v){const n=this.ibanNorm(v);return /^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(n)},
+  flippable:a=>!!a&&a.type!=='credit'&&a.type!=='cash',
+  row:(k,v,dim)=>`<div class="czfx-r"><span>${k}</span><b class="num${dim?' dim':''}">${v}</b></div>`,
+  telRow(a){const p=this.phone(a);
+    if(!p)return `<div class="czfx-tel none"><span class="czfx-ti">${TEL}</span><span class="t"><small>Banka çağrı merkezi</small><b>—</b></span></div>`;
+    return `<a class="czfx-tel" href="tel:${p.num.replace(/\D/g,'')}" onclick="event.stopPropagation()" aria-label="${esc(p.name)} çağrı merkezini ara: ${esc(p.num)}"><span class="czfx-ti">${TEL}</span><span class="t"><small>${esc(p.name)} çağrı merkezi</small><b>${esc(p.num)}</b></span></a>`},
+  flipBtn:id=>`<button class="cc-flip pressable" onclick="event.stopPropagation();App.flipCard('${id}',this)" aria-label="Kartı çevir">${C.ic('flip')}</button>`,
+  /* Kredi kartı arka yüzü */
+  creditBack(s,a){const m=D.cardSummary(s,a.id),st=a.style||'aurora',l4=this.last4(a),due=m.dueNow>0?m.lastDue:(m.openDue||m.lastDue),M=v=>U.money(v,{dec:false});
+    const g=this.row('Kesim günü',U.fmtDate(m.openCut))+this.row('Son ödeme günü',U.fmtDate(due))+this.row('Kart no',l4?'•••• '+esc(l4):'—',!l4)+
+      this.row('Limit',M(m.limit))+this.row('Kullanılabilir',M(m.available))+this.row(m.dueNow>0?'Ödenecek':'Dönem içi',M(m.dueNow>0?m.dueNow:m.openTotal));
+    return `<div class="ccard cc-back czfx-back cs-${st}" style="${C.ccStyle(a)}" aria-label="${esc(a.name)} arka yüz"><span class="sheen"></span><div class="czfx-stripe" aria-hidden="true"></div>
+      <div class="czfx-body"><div class="czfx-grid">${g}</div></div>${this.telRow(a)}${this.flipBtn(a.id)}</div>`},
+  /* Banka kartı / hesap arka yüzü */
+  accBack(s,a){const b=D.balance(s,a.id),cur=a.currency||'TRY',st=a.style||'aurora',l4=this.last4(a),M=v=>U.money(v,{cur});
+    const cells=[this.row(a.type==='fx'?(cur==='XAU'?'Altın':'Döviz')+' bakiyesi':'Bakiye',M(b))];
+    if(+a.overdraft>0)cells.push(this.row('Kullanılabilir',M(b+ +a.overdraft)));
+    else cells.push(this.row('Hesap türü',esc((ACCOUNT_TYPES[a.type]||{}).name||'Hesap')));
+    cells.push(a.debitCard?this.row('Kart no',l4?'•••• '+esc(l4):'—',!l4):this.row('Para birimi',cur==='TRY'?'TL':esc(cur)));
+    const ib=this.ibanOk(a.iban)?this.ibanFmt(a.iban):'';
+    const iban=`<div class="czfx-iban">${this.row('IBAN',ib||'—',!ib)}${ib?`<button type="button" class="czfx-copy" onclick="event.stopPropagation();CzFx.copy('${this.ibanNorm(a.iban)}')" aria-label="IBAN'ı kopyala">${COPY}</button>`:''}</div>`;
+    const bg=a.debitCard?C.ccStyle(a):(()=>{const bk=this.bank(a),g=GRADIENTS[(a.color||0)%GRADIENTS.length],c1=bk?bk.c1:g[0],c2=bk?bk.c2:g[1];return `--cc1:${c1};--cc2:${c2};background:linear-gradient(135deg,${c1},${c2})`})();
+    return `<div class="ccard cc-back czfx-back cs-${st}" style="${bg}" aria-label="${esc(a.name)} arka yüz"><span class="sheen"></span><div class="czfx-stripe" aria-hidden="true"></div>
+      <div class="czfx-body"><div class="czfx-grid">${cells.join('')}</div>${iban}</div>${this.telRow(a)}${this.flipBtn(a.id)}</div>`},
+  /* Ön yüzü (tek kök .ccard) çevrilebilir kart kabına sar */
+  wrap(s,a,front,ui){if(!front||front.indexOf('cc-flip')>=0)return front;ui=ui||UI;
+    let f=front.replace(/class="ccard /,'class="ccard czfx-hasflip ');const i=f.lastIndexOf('</div>');if(i<0)return front;f=f.slice(0,i)+this.flipBtn(a.id)+f.slice(i);
+    return `<div class="flipper czfx-fl ${ui.flipped&&ui.flipped[a.id]?'flipped':''}" data-czfx="${esc(a.id)}"><div class="flip-inner">${f}${this.accBack(s,a)}</div></div>`},
+  flip(fl){if(!fl)return;const id=fl.dataset.czfx||(fl.closest('.wslot')||{}).dataset?.id;if(!id)return;App.flipCard(id,fl.querySelector('.cc-flip')||fl)},
+  copy(v){const done=()=>{try{Haptic.tap()}catch(e){}Toast.show('IBAN kopyalandı')};
+    const fb=()=>{try{const t=document.createElement('textarea');t.value=v;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0;top:0';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();done()}catch(e){Toast.show(v)}};
+    try{navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(v).then(done,fb):fb()}catch(e){fb()}}
+};
+window.CzFx=CzFx;
+
+/* --- Bağlantılar: kredi kartı arka yüzü, kart kimliği, hesap kartları --- */
+C.cardBack=(s,a)=>{const h=CzFx.creditBack(s,a);try{return typeof CzWallet!=='undefined'?CzWallet.face(h,s,a,'back'):h}catch(e){return h}};
+{const _f=C.cardFlip;C.cardFlip=(s,a,ui)=>{const h=_f(s,a,ui);return h?h.replace('<div class="flipper ',`<div data-czfx="${esc(a.id)}" class="flipper `):h}}
+if(typeof CzWalletTheme!=='undefined'&&CzWalletTheme.deck){const _d=CzWalletTheme.deck;CzWalletTheme.deck=function(s,ui){const h=_d.apply(this,arguments);if(!h||h.indexOf('czwt-face')<0)return h;
+  try{const t=document.createElement('template');t.innerHTML=h;let ch=0;
+    t.content.querySelectorAll('.czwt-face').forEach(f=>{const sl=f.closest('.wslot'),a=sl&&D.account(s,sl.dataset.id);if(!CzFx.flippable(a))return;f.innerHTML=CzFx.wrap(s,a,f.innerHTML.trim(),ui);ch++});
+    return ch?t.innerHTML:h}catch(e){console.warn(e);return h}}}
+if(typeof Pages!=='undefined'&&Pages.account&&typeof C.debitCard==='function'){const _a=Pages.account;Pages.account=function(s,ui,p){const h=_a.apply(this,arguments);try{const a=h&&D.account(s,p.id);
+  if(a&&a.debitCard){const dc=C.debitCard(s,a);if(h.indexOf(dc)>=0)return h.replace(dc,CzFx.wrap(s,a,dc,ui))}}catch(e){console.warn(e)}return h}}
+
+/* Arka yüze dokun → geri çevir (kart açılımını tetiklemez); kart sayfasındaki küçük karta dokun → çevir */
+document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;if(t.closest('a,button,input,select,textarea,label'))return;
+  const back=t.closest('.flipper.flipped .flip-inner>.cc-back');
+  if(back){e.stopPropagation();e.preventDefault();CzFx.flip(back.closest('.flipper'));return}
+  const cd=t.closest('.cd-face');if(cd){const fl=cd.querySelector('.flipper');if(fl){e.stopPropagation();e.preventDefault();CzFx.flip(fl)}}},true);
+
+/* --- Hesap formu: IBAN (banka hesapları) + kredi kartında son 4 hane --- */
+if(typeof AccForm!=='undefined'){
+  const _r=AccForm.render;AccForm.render=function(){_r.apply(this,arguments);const d=this.draft,sh=document.querySelector('#sheet');if(!d||!sh||sh.querySelector('.czfx-accf'))return;
+    const anchor=sh.querySelector('#ac-last4')?.closest('.field')||sh.querySelector('#ac-bank')?.closest('.grid2');if(!anchor)return;let html='';
+    if(d.type==='credit')html=`<label class="field czfx-accf"><span>Kartın son 4 hanesi · opsiyonel</span><input class="input num" id="ac-cl4" inputmode="numeric" maxlength="4" value="${esc(d.last4||'')}" placeholder="ör. 1234"></label>`;
+    else if(CzFx.flippable(d))html=`<label class="field czfx-accf"><span>IBAN · opsiyonel</span><input class="input num" id="ac-iban" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="42" value="${esc(d.iban?CzFx.ibanFmt(d.iban):'')}" placeholder="TR00 0000 0000 0000 0000 0000 00"></label>`;
+    if(!html)return;anchor.insertAdjacentHTML('afterend',html)};
+  const _sy=AccForm.sync;AccForm.sync=function(){_sy.apply(this,arguments);const d=this.draft;if(!d)return;const sh=document.querySelector('#sheet');if(!sh)return;
+    const l=sh.querySelector('#ac-cl4');if(l)d.last4=(l.value.match(/\d/g)||[]).join('').slice(-4);const ib=sh.querySelector('#ac-iban');if(ib)d.iban=CzFx.ibanNorm(ib.value)};
+  const _sv=AccForm.save;AccForm.save=function(){const sh=document.querySelector('#sheet'),ib=sh&&sh.querySelector('#ac-iban');
+    if(ib&&ib.value.trim()&&!CzFx.ibanOk(ib.value)){Toast.show('IBAN geçersiz görünüyor');try{Haptic.error()}catch(e){}return false}return _sv.apply(this,arguments)};
+  const _ps=AccForm.postSave;AccForm.postSave=function(out,d){let item=_ps?_ps.call(this,out,d):{...out};
+    if(item.type==='credit'){if(d.last4&&/^\d{4}$/.test(d.last4))item={...item,last4:d.last4}}
+    if(CzFx.flippable(item)){if(CzFx.ibanOk(d.iban))item={...item,iban:CzFx.ibanNorm(d.iban)};else{item={...item};delete item.iban}}
+    return item}}
+
+/* ============ 2) Yeni işlem: tutar hapı karta uçar, kart hafifçe sekip sayı yuvarlanır ============ */
+const Fly={sup:new Set(),
+  val(s,id){const a=D.account(s,id);if(!a)return null;return a.type==='credit'?D.cardSummary(s,id).available:D.balance(s,id)},
+  fmt(a){return a.type==='credit'?v=>U.money(v):v=>U.money(v,{cur:a.currency||'TRY'})},
+  vis(r){return r.width>0&&r.bottom>70&&r.top<innerHeight-100},
+  target(a){const sl=document.querySelector(`#screen .wallet>.wslot[data-id="${a.id}"]`);
+    if(sl){const r=sl.getBoundingClientRect();if(this.vis(r)){const front=sl.classList.contains('wx-sel')||sl.classList.contains('front')&&!sl.classList.contains('wx-pile');
+      let pt={x:r.left+r.width*.62,y:r.top+28};
+      if(front){const n=sl.querySelector('.flip-inner>.ccard:not(.cc-back) .cc-amt')||sl.querySelector('.czwt-face .cc-amt');const q=n&&n.getBoundingClientRect();
+        if(q&&q.width&&q.top>70&&q.bottom<innerHeight-100)pt={x:q.left+Math.min(q.width,120)/2+20,y:q.top+q.height/2}}
+      return {pt,el:sl.firstElementChild,slot:sl}}}
+    const tab=document.querySelector('#tabbar .tab[data-tab="txs"]')||document.querySelector('#tabbar .tab[data-tab="home"]');
+    if(tab){const r=tab.getBoundingClientRect();if(r.width)return {pt:{x:r.left+r.width/2,y:r.top+r.height*.36},el:tab.querySelector('svg')||tab,dock:true}}
+    return null},
+  nums(slot){return slot?[...slot.querySelectorAll('.flip-inner>.ccard:not(.cc-back) .cc-amt,.czwt-face>.ccard .cc-amt,.czwt-pv')]:[]},
+  run(snap){const s=Store.get(),tx=s.transactions.find(t=>!snap.ids.has(t.id));if(!tx||(tx.kind!=='expense'&&tx.kind!=='income'))return this.release(snap);
+    const a=D.account(s,tx.accountId);if(!a)return this.release(snap);
+    const nv=this.val(s,a.id),ov=snap.old[a.id];const tg=this.target(a);if(!tg)return this.release(snap);
+    const f=this.fmt(a),els=tg.slot?this.nums(tg.slot):[],roll=!PRIVACY&&ov!=null&&nv!=null&&Math.abs(nv-ov)>=.005;
+    if(roll)els.forEach(e=>{e.innerHTML=f(ov)});
+    const r=snap.r,x0=r?r.left+r.width/2:innerWidth/2,y0=r?r.top+r.height/2:innerHeight*.3,{x:x1,y:y1}=tg.pt;
+    const pill=document.createElement('div');pill.className='czfx-pill'+(tx.kind==='income'?' inc':'');pill.setAttribute('aria-hidden','true');
+    pill.textContent=(tx.kind==='income'?'+':'−')+U.money(tx.amount,{cur:a.currency||'TRY'});document.body.appendChild(pill);
+    const pw=pill.offsetWidth,ph=pill.offsetHeight,cx=(x0+x1)/2+(x1-x0)*.18,cy=Math.min(y0,y1)-Math.max(90,Math.abs(y1-y0)*.35),N=24,kf=[];
+    for(let k=0;k<=N;k++){const t=k/N,u=1-t,x=u*u*x0+2*u*t*cx+t*t*x1,y=u*u*y0+2*u*t*cy+t*t*y1,sc=1-.62*t;
+      kf.push({transform:`translate(${(x-pw/2).toFixed(1)}px,${(y-ph/2).toFixed(1)}px) scale(${sc.toFixed(3)})`,opacity:t<.82?1:Math.max(0,1-(t-.82)/.18)})}
+    const an=pill.animate(kf,{duration:640,easing:'cubic-bezier(.42,0,.22,1)',fill:'forwards'});
+    const land=()=>{pill.remove();
+      if(tg.el&&tg.el.animate)tg.el.animate(tg.dock?[{scale:'1'},{scale:'1.18',offset:.35},{scale:'1'}]:[{translate:'0 0'},{translate:'0 4px',offset:.3},{translate:'0 -1px',offset:.7},{translate:'0 0'}],
+        {duration:tg.dock?360:420,easing:'cubic-bezier(.3,.7,.4,1)'});
+      try{Haptic.tap()}catch(e){}
+      if(roll&&els.length){const t0=performance.now(),D0=600;const step=now=>{const p=Math.min(1,(now-t0)/D0),e=1-Math.pow(1-p,3),v=ov+(nv-ov)*e;
+        els.forEach(el=>{if(el.isConnected)el.innerHTML=f(p<1?v:nv)});if(p<1)requestAnimationFrame(step);else this.release(snap)};requestAnimationFrame(step)}
+      else{if(roll)els.forEach(el=>{el.innerHTML=f(nv)});this.release(snap)}};
+    an.onfinish=land;an.oncancel=land;setTimeout(()=>{if(pill.isConnected)land()},1200)},
+  release(snap){if(snap&&snap.keys)snap.keys.forEach(k=>this.sup.delete(k))}
+};
+CzFx.Fly=Fly;
+if(typeof Count!=='undefined'&&Count.run){const _c=Count.run;Count.run=function(root){try{if(Fly.sup.size&&root&&root.querySelectorAll)root.querySelectorAll('[data-count][data-key]').forEach(el=>{if(Fly.sup.has(el.dataset.key))this.prev[el.dataset.key]=+el.dataset.count})}catch(e){}return _c.apply(this,arguments)}}
+if(typeof TxForm!=='undefined'&&TxForm.save){const _s=TxForm.save;TxForm.save=async function(){const d=this.draft||{};let snap=null;
+  if(!d.id&&(d.kind==='expense'||d.kind==='income')&&!RM()){try{const s=Store.get(),inp=document.querySelector('#sheet #tx-amount'),r=inp&&inp.getBoundingClientRect(),old={};
+    s.accounts.forEach(a=>{old[a.id]=Fly.val(s,a.id)});const keys=s.accounts.filter(a=>a.type==='credit').map(a=>'av-'+a.id);keys.forEach(k=>Fly.sup.add(k));
+    snap={r:r&&r.width?{left:r.left,top:r.top,width:r.width,height:r.height}:null,ids:new Set(s.transactions.map(t=>t.id)),old,keys}}catch(e){snap=null}}
+  let res;try{res=await _s.apply(this,arguments)}catch(e){if(snap)Fly.release(snap);throw e}
+  if(snap){const ok=Store.get().transactions.some(t=>!snap.ids.has(t.id));if(!ok)Fly.release(snap);
+    else requestAnimationFrame(()=>requestAnimationFrame(()=>{try{Fly.run(snap)}catch(e){console.warn(e);Fly.release(snap)}}))}
+  return res}}
+
+/* ============ 3) Grafikte değer okuma: kıl çizgi + nokta + tarih/değer etiketi; üstteki rakamlar o günü gösterir ============ */
+const Sc={st:null,cur:null,hover:null,tapT:0,
+  chart:t=>t&&t.closest&&t.closest('.gw-chart,.lc-wrap'),
+  coords(p){if(!p)return [];const out=[],re=/[ML]\s*(-?[\d.]+)[ ,](-?[\d.]+)/g;let m;const d=p.getAttribute('d')||'';while((m=re.exec(d)))out.push([+m[1],+m[2]]);return out},
+  model(w){if(w._czfx&&w._czfx.src===(w.dataset.flow||w.dataset.pts))return w._czfx;let M=null;
+    try{if(w.classList.contains('gw-chart')){const d=JSON.parse(w.dataset.flow),n=d.pop()[0],plot=w.querySelector('.gw-plot');if(!plot||!d.length)return null;
+        const inc=this.coords(plot.querySelector('path.l-inc')),exp=this.coords(plot.querySelector('path.l-exp'));
+        M={kind:'flow',src:w.dataset.flow,box:plot,n:d.length,
+          at:i=>({x:(n>1?i/(n-1):.5),ys:[inc[i]?inc[i][1]/100:null,exp[i]?exp[i][1]/100:null],label:d[i][0],vals:[d[i][1],d[i][2]]}),
+          idx:fx=>Math.max(0,Math.min(d.length-1,Math.round(fx*(n-1))))}}
+      else{const pts=JSON.parse(w.dataset.pts),svg=w.querySelector('svg.lchart');if(!svg||!pts.length)return null;const vb=svg.viewBox.baseVal,W=vb.width||340,H=vb.height||150;
+        const ln=svg.querySelector('path[fill="none"]'),c=this.coords(ln),col=ln&&ln.getAttribute('stroke');
+        M={kind:'line',src:w.dataset.pts,box:w,svg,n:pts.length,col,
+          at:i=>({x:c[i]?c[i][0]/W:i/Math.max(1,pts.length-1),ys:[c[i]?c[i][1]/H:null],label:pts[i][0],vals:[pts[i][1]]}),
+          idx:fx=>{let b=0,bd=1e9;c.forEach((p,i)=>{const dd=Math.abs(p[0]/W-fx);if(dd<bd){bd=dd;b=i}});return c.length?b:Math.round(fx*(pts.length-1))},W,H}}}catch(e){return null}
+    w._czfx=M;return M},
+  /* Grafik alanının (kutu içi) piksel ölçüleri */
+  geo(w,M){const br=M.box.getBoundingClientRect();if(M.kind==='flow')return {br,ox:0,oy:0,w:br.width,h:br.height,abs:br};
+    const sr=M.svg.getBoundingClientRect();return {br,ox:sr.left-br.left,oy:sr.top-br.top,w:sr.width,h:sr.height,abs:sr}},
+  ui(w,M){let el=M.box.querySelector(':scope>.czfx-sc');if(el)return el;el=document.createElement('div');el.className='czfx-sc';el.setAttribute('aria-hidden','true');
+    el.innerHTML=`<div class="czfx-hair"></div>${M.kind==='flow'?'<div class="czfx-dot sm" style="--czfx-c:color-mix(in srgb,var(--text) 60%,transparent)"></div><div class="czfx-dot" style="--czfx-c:var(--chart-inc,var(--blue))"></div>':`<div class="czfx-dot" style="--czfx-c:${M.col||'var(--blue)'}"></div>`}<div class="czfx-lbl"></div>`;
+    M.box.appendChild(el);return el},
+  head(w,M){if(M.kind==='flow'){const sum=w.parentElement&&w.parentElement.querySelector('.gw-sum');return sum?[...sum.querySelectorAll('b.num')].slice(0,2):[]}
+    const hero=w.closest('.acc-hero');if(!hero)return [];return [hero.querySelector('.hero-amount'),hero.querySelector('.hero-label')].filter(Boolean)},
+  short(l){return String(l||'').replace(/^(\d{1,2}) (\S{3})\S*(?: \d{4})?$/,'$1 $2')},
+  show(w,clientX){const M=this.model(w);if(!M)return;const G=this.geo(w,M),fx=(clientX-G.abs.left)/Math.max(1,G.w),i=M.idx(Math.max(0,Math.min(1,fx))),P=M.at(i);
+    const el=this.ui(w,M),px=G.ox+P.x*G.w;M.box.classList.add('czfx-on');
+    const hair=el.querySelector('.czfx-hair');hair.style.left=px+'px';hair.style.top=G.oy+'px';hair.style.height=G.h+'px';
+    const dots=[...el.querySelectorAll('.czfx-dot')];
+    if(M.kind==='flow'){[[dots[1],P.ys[0]],[dots[0],P.ys[1]]].forEach(([d,y])=>{if(!d)return;d.style.display=y==null?'none':'';d.style.left=px+'px';d.style.top=(G.oy+(y||0)*G.h)+'px'})}
+    else{dots[0].style.left=px+'px';dots[0].style.top=(G.oy+(P.ys[0]||0)*G.h)+'px'}
+    const lbl=el.querySelector('.czfx-lbl'),M0=v=>U.money(v,{dec:false}),dl=esc(this.short(P.label));
+    lbl.innerHTML=M.kind==='flow'?`${dl} <i>·</i> <span class="p">+${M0(P.vals[0])}</span> <i>·</i> −${M0(P.vals[1])}`:`${dl} <i>·</i> ${M0(P.vals[0])}`;
+    const lw=lbl.offsetWidth||120,bw=M.box.getBoundingClientRect().width;lbl.style.left=Math.max(lw/2,Math.min(bw-lw/2,px))+'px';lbl.style.top=(G.oy-4)+'px';
+    /* üstteki rakamlar */
+    const H=this.head(w,M);if(H.length){if(!w._czfxOrig)w._czfxOrig=H.map(h=>h.innerHTML);
+      if(M.kind==='flow'){H[0]&&(H[0].innerHTML=M0(P.vals[0]));H[1]&&(H[1].innerHTML=M0(P.vals[1]))}
+      else{const a=H[0];if(a){a.innerHTML=typeof U.bigMoney==='function'&&!/[$€]|gr/.test(w._czfxOrig[0])?U.bigMoney(P.vals[0]):U.money(P.vals[0]);a.classList.toggle('neg',P.vals[0]<0)}if(H[1])H[1].textContent=this.short(P.label)}
+      H.forEach(h=>h.classList.add('czfx-scrubbed'))}
+    this.cur=w},
+  hide(w){w=w||this.cur;if(!w)return;clearTimeout(this.tapT);const M=w._czfx;if(M&&M.box)M.box.classList.remove('czfx-on');
+    if(w._czfxOrig){const H=M?this.head(w,M):[];H.forEach((h,j)=>{if(w._czfxOrig[j]!=null)h.innerHTML=w._czfxOrig[j];h.classList.remove('czfx-scrubbed')});
+      if(M&&M.kind==='line'&&H[0])H[0].classList.toggle('neg',/^-|−/.test(H[0].textContent.trim()));w._czfxOrig=null}
+    if(this.cur===w)this.cur=null},
+  init(){const LP=150,SLOP=8;
+    document.addEventListener('touchstart',e=>{const w=this.chart(e.target);if(!w||e.touches.length>1){if(this.st)this.end();return}
+      clearTimeout(this.tapT);if(this.cur&&this.cur!==w)this.hide();
+      const t=e.touches[0];this.st={w,x0:t.clientX,y0:t.clientY,x:t.clientX,on:false,dead:false};
+      this.st.lp=setTimeout(()=>{const st=this.st;if(st&&!st.on&&!st.dead)this.activate(st)},LP)},{passive:true});
+    document.addEventListener('touchmove',e=>{const st=this.st;if(!st||st.dead)return;const t=e.touches[0];if(!t)return;const dx=t.clientX-st.x0,dy=t.clientY-st.y0;st.x=t.clientX;
+      if(!st.on){if(Math.abs(dy)>SLOP&&Math.abs(dy)>=Math.abs(dx)){st.dead=true;clearTimeout(st.lp);return}
+        if(Math.abs(dx)>6&&Math.abs(dx)>Math.abs(dy))this.activate(st);else return}
+      if(e.cancelable)e.preventDefault();this.show(st.w,t.clientX)},{passive:false});
+    const fin=e=>{const st=this.st;if(!st)return;clearTimeout(st.lp);this.st=null;
+      if(st.on){this.hide(st.w);return}
+      /* kısa dokunuş: değeri kısa süre göster */
+      if(!st.dead&&e&&e.type==='touchend'){this.show(st.w,st.x);clearTimeout(this.tapT);this.tapT=setTimeout(()=>this.hide(st.w),1600)}};
+    document.addEventListener('touchend',fin,{passive:true});document.addEventListener('touchcancel',fin,{passive:true});
+    /* fare / kalem: üzerinde gezdirince göster, çıkınca geri al */
+    document.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const w=this.chart(e.target);
+      if(w){if(this.cur&&this.cur!==w)this.hide();this.show(w,e.clientX)}else if(this.cur&&!this.st)this.hide()},{passive:true});
+    document.addEventListener('pointerleave',()=>{if(this.cur&&!this.st)this.hide()},{passive:true});
+    /* yeniden çizimde açık kalan durum temizlensin */
+    addEventListener('scroll',()=>{if(this.cur&&!this.st)this.hide()},{passive:true})},
+  activate(st){st.on=true;clearTimeout(this.tapT);this.tapT=0;try{Haptic.tap()}catch(e){}this.show(st.w,st.x)},
+  end(){const st=this.st;if(!st)return;clearTimeout(st.lp);this.st=null;if(st.on)this.hide(st.w)}
+};
+CzFx.Scrub=Sc;Sc.init();
+/* Eski "basılı tut = düzenle" grafikte tetiklenmesin */
+{const _f=C.flow;C.flow=function(){const h=_f.apply(this,arguments);return typeof h==='string'?h.replace('<div class="gw-chart" ','<div class="gw-chart" data-lp="" '):h}}
+})();
+try{App.render()}catch(e){}
+
+</script>
+<script id="cz-brand-js">
+/* ===== cz-brand-js · v4 · Mağaza logoları (genişletilmiş marka listesi + kategori simgeleri) ve "Ay özeti" hikâyesi =====
+   Tek isim alanları: CzLogo (genişletilir, API aynı) ve CzRp (yeni hikâye). Recap.open/close/go bu hikâyeye yönlendirilir.
+   Logolar: marka renginde rozet + kısa yazı (logo çizimi kopyalanmaz). Marka yoksa: mağaza adındaki anahtar kelime ya da
+   kategori → sade çizgi simge (akaryakıt pompası, eczane artısı, çatal-bıçak, sepet …); o da yoksa baş harf. */
+(()=>{
+if(typeof CzLogo==='undefined')return;
+
+/* ---------- 1) Marka listesi ---------- */
+/* [ad, kalıplar, zemin, yazı, rozet, stil] · stil: w=kalınlık, tt='up'|'low', ls=harf aralığı (em), it=italik, f='serif'|'round' */
+const SER={f:'serif',w:600,ls:.02},ITB={it:1,w:900},BLK={w:900};
+const ADD=[
+  /* market */
+  ['Onur Market','onur market|onurmarket|onur marketcilik','#e30613','#fff','onur',{w:800,ls:-.04}],
+  ['Pehlivanoğlu','pehlivanoglu','#0a7a3b','#fff','P',BLK],
+  ['Kipa','kipa|tesco kipa','#e2001a','#fff','kipa',{w:900,ls:-.03}],
+  ['Özdilek','ozdilek','#00519e','#fff','Ö',BLK],
+  ['Mopaş','mopas','#e30613','#fff','M',BLK],
+  ['Happy Center','happy center|happycenter','#e4032e','#fff','HC',BLK],
+  ['Altunbilekler','altunbilekler','#d71920','#fff','A',BLK],
+  ['Uyum Market','uyum market|uyum hipermarket|uyum gida','#e30613','#ffd200','U',BLK],
+  ['Çağrı','cagri hipermarket|cagri market','#00843d','#fff','Ç',BLK],
+  ['Gimsa','gimsa','#e30613','#fff','G',BLK],
+  ['Migros Hemen','migros hemen|migroshemen','#ff7a00','#fff','M',BLK],
+  /* kahve & yemek */
+  ['Sbarro','sbarro','#c8102e','#fff','S',{w:900,it:1}],
+  ['Mado','mado','#c8102e','#fff','mado',{f:'serif',w:700,ls:0}],
+  ['Baydöner','baydoner|bay doner','#c8102e','#fff','BD',BLK],
+  ['Tavuk Dünyası','tavuk dunyasi|tavukdunyasi','#e30613','#ffd200','TD',BLK],
+  ['HD İskender','hd iskender|hdiskender','#7a0019','#fff','HD',BLK],
+  ['Köfteci Yusuf','kofteci yusuf|kofteciyusuf','#c8102e','#fff','KY',BLK],
+  ['Pizza Hut','pizza hut|pizzahut','#ee3124','#fff','PH',BLK],
+  ['Papa John\'s','papa johns|papajohns','#007a3e','#fff','PJ',BLK],
+  ['Subway','subway','#008c15','#ffc600','S',BLK],
+  ['Arby\'s','arbys','#d2001e','#fff','A',BLK],
+  ['Big Chefs','big chefs|bigchefs','#111','#fff','BC',{w:700}],
+  ['Usta Dönerci','usta donerci|ustadonerci','#c8102e','#fff','UD',BLK],
+  ['Caribou','caribou','#3e2b2e','#fff','C',{f:'serif',w:700}],
+  ['Gloria Jean\'s','gloria jeans|gloriajeans','#5a2d0c','#fff','GJ',{f:'serif',w:700}],
+  ['Tchibo','tchibo','#002f6c','#fff','T',BLK],
+  ['Kahve Diyarı','kahve diyari|kahvediyari','#6b3e26','#fff','KD',BLK],
+  ['Dunkin\'','dunkin','#ff671f','#fff','DD',{w:900,f:'round'}],
+  ['Midpoint','midpoint','#111','#fff','mp',{w:800}],
+  /* giyim & spor */
+  ['Network','^network','#111','#fff','N',{w:500,ls:.06}],
+  ['Beymen','beymen','#111','#fff','B',SER],
+  ['Vakko','vakko','#111','#fff','V',SER],
+  ['Pull&Bear','pull bear|pullandbear|pull and bear','#111','#fff','P&B',{w:700}],
+  ['Bershka','bershka','#111','#fff','B',{w:700}],
+  ['Stradivarius','stradivarius','#1a1a1a','#fff','S',SER],
+  ['Mango','mango','#111','#fff','M',{w:500,ls:.04}],
+  ['Massimo Dutti','massimo dutti|massimodutti','#111','#fff','MD',SER],
+  ['Oysho','oysho','#111','#fff','O',{w:500}],
+  ['U.S. Polo Assn.','us polo|uspolo|u s polo','#002855','#fff','USPA',{w:800}],
+  ['Lacoste','lacoste','#004526','#fff','L',SER],
+  ['Tommy Hilfiger','tommy hilfiger|tommy','#002f6c','#fff','TH',{w:800}],
+  ['Calvin Klein','calvin klein','#111','#fff','CK',{w:500,ls:.06}],
+  ['Nike','nike','#111','#fff','nike',{w:900,it:1,tt:'up',ls:-.03}],
+  ['Adidas','adidas','#111','#fff','adi',{w:800,tt:'low'}],
+  ['Puma','puma','#111','#fff','PUMA',{w:900}],
+  ['Skechers','skechers','#0033a0','#fff','S',ITB],
+  ['Under Armour','under armour','#111','#fff','UA',BLK],
+  ['Columbia','columbia','#0a3a6b','#fff','C',{w:800}],
+  ['Sportive','sportive','#e30613','#fff','S',ITB],
+  ['Intersport','intersport','#003a7d','#fff','I',ITB],
+  ['Superstep','superstep','#111','#fff','SS',{w:900}],
+  ['Hotiç','hotic','#111','#fff','H',SER],
+  ['Derimod','derimod','#111','#fff','D',SER],
+  ['Penti','penti','#111','#fff','penti',{w:600,ls:-.02}],
+  ['Suwen','suwen','#111','#fff','S',{w:600}],
+  ['Kiğılı','kigili','#002b5c','#fff','K',SER],
+  ['Colin\'s','colins','#002f6c','#fff','C',{w:900}],
+  ['LTB','ltb jeans|^ltb','#111','#fff','LTB',BLK],
+  ['İpekyol','ipekyol','#111','#fff','İ',SER],
+  ['Twist','^twist','#111','#fff','T',{w:500}],
+  ['Altınyıldız','altinyildiz','#0b2340','#fff','A',SER],
+  ['Shein','shein','#111','#fff','S',{w:800}],
+  ['Temu','temu','#fb7701','#fff','T',BLK],
+  ['AliExpress','aliexpress|ali express','#e62e04','#fff','A',BLK],
+  ['Etsy','etsy','#f1641e','#fff','E',SER],
+  ['eBay','ebay','#fff','#e53238','e',{w:800}],
+  /* kozmetik */
+  ['Eve','eve shop|eveshop|eve kozmetik|^eve$','#d6006e','#fff','eve',{w:800,ls:-.03}],
+  ['Sephora','sephora','#111','#fff','S',{w:500,ls:.06}],
+  ['Flormar','flormar','#111','#fff','F',SER],
+  ['Golden Rose','golden rose|goldenrose','#111','#fff','GR',SER],
+  ['Yves Rocher','yves rocher|yvesrocher','#00654a','#fff','YR',SER],
+  ['Kiko','kiko milano|^kiko','#111','#fff','K',{w:600}],
+  ['MAC','mac cosmetics|mac kozmetik','#111','#fff','MAC',BLK],
+  /* elektronik */
+  ['Samsung','samsung','#1428a0','#fff','S',{w:800}],
+  ['Xiaomi','xiaomi|mi store','#ff6900','#fff','mi',{w:800,f:'round'}],
+  ['Arçelik','arcelik','#e30613','#fff','A',BLK],
+  ['Beko','beko','#0062a8','#fff','beko',{w:800}],
+  ['Vestel','vestel','#111','#e4002b','V',BLK],
+  /* ev & yapı */
+  ['Koçtaş','koctas','#f39200','#fff','K',BLK],
+  ['Bauhaus','bauhaus','#e30613','#fff','B',BLK],
+  ['Tekzen','tekzen','#d71920','#fff','T',BLK],
+  ['Evidea','evidea','#1b1b1b','#fff','e',{f:'serif',w:600}],
+  ['Karaca','karaca home|karaca zuccaciye|^karaca$','#111','#fff','K',SER],
+  ['Paşabahçe','pasabahce','#003c71','#fff','P',SER],
+  ['Mudo','mudo','#1a1a1a','#fff','M',SER],
+  ['Bellona','bellona','#e2001a','#fff','B',BLK],
+  ['İstikbal','istikbal','#d71920','#fff','İ',BLK],
+  ['Doğtaş','dogtas','#1a1a1a','#fff','D',SER],
+  ['Chakra','chakra','#a4875b','#fff','C',SER],
+  ['Yataş','yatas','#002d72','#fff','Y',BLK],
+  /* akaryakıt */
+  ['Lukoil','lukoil','#e30613','#fff','L',BLK],
+  ['Alpet','alpet','#00519e','#fff','A',BLK],
+  ['TP','turkiye petrolleri|tp petrol','#c8102e','#fff','TP',BLK],
+  /* abonelik & dijital */
+  ['Digiturk','digiturk','#002b7f','#fff','D',BLK],
+  ['beIN','bein','#5c2d91','#fff','bein',{w:800}],
+  ['D-Smart','d smart|dsmart','#0054a6','#fff','D',BLK],
+  ['TOD','tod tv|todtv|^tod','#5c2d91','#fff','TOD',BLK],
+  ['Gain','gain medya|^gain$','#111','#ff3c00','G',BLK],
+  ['MUBI','mubi','#111','#fff','MUBI',{w:800}],
+  ['Tidal','tidal','#111','#fff','T',{w:700}],
+  ['Deezer','deezer','#a238ff','#fff','D',BLK],
+  ['Fizy','fizy','#5a2d82','#fff','fizy',{w:800}],
+  ['Storytel','storytel','#ff5c28','#fff','S',BLK],
+  ['Audible','audible','#f7991c','#111','A',BLK],
+  ['Duolingo','duolingo','#58cc02','#fff','duo',{w:900,f:'round'}],
+  ['Tinder','tinder','#fd5068','#fff','T',BLK],
+  ['LinkedIn','linkedin','#0a66c2','#fff','in',{w:800}],
+  ['Patreon','patreon','#ff424d','#fff','P',BLK],
+  ['Twitch','twitch','#9146ff','#fff','T',BLK],
+  ['Discord','discord','#5865f2','#fff','D',BLK],
+  ['Epic Games','epic games|epicgames','#2a2a2a','#fff','EPIC',BLK],
+  ['Roblox','roblox','#111','#fff','R',BLK],
+  ['Nintendo','nintendo','#e60012','#fff','N',BLK],
+  ['Adobe','adobe','#fa0f00','#fff','A',BLK],
+  ['Canva','canva','#7d2ae8','#fff','C',{w:700,f:'serif',it:1}],
+  ['Notion','notion','#fff','#111','N',{f:'serif',w:700}],
+  ['Figma','figma','#1e1e1e','#fff','F',{w:800}],
+  ['Dropbox','dropbox','#0061ff','#fff','D',BLK],
+  ['GitHub','github','#24292f','#fff','GH',BLK],
+  ['Claude','claude ai|anthropic','#d97757','#fff','C',{f:'serif',w:600}],
+  ['Türksat','turksat','#003f87','#fff','T',BLK],
+  ['TurkNet','turknet|turk net','#0073cf','#fff','TN',BLK],
+  /* alışveriş & kargo */
+  ['Sahibinden','sahibinden','#ffe800','#2a2a2a','S',BLK],
+  ['Pazarama','pazarama','#5f2eea','#fff','p',{w:900}],
+  ['PttAVM','pttavm|ptt avm','#ffcc00','#1c3f94','avm',BLK],
+  ['PTT','ptt|ptt kargo|posta telgraf','#ffcc00','#1c3f94','PTT',BLK],
+  ['Yurtiçi Kargo','yurtici kargo|yurticikargo|^yurtici','#1d3f8f','#ffd200','YK',BLK],
+  ['Aras Kargo','aras kargo|araskargo','#e30613','#fff','aras',{w:900,ls:-.03}],
+  ['MNG Kargo','mng kargo|mngkargo|^mng','#f7a600','#14213d','MNG',BLK],
+  ['Sürat Kargo','surat kargo|suratkargo','#004b93','#fff','S',BLK],
+  ['HepsiJet','hepsijet|hepsi jet','#ff6000','#fff','hj',{w:900}],
+  ['UPS','^ups|ups kargo','#351c15','#ffb500','UPS',BLK],
+  ['DHL','dhl','#ffcc00','#d40511','DHL',ITB],
+  ['FedEx','fedex','#4d148c','#fff','FedEx',{w:900,ls:-.05}],
+  ['Letgo','letgo','#ff3f55','#fff','l',BLK],
+  ['Dolap','dolap com|dolapcom|^dolap$','#2bcbba','#fff','D',BLK],
+  /* ulaşım & seyahat */
+  ['Obilet','obilet','#1c64f2','#fff','o',{w:900}],
+  ['Enuygun','enuygun','#1fb75f','#fff','e',{w:900}],
+  ['Turna','turna com|turnacom|^turna$','#e4002b','#fff','T',BLK],
+  ['Tatilsepeti','tatilsepeti|tatil sepeti','#f57f00','#fff','ts',{w:900}],
+  ['Airbnb','airbnb','#ff5a5f','#fff','A',{w:800}],
+  ['Booking.com','booking com|bookingcom|booking','#003580','#fff','B.',{w:800}],
+  ['Biletix','biletix','#009fe3','#fff','B',BLK],
+  ['Passo','passo','#ff0d4d','#fff','P',BLK],
+  ['Biletinial','biletinial','#d5007f','#fff','b',{w:900}],
+  ['Kamil Koç','kamil koc|kamilkoc','#e30613','#fff','KK',BLK],
+  ['Metro Turizm','metro turizm|metroturizm','#003b7a','#fff','MT',BLK],
+  ['Pamukkale Turizm','pamukkale turizm|pamukkale','#e30613','#fff','P',BLK],
+  ['Havaist','havaist','#00a0df','#fff','H',BLK],
+  ['Havabus','havabus','#0b4ea2','#fff','H',BLK],
+  ['TCDD','tcdd|tcdd tasimacilik','#d71920','#fff','TCDD',BLK],
+  ['İDO','^ido|ido deniz|istanbul deniz otobusleri','#0067b1','#fff','İDO',BLK],
+  ['Şehir Hatları','sehir hatlari|sehirhatlari','#002f6c','#fff','ŞH',BLK],
+  ['İSPARK','ispark','#00a651','#fff','P',BLK],
+  ['HGS','hgs|hizli gecis','#00529b','#fff','HGS',BLK],
+  ['Yandex Go','yandex go|yandex taxi|yandex','#ffcc00','#111','Y',BLK],
+  /* spor salonu */
+  ['MacFit','macfit|mac fit','#111','#e30613','MAC',BLK],
+  ['Mars Athletic','mars athletic|marsathletic','#111','#fff','M',BLK],
+  /* sağlık */
+  ['Acıbadem','acibadem','#00539b','#fff','A',BLK],
+  ['Memorial','memorial','#00508f','#fff','M',SER],
+  ['Medical Park','medical park|medicalpark','#003e7e','#fff','MP',BLK],
+  ['Medicana','medicana','#00a4b4','#fff','M',BLK],
+  /* sinema */
+  ['Paribu Cineverse','cineverse|paribu cineverse|cinemapink','#5b2b8c','#fff','CV',BLK]
+];
+/* Mevcut markalara harf/kalınlık ayarı (renk ve kalıplar aynı kalır) */
+const STY={'Migros':BLK,'A101':{w:900,ls:-.06},'BİM':{w:900,ls:-.02},'ŞOK':ITB,'CarrefourSA':{w:800},'File Market':{w:900,tt:'low'},
+  'Getir':{w:900,tt:'low',ls:-.04},'Getir Yemek':{w:900,tt:'low'},'Trendyol':{w:800,tt:'low'},'Trendyol Go':{w:800,tt:'low'},'Hepsiburada':{w:900,tt:'low'},
+  'Amazon':{w:800,tt:'low'},'n11':{w:900,tt:'low'},'Yemeksepeti':{w:900,tt:'low'},'Netflix':BLK,'Spotify':{w:800},'Zara':{f:'serif',w:500,ls:.04},
+  'H&M':{w:800,it:1,ls:-.02},'IKEA':{w:900,ls:-.02},'Decathlon':{w:900,it:1},'Mavi':{w:700,tt:'low'},'Boyner':{w:700},'Koton':{w:800},
+  'DeFacto':{w:800},'LC Waikiki':{w:900},'Shell':BLK,'BP':{w:900,tt:'low'},'Opet':BLK,'Petrol Ofisi':BLK,'THY':{w:800,ls:.01},'Pegasus':BLK,
+  'Starbucks':{w:800},'Kahve Dünyası':{w:800},'Simit Sarayı':{w:800},'Burger King':{w:900,f:'round'},'McDonald\'s':BLK,'KFC':{w:900},
+  'Domino\'s':BLK,'Little Caesars':BLK,'Popeyes':BLK,'Gratis':{w:900},'Watsons':{w:800},'Rossmann':BLK,'Teknosa':BLK,'MediaMarkt':{w:900,ls:-.05},
+  'Vatan':BLK,'Turkcell':BLK,'Vodafone':BLK,'Türk Telekom':{w:800},'Uber':{w:600},'Apple':{w:600},'Google':{w:600},'Steam':{w:800},
+  'Çiçeksepeti':{w:900,tt:'low'},'English Home':{f:'serif',w:600},'Madame Coco':{f:'serif',w:600}};
+const have=new Set(CzLogo.RAW.map(r=>r[0]));
+CzLogo.RAW=ADD.filter(r=>!have.has(r[0])).concat(CzLogo.RAW.map(r=>STY[r[0]]&&!r[5]?[...r.slice(0,5),STY[r[0]]]:r));
+CzLogo.list=null;CzLogo.cache.clear();
+
+/* ---------- 2) Kategori simgeleri (24×24, çizgi) ---------- */
+const P={
+  fuel:'<path d="M5 20V5.5A1.5 1.5 0 0 1 6.5 4h6A1.5 1.5 0 0 1 14 5.5V20M4 20h11M7 8h5M14 10h1.6a1.4 1.4 0 0 1 1.4 1.4v4.1a1.25 1.25 0 0 0 2.5 0V8.4L17 6"/>',
+  pharmacy:'<path d="M9.5 4h5v5.5H20v5h-5.5V20h-5v-5.5H4v-5h5.5z"/>',
+  food:'<path d="M7 3v7.5M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 10.5V21M17 21V3c-2.2 1.2-3.2 3.6-3.2 6.6V13H17"/>',
+  cart:'<path d="M3 4h2.2l2.1 10.2a1.5 1.5 0 0 0 1.5 1.2h8.3a1.5 1.5 0 0 0 1.5-1.1L20.3 8H6.2"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/>',
+  coffee:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M8 3.5c-.6.8-.6 1.7 0 2.5M11.5 3.5c-.6.8-.6 1.7 0 2.5"/>',
+  gym:'<path d="M3 12h18M6.5 7.5v9M4 9.5v5M17.5 7.5v9M20 9.5v5"/>',
+  book:'<path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5zM12 6v13"/>',
+  film:'<rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M3.5 9.5h17M8 5l-1.5 4.5M13 5l-1.5 4.5M18 5l-1.5 4.5"/>',
+  scissors:'<circle cx="6.5" cy="17" r="2.5"/><circle cx="17.5" cy="17" r="2.5"/><path d="M8.3 15.3 18 4M15.7 15.3 6 4"/>',
+  bag:'<path d="M5 8h14l-1 12H6zM9 8V6.5a3 3 0 0 1 6 0V8"/>',
+  heart:'<path d="M12 20s-7.5-4.6-7.5-10A4.2 4.2 0 0 1 12 7.6 4.2 4.2 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
+  bolt:'<path d="M13 3 5.5 13.5H12L11 21l7.5-10.5H12z"/>',
+  bus:'<rect x="5" y="3.5" width="14" height="14" rx="2.5"/><path d="M5 11h14M8 17.5V20M16 17.5V20"/><circle cx="8.5" cy="14.3" r=".6"/><circle cx="15.5" cy="14.3" r=".6"/>',
+  plane:'<path d="M10.5 13.5 4 11.2V9.5l7 1V5.2a1.5 1.5 0 0 1 3 0v5.3l7-1v1.7l-6.5 2.3v4.2l2 1.5V20L12 19l-4.5 1v-1.3l2-1.5z"/>',
+  home:'<path d="M4 11 12 4l8 7M6.5 9v10.5h11V9M10 19.5v-5h4v5"/>',
+  gift:'<rect x="4" y="8" width="16" height="4" rx="1"/><path d="M5.5 12v8h13v-8M12 8v12M12 8c-1-3-5-4-5-1.5S10.5 8 12 8zM12 8c1-3 5-4 5-1.5S13.5 8 12 8z"/>',
+  paw:'<circle cx="8" cy="8" r="1.6"/><circle cx="16" cy="8" r="1.6"/><circle cx="5" cy="12.5" r="1.5"/><circle cx="19" cy="12.5" r="1.5"/><path d="M12 12c-2.8 0-5 3.4-5 5.4 0 1.6 1.3 2.1 2.6 2.1 1 0 1.5-.5 2.4-.5s1.4.5 2.4.5c1.3 0 2.6-.5 2.6-2.1 0-2-2.2-5.4-5-5.4z"/>',
+  device:'<rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M10.5 18h3"/>',
+  game:'<path d="M7.5 8h9a4 4 0 0 1 4 4.4l-.4 3.4a2.3 2.3 0 0 1-4 1.2L14.5 15h-5L8 17a2.3 2.3 0 0 1-4-1.2l-.4-3.4A4 4 0 0 1 7.5 8zM8 10.5v3M6.5 12h3"/><circle cx="16" cy="11" r=".7"/><circle cx="17.5" cy="13" r=".7"/>',
+  repeat:'<path d="M4 11V9.5A2.5 2.5 0 0 1 6.5 7H19l-3-3M20 13v1.5a2.5 2.5 0 0 1-2.5 2.5H5l3 3"/>',
+  receipt:'<path d="M6 3.5h12V21l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3L6 21zM9 8h6M9 11.5h6M9 15h4"/>',
+  bed:'<path d="M3.5 18.5V6M3.5 14.5h17v4M20.5 14.5V12a2.5 2.5 0 0 0-2.5-2.5h-7v5"/><circle cx="7.3" cy="11.3" r="1.7"/>',
+  car:'<path d="M5 16.5V12l1.8-4.4A1.8 1.8 0 0 1 8.5 6.5h7a1.8 1.8 0 0 1 1.7 1.1L19 12v4.5zM5 12h14M6.5 16.5V19M17.5 16.5V19"/><circle cx="8" cy="14.2" r=".6"/><circle cx="16" cy="14.2" r=".6"/>',
+  wrench:'<path d="M14.5 4.2a4.5 4.5 0 0 0-5 6L4 15.7 7.3 19l5.5-5.5a4.5 4.5 0 0 0 6-5L16 11.2 12.8 8l2.7-2.7z"/>',
+  ticket:'<path d="M4 7.5A1.5 1.5 0 0 1 5.5 6h13A1.5 1.5 0 0 1 20 7.5v2.3a2.2 2.2 0 0 0 0 4.4v2.3a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 16.5v-2.3a2.2 2.2 0 0 0 0-4.4zM14.5 6v12" stroke-dasharray="2 2.2"/>'
+};
+/* ad içindeki anahtar kelimeler (katlanmış, özelden genele) → [simge, renk] */
+const KW=[
+  ['pharmacy','#ff3b30',/(^| )(eczane|eczanesi|eczacilik|pharmacy|ecza deposu)/],
+  ['fuel','#ff9f0a',/(^| )(akaryakit|petrol|benzin|benzinlik|otogaz|lpg|fuel|istasyonu?)( |$)/],
+  ['gym','#5e5ce6',/((^| )(spor salonu|spor merkezi|spor kulubu|spor tesisi|gym|fitness|pilates|yoga|crossfit)( |$))|( spor$)/],
+  ['coffee','#a2845e',/(^| )(kahve|kahvecisi|coffee|kafe|cafe|caffe|espresso|cay evi|cay bahcesi|kiraathane)/],
+  ['food','#ff9f0a',/(^| )(restoran|restaurant|lokanta|lokantasi|doner|donerci|kebap|kebab|kebapci|pide|pideci|lahmacun|burger|pizza|pizzeria|pastane|pastanesi|firin|firini|borek|borekci|balik|ocakbasi|kofte|koftecisi|yemek|mangal|cigkofte|cig kofte|tantuni|kokorec|sushi|bistro|meyhane|tatlici|baklava|simit|dondurma|grill)/],
+  ['cart','#30d158',/(^| )(market|marketi|bakkal|bakkaliye|manav|kasap|sarkuteri|bufe|tekel|supermarket|hipermarket|gida|toptan|pazar)( |$)/],
+  ['scissors','#bf5af2',/(^| )(kuafor|kuaforu|berber|berberi|guzellik|guzellik salonu|barber|nail|manikur)/],
+  ['book','#32ade6',/(^| )(kirtasiye|kitap|kitabevi|kitapci|yayin|yayinevi|kurs|egitim|okul|universite|dershane)/],
+  ['film','#5e5ce6',/(^| )(sinema|cinema|tiyatro|konser|muze|opera)/],
+  ['heart','#ff6961',/(^| )(hastane|hastanesi|klinik|klinigi|dis|dentist|doktor|saglik|laboratuvar|tip merkezi|poliklinik|optik|veteriner)( |$)/],
+  ['paw','#a2845e',/(^| )(pet|petshop|pet shop|mama|veteriner)( |$)/],
+  ['bed','#64d2ff',/(^| )(otel|hotel|pansiyon|hostel|apart|resort)( |$)/],
+  ['plane','#64d2ff',/(^| )(havayol|havayollari|airlines|airport|havalimani)/],
+  ['bus','#64d2ff',/(^| )(taksi|taxi|otobus|dolmus|minibus|vapur|feribot|turizm|seyahat)( |$)/],
+  ['car','#8e8e93',/(^| )(otopark|park|oto yikama|otoyikama|lastik|oto servis|rent a car|kiralama)( |$)/],
+  ['wrench','#8e8e93',/(^| )(nalbur|hirdavat|tamir|tamirci|servis|teknik|yapi market|insaat)( |$)/],
+  ['bag','#bf5af2',/(^| )(giyim|tekstil|butik|ayakkabi|moda|konfeksiyon|terzi|canta)( |$)/],
+  ['device','#0a84ff',/(^| )(bilgisayar|telefon|elektronik|gsm|iletisim)( |$)/],
+  ['gift','#ff9f0a',/(^| )(cicek|cicekci|hediye|hediyelik|oyuncak)( |$)/],
+  ['home','#8e8e93',/(^| )(mobilya|ev tekstil|zuccaciye|aydinlatma|perde|hali)( |$)/],
+  ['bolt','#c69c6d',/(^| )(elektrik|dogalgaz|su idaresi|fatura|enerji)( |$)/]
+];
+const CATG={market:'cart',food:'food',transport:'bus',fuel:'fuel',electronics:'device',clothing:'bag',subscription:'repeat',bills:'bolt',
+  rent:'home',fun:'ticket',health:'heart',education:'book',fees:'receipt',gift:'gift'};
+
+Object.assign(CzLogo,{
+  GLYPHS:P,
+  init(){if(this.list)return;this.list=this.RAW.map(([name,pat,bg,fg,t,st])=>{const ps=pat.split('|');
+    const res=ps.map(p=>p[0]==='^'?new RegExp('^'+p.slice(1)+'( |$)'):new RegExp('(^| )'+p+'( |$)'));
+    const comp=ps.map(p=>p.replace(/^\^/,'').replace(/[ $]/g,'').replace(/\(.*?\)/g,'')).filter(p=>p.length>=7&&/^[a-z0-9]+$/.test(p));return{name,bg,fg,t,st:st||null,res,comp}})},
+  match(name){if(!name)return null;const b=this.info(name).brand;return b?{bg:b.bg,fg:b.fg,t:b.t,st:b.st,name:b.name,cz:1}:null},
+  /* bilinmeyen mağaza → anahtar kelime ya da kategoriden simge; yoksa null */
+  glyphFor(name,category){const f=this.fold(this.info(name||'').name+' '+(name||''));
+    for(const [g,c,re] of KW)if(re.test(f))return{mono:1,glyph:g,c,t:(this.mono(name).t),cz:1};
+    const g=CATG[category];if(g){let c='#8e8e93';try{c=cat(category).color}catch(e){}return{mono:1,glyph:g,c,t:this.mono(name).t,cz:1}}
+    return null},
+  svg(g){return `<svg class="czg-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[g]||''}</svg>`},
+  html(b,big){if(!b)return '';
+    if(b.glyph&&P[b.glyph])return `<span class="ic czl mono czg${big?' big':''}" data-g="${b.glyph}" style="--c:${b.c}" aria-hidden="true">${this.svg(b.glyph)}</span>`;
+    const t=U.esc(b.t),n=[...String(b.t)].length,sz=n>=5?5:n;
+    if(b.mono)return `<span class="ic czl mono${big?' big':''}" style="--c:${b.c}" aria-hidden="true"><b>${t}</b></span>`;
+    const st=b.st||{},bg=String(b.bg||'#8e8e93');
+    const cls=`${st.f==='serif'?' czf-s':st.f==='round'?' czf-r':''}${st.it?' czf-i':''}${st.tt==='up'?' czf-up':st.tt==='low'?' czf-low':''}`;
+    const sty=`--bg:${bg};--fg:${b.fg}${st.w?`;--czw:${st.w}`:''}${st.ls!=null?`;--czls:${st.ls}em`:''}`;
+    return `<span class="ic brand czl n${sz}${big?' big':''}${/^#?f{3}(f{3})?$/i.test(bg.replace('#',''))?' lite':''}${cls}" style="${sty}" aria-hidden="true"><b>${t}</b></span>`}
+});
+CzLogo.init();
+
+/* İşlem görseli: baş harf yerine (mümkünse) simge */
+{const _v=C.txVis;C.txVis=function(s,t,ctx){const v=_v.apply(this,arguments);
+  try{if(v&&v.brand&&v.brand.mono&&!v.brand.glyph&&['expense','income','refund'].includes(t.kind)){const o=t.kind==='refund'&&t.refOf&&D.tx(s,t.refOf),src=(o&&o.merchant)||t.merchant;
+    const g=src&&CzLogo.glyphFor(src,(o&&o.category)||t.category);if(g)v.brand=g}}catch(e){}
+  return v}}
+
+/* ---------- 3) Türkçe ekler ---------- */
+const TR={
+  low:w=>String(w).replace(/I/g,'ı').replace(/İ/g,'i').toLowerCase(),
+  EX:{apple:'da',google:'da',googleplay:'da',youtube:'da',spotify:'da',steam:'de',vodafone:'da',uber:'de',netflix:'te',disney:'de',
+      ikea:'da',zara:'da',mcdonalds:'ta',starbucks:'ta',dominos:'ta',littlecaesars:'ta',burgerking:'te',amazon:'da',hm:'de',kfc:'de',bp:'de',
+      shell:'de',decathlon:'da',playstation:'da',xbox:'ta',microsoft:'ta',airbnb:'de',booking:'te',bookingcom:'da',chatgpt:'de'},
+  last(w){/* son okunan ünlü ve son ses */const raw=String(w||'').trim(),f=CzLogo.fold(raw).replace(/ /g,'');
+    const letters=raw.replace(/[^A-Za-zÇĞİÖŞÜÂÎÛçğıöşüâîû0-9]/g,'');if(!letters)return{v:'e',hard:false,vowelEnd:true};
+    const ld=letters.slice(-1);
+    if(/\d/.test(ld)){const D={0:['ı',false,false],1:['i',false,false],2:['i',false,true],3:['ü',true,false],4:['ü',true,false],5:['e',true,false],6:['ı',false,true],7:['i',false,true],8:['i',false,false],9:['u',false,false]};
+      let n=letters.match(/\d+$/)[0].replace(/^0+(?=\d)/,'');const x=+n;
+      if(x%10===0&&x>0){const T={10:['u',false,false],20:['i',false,true],30:['u',false,false],40:['ı',true,false],50:['i',false,true],60:['ı',true,false],70:['i',true,false],80:['e',false,false],90:['a',false,false]};
+        const k=x%100;if(k){const q=T[k];return{v:q[0],hard:q[1],vowelEnd:q[2]}}if(x%1000)return{v:'ü',hard:false,vowelEnd:false};return{v:'i',hard:false,vowelEnd:false}}
+      const q=D[ld];return{v:q[0],hard:q[1],vowelEnd:q[2]}}
+    const up=letters.replace(/\d/g,''),isUp=up===up.toLocaleUpperCase('tr')&&up.length<=5,hasV=/[AEIİOÖUÜ]/.test(up);
+    if(isUp&&!hasV)return{v:'e',hard:false,vowelEnd:true};/* kısaltma: harf adları (be, ce, de…) */
+    const l=this.low(letters.replace(/\d/g,'')),vs=l.match(/[aeıioöuüâîû]/g),v=vs?vs[vs.length-1]:'e',lc=l.slice(-1);
+    return{v,hard:/[çfhkpsştx]/.test(lc),vowelEnd:/[aeıioöuüâîû]/.test(lc)}},
+  back:v=>/[aıouâû]/.test(v),
+  /* bulunma: Migros'ta, BİM'de, Ekim'de */
+  loc(w){w=String(w||'').trim();if(!w)return w;const k=CzLogo.fold(w).replace(/ /g,'');if(this.EX[k])return w+"'"+this.EX[k];
+    const L=this.last(w);return w+"'"+(L.hard?'t':'d')+(this.back(L.v)?'a':'e')},
+  /* yönelme: Eylül'e, Ağustos'a */
+  dat(w){w=String(w||'').trim();const L=this.last(w);return w+"'"+(L.vowelEnd?'y':'')+(this.back(L.v)?'a':'e')},
+  /* sayı + iyelik: %28'i, %50'si, 4'ü */
+  poss(n){n=Math.abs(Math.round(+n||0));const L=this.last(String(n));const v=L.v,h={a:'ı',ı:'ı',o:'u',u:'u',e:'i',i:'i',ö:'ü',ü:'ü'}[v]||'i';return n+"'"+(L.vowelEnd?'s':'')+h},
+  /* sayı + iyelik + bulunma: 4'ünde, 2'sinde */
+  possLoc(n){const p=this.poss(n),h=p.slice(-1);return p+'n'+(/[ıu]/.test(h)?'da':'de')}
+};
+
+/* ---------- 4) Ay özeti hikâyesi ---------- */
+const NS='http://www.w3.org/2000/svg';
+const CzRp={
+  DUR:6500,TR,
+  now(){return new Date()},
+  M:v=>U.money(v,{dec:false,raw:true}),
+  rm(){try{return Motion.reduced()}catch(e){return false}},
+  mix(c,p,base='#0b0b0f'){return `color-mix(in srgb,${c} ${p}%,${base})`},
+  /* hex → ışıklılık (göreli) */
+  lum(hex){const h=String(hex||'').replace('#','');if(!/^[0-9a-f]{3}([0-9a-f]{3})?$/i.test(h))return .2;const x=h.length===3?h.split('').map(c=>c+c).join(''):h;
+    const ch=[0,2,4].map(i=>{const v=parseInt(x.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*ch[0]+.7152*ch[1]+.0722*ch[2]},
+  /* ---- veriler (bağımsız hesap; toplam = Raporlar ile aynı tanım) ---- */
+  facts(s,y,m){const r=D.monthReport(s,y,m),from=r.from,to=r.to,pm=new Date(y,m-1,1);
+    const txs=s.transactions.filter(t=>t.kind==='expense'&&t.source!=='adjust'&&t.date>=from&&t.date<=to);
+    const mm={};txs.forEach(t=>{if(!t.merchant)return;const inf=CzLogo.info(t.merchant),k=CzLogo.fold(inf.name)||CzLogo.fold(t.merchant);
+      const o=mm[k]=mm[k]||{name:inf.name,raw:t.merchant,count:0,total:0,cat:t.category};o.count++;o.total=U.r2(o.total+t.amount)});
+    const fav=Object.values(mm).sort((a,b)=>b.count-a.count||b.total-a.total)[0]||null;
+    const biggest=txs.slice().sort((a,b)=>b.amount-a.amount||a.date.localeCompare(b.date))[0]||null;
+    const wd=Array.from({length:7},(_,i)=>({d:i,n:0,v:0})),days={};
+    txs.forEach(t=>{const d=U.parse(t.date).getDay();wd[d].n++;wd[d].v=U.r2(wd[d].v+t.amount);const x=days[t.date]=days[t.date]||{date:t.date,n:0,v:0};x.n++;x.v=U.r2(x.v+t.amount)});
+    const bwd=wd.slice().sort((a,b)=>b.n-a.n||b.v-a.v)[0],bday=Object.values(days).sort((a,b)=>b.n-a.n||b.v-a.v)[0]||null;
+    /* taksitler: bu ay başlayanlar + ay sonundan sonraya kalan tüm taksit payları */
+    const started=txs.filter(t=>(t.installments|0)>1).map(t=>({t,n:t.installments|0,monthly:U.r2(t.amount/(t.installments|0))})).sort((a,b)=>b.t.amount-a.t.amount);
+    let rem=0,remPlans=0,endAt='';
+    s.transactions.filter(t=>t.kind==='expense'&&t.source!=='adjust'&&(t.installments|0)>1&&t.date<=to).forEach(t=>{const parts=U.split(t.amount,t.installments|0);let any=false;
+      parts.forEach((a,k)=>{const d=U.addMonths(t.date,k);if(d>to){rem+=a;any=true;if(d>endAt)endAt=d}});if(any)remPlans++});
+    /* bütçe */
+    const by=D.sumBy(D.spendIn(s,from,to));
+    const buds=(s.budgets||[]).filter(b=>+b.limit>0).map(b=>{const c=cat(b.category),spent=U.r2(by[b.category]||0);return{key:b.category,name:c.name,color:c.color,limit:+b.limit,spent,ok:spent<=+b.limit}}).sort((a,b)=>b.spent/b.limit-a.spent/a.limit);
+    const top=r.cats.filter(x=>x.cur>0);
+    return{y,m,r,from,to,M:U.MONTHS[m],PM:U.MONTHS[pm.getMonth()],expense:r.expense,prev:r.prevExpense,
+      pct:r.prevExpense>0?Math.round((r.expense-r.prevExpense)/r.prevExpense*100):null,count:txs.length,
+      cats:top.map(x=>({key:x.key,name:cat(x.key).name,color:cat(x.key).color,v:x.cur,share:r.expense>0?x.cur/r.expense:0})),
+      fav,biggest,wd,bwd,bday,started,startedMonthly:U.r2(started.reduce((a,x)=>a+x.monthly,0)),startedTotal:U.r2(started.reduce((a,x)=>a+x.t.amount,0)),
+      rem:U.r2(rem),remPlans,endAt,buds,kept:buds.filter(b=>b.ok).length}},
+  logo(name,category,big=true){const b=CzLogo.match(name)||CzLogo.glyphFor(name,category)||CzLogo.mono(CzLogo.info(name).name,(()=>{try{return cat(category).color}catch(e){return '#8e8e93'}})());return CzLogo.html(b,big)},
+  slides(F){const M=F.M,K=(M+' '+F.y).toLocaleUpperCase('tr'),out=[],e=U.esc,T=this.TR;
+    if(!(F.expense>0)||!F.count){out.push({k:'empty',bg:'#1c1c1e',html:`<p class="czrp-kick">${e(K)}</p><div class="czrp-main"><p class="czrp-lead">${e(T.loc(M))} harcama kaydın yok</p>
+      <p class="czrp-sub">Harcama ekledikçe ayın özeti burada oluşur.</p></div>`,last:true,simple:true});return out}
+    /* 1 · toplam */
+    const pc=F.pct,mx=Math.max(F.expense,F.prev,1);
+    out.push({k:'total',bg:'#1d3fbb',aria:`${M} ayında toplam ${this.M(F.expense)} harcadın`,html:`<p class="czrp-kick">${e(K)}</p>
+      <div class="czrp-main"><p class="czrp-lead">${e(T.loc(M))} toplam harcaman</p><div class="czrp-big num">${e(this.M(F.expense))}</div>
+      <p class="czrp-sub">${pc===null?`${F.count} işlem`:pc===0?`${e(T.dat(F.PM))} göre aynı`:`${e(T.dat(F.PM))} göre <b>%${Math.abs(pc)} daha ${pc>0?'fazla':'az'}</b> · ${F.count} işlem`}</p></div>
+      <div class="czrp-vis czrp-cmp">${F.prev>0?`<div><span>${e(F.PM)}</span><i><b style="--w:${(F.prev/mx*100).toFixed(1)}%;opacity:.45"></b></i><em class="num">${e(this.M(F.prev))}</em></div>`:''}
+        <div><span>${e(M)}</span><i><b style="--w:${(F.expense/mx*100).toFixed(1)}%"></b></i><em class="num">${e(this.M(F.expense))}</em></div></div>`});
+    /* 2 · kategori */
+    const c0=F.cats[0];if(c0){const four=F.cats.slice(0,4),rest=Math.max(0,1-four.reduce((a,x)=>a+x.share,0)),sh=Math.round(c0.share*100);
+      out.push({k:'cat',bg:this.mix(c0.color,44),aria:`En çok ${c0.name} kategorisine harcadın`,html:`<p class="czrp-kick">${e(K)}</p>
+        <div class="czrp-main"><p class="czrp-lead">En çok harcadığın kategori</p><div class="czrp-big czrp-word">${e(c0.name)}</div>
+        <p class="czrp-sub"><b class="num">${e(this.M(c0.v))}</b> · harcamanın %${e(T.poss(sh))}</p></div>
+        <div class="czrp-vis"><div class="czrp-stack">${four.map(x=>`<b style="--w:${(x.share*100).toFixed(2)}%;--c:${x.color}"></b>`).join('')}${rest>.004?`<b style="--w:${(rest*100).toFixed(2)}%;--c:rgba(255,255,255,.35)"></b>`:''}</div>
+          <div class="czrp-leg">${four.map(x=>`<div><i style="background:${x.color}"></i><span>${e(x.name)}</span><em class="num">%${Math.round(x.share*100)}</em></div>`).join('')}</div></div>`})}
+    /* 3 · en sık gidilen yer */
+    const f=F.fav;if(f&&f.count>=2){const br=CzLogo.match(f.raw)||CzLogo.match(f.name),bg=br&&this.lum(br.bg)<.6&&this.lum(br.bg)>.02?this.mix(br.bg,62):br?this.mix(br.bg,42):'#14532d';
+      out.push({k:'fav',bg,aria:`En sık ${f.name}: ${f.count} kez`,html:`<p class="czrp-kick">${e(K)}</p>
+        <div class="czrp-main"><div class="czrp-logo">${this.logo(f.raw,f.cat)}</div><p class="czrp-lead">En sık uğradığın yer</p><div class="czrp-big czrp-word">${e(f.name)}</div>
+        <p class="czrp-sub">${e(T.loc(f.name))} <b>${f.count} kez</b> alışveriş yaptın · toplam <b class="num">${e(this.M(f.total))}</b></p></div>
+        <div class="czrp-vis czrp-dots" aria-hidden="true">${Array.from({length:Math.min(f.count,31)},()=>'<i></i>').join('')}${f.count>31?`<small>+${f.count-31}</small>`:''}</div>`})}
+    /* 4 · en büyük harcama */
+    const bg4=F.biggest;if(bg4){const nm=bg4.merchant?CzLogo.info(bg4.merchant).name:cat(bg4.category).name,n=bg4.installments|0;
+      out.push({k:'big',bg:'#8a1c3b',aria:`En büyük harcaman ${this.M(bg4.amount)}`,html:`<p class="czrp-kick">${e(K)}</p>
+        <div class="czrp-main"><p class="czrp-lead">Tek seferde en büyük harcaman</p><div class="czrp-big num">${e(this.M(bg4.amount))}</div>
+        <div class="czrp-who">${this.logo(bg4.merchant||nm,bg4.category,false)}<span><b>${e(T.loc(nm))}</b><small>${e(T.loc(U.parse(bg4.date).getDate()+' '+U.MONTHS[U.parse(bg4.date).getMonth()]))} · ${e(cat(bg4.category).name)}</small></span></div>
+        ${n>1?`<p class="czrp-sub">${n} taksit · ayda <b class="num">${e(this.M(bg4.amount/n))}</b></p>`:''}</div>`})}
+    /* 5 · en yoğun gün */
+    const W=F.bwd;if(W&&W.n>0){const order=[1,2,3,4,5,6,0],mxn=Math.max(...F.wd.map(x=>x.n),1),dn=U.DAYS[W.d],bd=F.bday;
+      out.push({k:'week',bg:'#4c2a99',aria:`En yoğun günün ${dn}`,html:`<p class="czrp-kick">${e(K)}</p>
+        <div class="czrp-main"><p class="czrp-lead">En yoğun günün</p><div class="czrp-big czrp-word">${e(dn)}</div>
+        <p class="czrp-sub">${e(dn)} günleri <b>${W.n} işlem</b> · <b class="num">${e(this.M(W.v))}</b></p></div>
+        <div class="czrp-vis"><div class="czrp-wk">${order.map(d=>{const x=F.wd[d];return `<div class="${d===W.d?'on':''}"><i><b style="--h:${(x.n/mxn*100).toFixed(1)}%"></b></i><span>${['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'][d]}</span></div>`}).join('')}</div>
+        ${bd?`<p class="czrp-note">Rekor gün: <b>${e(U.parse(bd.date).getDate()+' '+M)}</b> · ${bd.n} işlem · <span class="num">${e(this.M(bd.v))}</span></p>`:''}</div>`})}
+    /* 6 · taksitler */
+    if(F.started.length||F.rem>0){const st=F.started,ed=F.endAt?U.parse(F.endAt):null;
+      out.push({k:'inst',bg:'#0d5c63',aria:'Taksitler',html:`<p class="czrp-kick">${e(K)}</p>
+        <div class="czrp-main"><p class="czrp-lead">${st.length?`${e(T.loc(M))} başlayan taksitler`:'Taksitler'}</p><div class="czrp-big ${st.length?'czrp-word':''}">${st.length?`${st.length} yeni plan`:'Yeni taksit yok'}</div>
+        <p class="czrp-sub">${st.length?`Aylık ödemene <b class="num">+${e(this.M(F.startedMonthly))}</b> eklendi`:'Bu ay yeni bir taksite girmedin.'}</p></div>
+        <div class="czrp-vis">${st.slice(0,3).map(x=>`<div class="czrp-row">${this.logo(x.t.merchant||cat(x.t.category).name,x.t.category,false)}<span>${e(x.t.merchant?CzLogo.info(x.t.merchant).name:cat(x.t.category).name)}<small>${x.n} × ${e(this.M(x.monthly))}</small></span><em class="num">${e(this.M(x.t.amount))}</em></div>`).join('')}
+          <div class="czrp-tot"><span>Kalan taksit borcu<small>${F.remPlans} plan${ed?` · son ödeme ${e(U.MONTHS[ed.getMonth()]+' '+ed.getFullYear())}`:''}</small></span><b class="num">${e(this.M(F.rem))}</b></div></div>`})}
+    /* 7 · bütçe */
+    if(F.buds.length){const B=F.buds,all=F.kept===B.length;
+      out.push({k:'bud',bg:all?'#1f5a32':'#7a3b0c',aria:`${B.length} bütçenin ${F.kept} tanesinde kaldın`,html:`<p class="czrp-kick">${e(K)}</p>
+        <div class="czrp-main"><p class="czrp-lead">Bütçe karnesi</p><div class="czrp-big num">${F.kept}<span class="czrp-of">/${B.length}</span></div>
+        <p class="czrp-sub">${all?'Bütün bütçelerinde kaldın.':F.kept?`${B.length} bütçenin ${e(T.possLoc(F.kept))} limitin altında kaldın.`:'Bu ay bütçelerin aşıldı.'}</p></div>
+        <div class="czrp-vis">${B.slice(0,4).map(b=>{const p=b.spent/b.limit;return `<div class="czrp-bud ${b.ok?'':'over'}"><div><span>${e(b.name)}</span><em class="num">${e(this.M(b.spent))} / ${e(this.M(b.limit))}</em></div><i><b style="--w:${Math.min(100,p*100).toFixed(1)}%"></b></i></div>`}).join('')}</div>`})}
+    /* 8 · kapanış */
+    const hl=this.highlights(F);
+    out.push({k:'end',bg:'#f4f1ea',tone:'light',last:true,aria:`${M} özeti`,html:`<p class="czrp-kick">${e(K)}</p>
+      <div class="czrp-main"><p class="czrp-lead">${e(M)} böyle geçti</p></div>
+      <div class="czrp-hl">${hl.map(h=>`<div><small>${e(h.k)}</small><b class="${h.num?'num':''}">${e(h.v)}</b><span>${e(h.s)}</span></div>`).join('')}</div>
+      <div class="czrp-acts"><button class="czrp-b1 pressable" data-act="share">${C.ic('send')}Paylaş</button><button class="czrp-b2 pressable" data-act="replay">Baştan izle</button></div>`});
+    return out},
+  highlights(F){const T=this.TR,out=[{k:'Toplam harcama',v:this.M(F.expense),num:1,s:F.pct===null?`${F.count} işlem`:`${T.dat(F.PM)} göre %${Math.abs(F.pct)} ${F.pct>0?'fazla':'az'}`}];
+    if(F.cats[0])out.push({k:'En çok',v:F.cats[0].name,s:`${this.M(F.cats[0].v)} · %${Math.round(F.cats[0].share*100)}`});
+    if(F.fav&&F.fav.count>=2)out.push({k:'En sık',v:F.fav.name,s:`${F.fav.count} kez · ${this.M(F.fav.total)}`});
+    else if(F.biggest)out.push({k:'En büyük harcama',v:this.M(F.biggest.amount),num:1,s:F.biggest.merchant?CzLogo.info(F.biggest.merchant).name:cat(F.biggest.category).name});
+    return out.slice(0,3)},
+  /* ---- arayüz ---- */
+  open(y,m,src){const s=Store.get();if(!Number.isFinite(+y)||!Number.isFinite(+m))return;y=+y;m=+m;
+    this.y=y;this.m=m;Recap.y=y;Recap.m=m;this.F=this.facts(s,y,m);this.list=this.slides(this.F);this.i=0;this.src=src||'';
+    try{const ym=U.monthStart(y,m).slice(0,7),seen={...(s.settings.recapSeen||{})};if(!seen[ym]){seen[ym]=1;Store.dispatch({type:'settings/update',payload:{recapSeen:seen}})}}catch(e){}
+    this.kill(true);this.prevFocus=document.activeElement;
+    const wide=document.documentElement.classList.contains('wide');
+    if(wide){const sc=document.createElement('div');sc.id='czrp-scrim';sc.addEventListener('click',()=>this.close());document.body.appendChild(sc)}
+    const el=document.createElement('div');el.id='story';el.className='czrp'+(this.rm()?' rm':'');el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label',`${U.MONTHS[m]} ${y} özeti`);
+    el.innerHTML=`<div class="czrp-bars">${this.list.map(()=>'<i><b></b></i>').join('')}</div>
+      <button class="czrp-x pressable" data-act="close" aria-label="Kapat">${C.ic('close')}</button>
+      <div class="czrp-stage" aria-live="polite"></div>
+      ${wide?`<button class="czrp-side p" data-act="prev" aria-label="Önceki">${C.ic('chev')}</button><button class="czrp-side n" data-act="next" aria-label="Sonraki">${C.ic('chev')}</button>`:''}
+      <span class="czrp-sr" aria-hidden="true"></span>`;
+    document.body.appendChild(el);document.body.classList.add('story-open');this.el=el;this.bind(el);this.show(0,0);
+    try{el.querySelector('.czrp-x').focus({preventScroll:true})}catch(e){}
+    try{Haptic.tap()}catch(e){}},
+  kill(now){const o=document.getElementById('story');if(o)o.remove();const sc=document.getElementById('czrp-scrim');if(sc)sc.remove()},
+  close(){const el=document.getElementById('story');clearTimeout(this.tm);if(!el)return;document.body.classList.remove('story-open');
+    const sc=document.getElementById('czrp-scrim');
+    if(this.rm()||!el.classList.contains('czrp')){el.remove();if(sc)sc.remove()}else{el.classList.add('out');if(sc)sc.classList.add('out');setTimeout(()=>{el.remove();if(sc)sc.remove()},260)}
+    this.el=null;try{if(this.prevFocus&&this.prevFocus.focus)this.prevFocus.focus({preventScroll:true})}catch(e){}},
+  go(d){if(!this.el)return;const n=this.i+d;if(n>=this.list.length){if(d>0&&this.list[this.i]&&this.list[this.i].last){this.bump(1);return}this.close();return}
+    if(n<0){this.show(0,-1);return}try{Haptic.tap()}catch(e){}this.show(n,d)},
+  bump(d){/* son sayfada ileri: kısa "son" geri bildirimi */const st=this.el&&this.el.querySelector('.czrp-slide');if(!st||this.rm())return;
+    st.animate([{transform:'translateX(0)'},{transform:`translateX(${-8*d}px)`},{transform:'translateX(0)'}],{duration:260,easing:'cubic-bezier(.3,.7,.2,1)'})},
+  show(i,dir){const el=this.el;if(!el)return;this.i=Math.max(0,Math.min(this.list.length-1,i));const sl=this.list[this.i],rm=this.rm();
+    el.style.setProperty('--czrp-bg',sl.bg);el.dataset.tone=sl.tone||'dark';el.dataset.k=sl.k;
+    el.querySelectorAll('.czrp-bars i').forEach((x,j)=>{x.className=j<this.i?'done':'';if(j===this.i){void x.offsetWidth;x.className=sl.last||rm?'done':'cur';
+      const b=x.firstChild;b.style.animationDuration=this.DUR+'ms';b.onanimationend=()=>{if(this.list[this.i]===sl&&!this.paused)this.go(1)}}});
+    const stage=el.querySelector('.czrp-stage'),old=stage.querySelector('.czrp-slide');
+    const nw=document.createElement('div');nw.className='czrp-slide';nw.dataset.k=sl.k;nw.setAttribute('aria-label',sl.aria||'');nw.innerHTML=sl.html;
+    if(old&&!rm&&dir){old.classList.add('leaving');old.style.setProperty('--dx',(-dir*28)+'px');setTimeout(()=>old.remove(),220);nw.style.setProperty('--dx',(dir*36)+'px');nw.classList.add('entering')}
+    else{if(old)old.remove();if(!rm&&dir===0)nw.classList.add('entering')}
+    stage.appendChild(nw);this.paused=false;el.classList.remove('paused');
+    const sr=el.querySelector('.czrp-sr');if(sr)sr.textContent=`${this.i+1}/${this.list.length}`},
+  pause(p){const el=this.el;if(!el)return;this.paused=!!p;el.classList.toggle('paused',!!p)},
+  bind(el){let x0=null,y0=0,t0=0,moved=false,holdT=0,pid=null;
+    const act=e=>{const b=e.target.closest('[data-act]');if(!b)return false;const a=b.dataset.act;e.stopPropagation();
+      if(a==='close')this.close();else if(a==='prev')this.go(-1);else if(a==='next')this.go(1);else if(a==='share')this.share();else if(a==='replay'){try{Haptic.tap()}catch(x){}this.show(0,-1)}return true};
+    el.addEventListener('click',e=>{if(act(e))return});
+    el.addEventListener('pointerdown',e=>{if(e.target.closest('[data-act]'))return;x0=e.clientX;y0=e.clientY;t0=Date.now();moved=false;pid=e.pointerId;
+      clearTimeout(holdT);holdT=setTimeout(()=>{if(x0!=null&&!moved)this.pause(true)},220)});
+    el.addEventListener('pointermove',e=>{if(x0==null||e.pointerId!==pid)return;const dx=e.clientX-x0,dy=e.clientY-y0;if(Math.abs(dx)>8||Math.abs(dy)>8)moved=true;
+      if(dy>8&&dy>Math.abs(dx)&&!this.rm()&&!document.documentElement.classList.contains('wide')){el.style.transform=`translateY(${(dy*.55).toFixed(1)}px) scale(${(1-Math.min(dy,320)/2400).toFixed(4)})`;el.style.borderRadius=Math.min(28,dy/4).toFixed(1)+'px'}});
+    const up=e=>{if(x0==null)return;clearTimeout(holdT);const dx=e.clientX-x0,dy=e.clientY-y0,dt=Date.now()-t0,wasPaused=this.paused;x0=null;
+      el.style.transform='';el.style.borderRadius='';if(wasPaused)this.pause(false);
+      if(e.type==='pointercancel')return;
+      if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.2){this.go(dx<0?1:-1);return}
+      if(dy>90&&dy>Math.abs(dx)){this.close();return}
+      if(!moved&&dt<350&&!wasPaused){if(e.target.closest('button,a'))return;const r=el.getBoundingClientRect();this.go(e.clientX-r.left<r.width*.33?-1:1)}};
+    el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+    if(!this.key){this.key=e=>{if(!document.querySelector('#story.czrp'))return;if(e.key===' '&&!e.target.closest('input,textarea,select')){e.preventDefault();this.pause(!this.paused)}
+      else if(e.key==='Tab'){const f=[...document.querySelectorAll('#story.czrp button')];if(!f.length)return;const i=f.indexOf(document.activeElement);
+        if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}};document.addEventListener('keydown',this.key)}},
+  /* ---- paylaşılabilir görsel (kapanış sayfası) ---- */
+  wrap(x,text,maxW){const words=String(text).split(/\s+/),lines=[];let cur='';for(const w of words){const t=cur?cur+' '+w:w;if(x.measureText(t).width>maxW&&cur){lines.push(cur);cur=w}else cur=t}if(cur)lines.push(cur);return lines},
+  fit(x,text,font,size,maxW,min=40){let s=size;x.font=`${font.replace('{s}',s)}`;while(x.measureText(text).width>maxW&&s>min){s-=4;x.font=font.replace('{s}',s)}return s},
+  async render(){const F=this.F||this.facts(Store.get(),this.y,this.m),hl=this.highlights(F);
+    const c=document.createElement('canvas');c.width=1080;c.height=1920;const x=c.getContext('2d');
+    const SF='-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Inter,system-ui,sans-serif',INK='#1c1c1e',SUB='rgba(28,28,30,.6)';
+    x.fillStyle='#f4f1ea';x.fillRect(0,0,1080,1920);
+    const t=(s,X,Y,size,w=600,col=INK,al='left')=>{x.font=`${w} ${size}px ${SF}`;x.fillStyle=col;x.textAlign=al;x.fillText(s,X,Y)};
+    t((F.M+' '+F.y).toLocaleUpperCase('tr'),96,210,38,700,SUB);
+    t(`${F.M} böyle geçti`,96,330,92,800);
+    /* ince renkli şerit: slaytların renkleri */
+    const sw=['#1d3fbb',F.cats[0]?F.cats[0].color:'#8e8e93','#8a1c3b','#4c2a99','#0d5c63'];sw.forEach((col,i)=>{x.fillStyle=col;x.fillRect(96+i*60,384,48,10)});
+    let Y=560;hl.forEach((h,i)=>{x.fillStyle='rgba(28,28,30,.12)';if(i)x.fillRect(96,Y-120,888,2);
+      t(h.k,96,Y-40,38,600,SUB);const s=this.fit(x,h.v,`800 {s}px ${SF}`,120,888,56);t(h.v,96,Y+s*.78,s,800);t(h.s,96,Y+s*.78+70,40,500,SUB);Y+=380});
+    /* en sık gidilen yerin rozeti (marka rengi + kısa yazı) */
+    const br=F.fav&&F.fav.count>=2&&(CzLogo.match(F.fav.raw)||CzLogo.match(F.fav.name));
+    if(br){const cx=900,cy=1320-380*(3-hl.length),R=62;x.fillStyle=br.bg;x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.fill();
+      if(/^#?f{3}(f{3})?$/i.test(br.bg.replace('#',''))){x.strokeStyle='rgba(0,0,0,.12)';x.lineWidth=2;x.stroke()}
+      const st=br.st||{},n=[...String(br.t)].length,fs=n>=4?34:n===3?40:n===2?50:62;x.font=`${st.it?'italic ':''}${st.w||800} ${fs}px ${st.f==='serif'?'"New York",Georgia,serif':SF}`;x.fillStyle=br.fg;x.textAlign='center';x.textBaseline='middle';
+      x.fillText(st.tt==='up'?String(br.t).toLocaleUpperCase('tr'):br.t,cx,cy+2);x.textBaseline='alphabetic'}
+    t('Cüzdan · Ay özeti',96,1800,34,600,SUB);
+    return new Promise(res=>c.toBlob(res,'image/png'))},
+  async share(){try{Haptic.tap()}catch(e){}const blob=await this.render();if(!blob){Toast.show('Görsel oluşturulamadı');return 'fail'}
+    const name=`cuzdan-${this.y}-${U.p2(this.m+1)}-ozet.png`,file=new File([blob],name,{type:'image/png'});
+    try{if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:`${U.MONTHS[this.m]} özetim`});return 'shared'}}catch(e){if(e&&e.name==='AbortError')return 'abort'}
+    try{Exporter.download(blob,name,'image/png')}catch(e){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove()}
+    Toast.show('Özet görseli indirildi');return 'download'},
+  /* ---- giriş noktaları ---- */
+  prevMonth(){const d=this.now();const p=new Date(d.getFullYear(),d.getMonth()-1,1);return{y:p.getFullYear(),m:p.getMonth(),ym:U.iso(p).slice(0,7)}},
+  card(s){const d=this.now();if(d.getDate()>7||!s.accounts||!s.accounts.length)return '';const p=this.prevMonth();
+    if((s.settings.czyRecapOff||{})[p.ym])return '';let r;try{r=D.monthReport(s,p.y,p.m)}catch(e){return ''}if(!(r.expense>0))return '';
+    const seen=!!(s.settings.recapSeen||{})[p.ym],M=U.MONTHS[p.m];
+    return `<div class="czrp-card glass" data-key="czrp-card"><button class="czrp-card-main pressable" onclick="CzRp.open(${p.y},${p.m},'home')" aria-label="${M} özetini izle">
+      <span class="czrp-art" aria-hidden="true"><i></i><i></i><i></i><b>${U.esc(M.slice(0,3))}</b></span>
+      <span class="czrp-card-t"><b>${U.esc(M)} özetin hazır</b><small>${seen?'Tekrar izle':'Toplam'} · ${U.esc(this.M(r.expense))}${seen?'':' · 1 dk'}</small></span>${C.ic('chev')}</button>
+      <button class="czrp-card-x pressable" onclick="CzY.recap.dismiss('${p.ym}')" aria-label="${M} özetini gizle">${C.ic('close')}</button></div>`}
+};
+window.CzRp=CzRp;
+
+/* Eski hikâye giriş noktalarını yeni hikâyeye bağla (Raporlar düğmesi, bildirim, ana sayfa kartı, ay seçici) */
+Recap.open=(y,m)=>CzRp.open(y,m);
+Recap.close=()=>CzRp.close();
+Recap.go=d=>CzRp.go(d);
+Recap.share=()=>CzRp.share();
+if(typeof CzY!=='undefined'&&CzY.recap){
+  CzY.recap.banner=s=>CzRp.card(s);
+  const _p=CzY.recap.panel.bind(CzY.recap);
+  CzY.recap.panel=function(s,ui){return _p(s,ui).replace('<b>Ay özetini aç</b>','<b>Ay özetini izle</b>').replace('Ayın hikâyesi · paylaşılabilir görsel','Hikâye formatında · paylaşılabilir görsel')
+    .replace('onclick="CzY.recap.openSel()">Aç</button>','onclick="CzY.recap.openSel()">İzle</button>')};
+}
+})();
+try{App.render()}catch(e){}
+
+</script>
+<script id="cz-press-js">
+/* =====================================================================
+   cz-press-js · iOS etkileşimleri
+   1) Uzun basma menüsü (peek): işlem satırı, Wallet kartı, hesap satırı · masaüstünde sağ tık
+   2) Kademeli sayfalar (Apple Haritalar gibi): orta ↔ büyük, aşağı çekip kapatma, lastik etkisi
+   3) Aşağı çekip yenile: iOS döner göstergesi, bulut eşitleme
+   ===================================================================== */
+(function(){
+if(typeof App==='undefined'||typeof Store==='undefined'||typeof Ctx==='undefined'||typeof Gesture==='undefined')return;
+const root=document.documentElement;
+const wide=()=>root.classList.contains('wide');
+const reduced=()=>typeof Motion!=='undefined'?Motion.reduced():!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const hap=k=>{try{(typeof CzLogo!=='undefined'&&CzLogo.tick&&k==='tick')?CzLogo.tick():Haptic[k==='success'?'success':'tap']()}catch(e){}};
+const cssPx=(v,f=0)=>{const n=parseFloat(v);return isFinite(n)?n:f};
+const sat=()=>cssPx(getComputedStyle(root).getPropertyValue('--sat'));
+const sab=()=>cssPx(getComputedStyle(root).getPropertyValue('--sab'));
+
+/* =================================================================== 1) PEEK */
+const CzPress={st:null,
+  acc(id){try{return D.account(Store.get(),id)}catch(e){return null}},
+  /* parmağın altındaki öğe → menü anahtarı */
+  resolve(t){if(!t||!t.closest)return null;
+    if(t.closest('#sheet,#ctx,#czp-bd,input,textarea,select,.swipe-acts,.czsw-more,.wx-panel .wx-act,.wx-more,.w-del,.w-size'))return null;
+    if(UI.homeEdit||document.querySelector('.wgrid.editing'))return null;
+    let e=t.closest('.swipe-fg[data-lp^="tx:"]');if(e)return{key:e.dataset.lp,el:e};
+    e=t.closest('.wslot[data-id]');if(e){const a=this.acc(e.dataset.id);if(a)return{key:(a.type==='credit'?'card:':'acc:')+a.id,el:e}}
+    e=t.closest('[data-acc]');if(e){const a=this.acc(e.dataset.acc);if(a)return{key:(a.type==='credit'?'card:':'acc:')+a.id,el:e}}
+    e=t.closest('button.row[onclick*="App.push(\'account\'"],button.row[onclick*="App.push(\'card\'"]');
+    if(e){const m=(e.getAttribute('onclick')||'').match(/id:'([^']+)'/),a=m&&this.acc(m[1]);if(a)return{key:(a.type==='credit'?'card:':'acc:')+a.id,el:e}}
+    return null},
+  /* menü öğeleri: mevcut bağlam menüsünün eylemleri yeniden kullanılır */
+  items(key){const i=key.indexOf(':'),kind=key.slice(0,i),id=key.slice(i+1),s=Store.get();
+    if(kind==='tx'){const t=D.tx(s,id);if(!t)return null;const g=[];
+      if(['expense','income','transfer'].includes(t.kind))g.push(['Düzenle','edit',()=>TxForm.open(id)]);
+      if(['expense','income'].includes(t.kind)){g.push(['Bugüne kopyala','copy',()=>App.duplicateTx(id)]);g.push(['Şablon yap','bolt',()=>TemplateForm.fromTx(id)])}
+      if(t.kind==='expense'&&!D.refundMap(s)[id])g.push(['İade et','refund',()=>RefundSheet.open(id)]);
+      const del=()=>{if(typeof CzLogo!=='undefined'&&CzLogo.del)CzLogo.del(id);else App.deleteTx(id)};
+      return g.length?[g,[['Sil','trash',del,'danger']]]:[[['Sil','trash',del,'danger']]]}
+    const a=D.account(s,id);if(!a)return null;
+    const exp=()=>TxForm.open(null,{type:'expense',prefill:{accountId:id}});
+    if(kind==='card')return[[['Ödeme yap','card',()=>PaySheet.open(id)],['Harcama ekle','plus',exp],['Ekstre yükle','inbox',()=>ImportSheet.open(id)]],
+      [['Ayrıntılar','info',()=>{if(window.WX&&WX.details)WX.details(id);else App.push('card',{id})}]]];
+    return[[['Gelir ekle','arrowdown',()=>TxForm.open(null,{type:'income',prefill:{accountId:id}})],['Harcama ekle','arrowup',exp],
+      ['Transfer','transfer',()=>TxForm.open(null,{type:'transfer',prefill:{accountId:id}})]],
+      [['Ayrıntılar','info',()=>App.push(a.type==='credit'?'card':'account',{id})]]]},
+  /* yuvarlatılmış dikdörtgen deliği olan tam ekran yol (evenodd): öğe buzlanmadan görünür */
+  hole(r,rad){const W=innerWidth,H=innerHeight,{left:x,top:y,width:w,height:h}=r,k=Math.min(rad,w/2,h/2),f=n=>n.toFixed(1);
+    return `path(evenodd,"M0 0H${W}V${H}H0Z M${f(x+k)} ${f(y)}H${f(x+w-k)}A${f(k)} ${f(k)} 0 0 1 ${f(x+w)} ${f(y+k)}V${f(y+h-k)}A${f(k)} ${f(k)} 0 0 1 ${f(x+w-k)} ${f(y+h)}H${f(x+k)}A${f(k)} ${f(k)} 0 0 1 ${f(x)} ${f(y+h-k)}V${f(y+k)}A${f(k)} ${f(k)} 0 0 1 ${f(x+k)} ${f(y)}Z")`},
+  open(key,el,at){this.close(true);const groups=this.items(key);if(!groups||!el||!el.isConnected)return;
+    try{Gesture.closeAll&&Gesture.closeAll()}catch(e){}
+    const lift=el.classList.contains('swipe-fg')?el.parentElement:el;
+    /* ölçmeden önce: geçişleri durdur, kartın basılı (:active) kalkışını dondur → delik ile kart tam örtüşür */
+    const saved={tr:lift.style.getPropertyValue('transform'),trp:lift.style.getPropertyPriority('transform'),tn:lift.style.getPropertyValue('transition'),anc:[]};
+    lift.style.setProperty('transition','none','important');
+    if(lift.classList.contains('wslot'))lift.style.setProperty('transform',saved.tr||'none','important');
+    /* kırpan (overflow:hidden) üst kutular büyüyen satırı kesmesin */
+    for(let a=lift.parentElement,i=0;a&&i<4&&a.id!=='screen'&&a!==document.body;a=a.parentElement,i++){const c=getComputedStyle(a);
+      if((c.overflowX!=='visible'||c.overflowY!=='visible')&&a.scrollHeight<=a.clientHeight+1&&a.scrollWidth<=a.clientWidth+1){saved.anc.push([a,a.style.overflow]);a.style.overflow='visible'}}
+    /* yüzen çubukların altında kalıyorsa önce görünür alana al */
+    const topSafe=sat()+60,botSafe=innerHeight-sab()-96;let r0=lift.getBoundingClientRect();
+    if(r0.height<botSafe-topSafe){const d=r0.top<topSafe?r0.top-topSafe:r0.bottom>botSafe?r0.bottom-botSafe:0;if(d){scrollBy(0,d);r0=lift.getBoundingClientRect()}}
+    /* yuvarlaklık: kart için .ccard'ın kendi köşesi */
+    const inner=lift.querySelector('.ccard,.czwt-face')||lift.firstElementChild;
+    let rad=Math.max(cssPx(getComputedStyle(lift).borderTopLeftRadius),inner?cssPx(getComputedStyle(inner).borderTopLeftRadius):0);
+    const ownBg=getComputedStyle(lift),plate=!lift.classList.contains('wslot')&&(ownBg.backgroundColor==='rgba(0, 0, 0, 0)'||ownBg.backgroundColor==='transparent')&&ownBg.backgroundImage==='none';
+    if(plate&&rad<12)rad=14;
+    lift.style.setProperty('--czp-r',rad+'px');
+    const S=Math.min(1.03,1+16/Math.max(1,r0.width));lift.style.setProperty('--czp-s',S.toFixed(4));
+    const bd=document.createElement('div');bd.id='czp-bd';bd.setAttribute('aria-hidden','true');
+    const cx=r0.left+r0.width/2,cy=r0.top+r0.height/2,R={left:cx-r0.width*S/2-1,top:cy-r0.height*S/2-1,width:r0.width*S+2,height:r0.height*S+2};
+    bd.style.clipPath=bd.style.webkitClipPath=this.hole(R,rad*S+1);
+    const m=document.createElement('div');m.id='ctx';m.className='czp-menu';m.setAttribute('role','menu');
+    const acts=[];m.innerHTML=groups.map(g=>`<div class="czp-g" role="group">${g.map(([l,ic,fn,cls])=>{acts.push(fn);
+      return `<button type="button" role="menuitem" class="${cls||''}" data-i="${acts.length-1}"><span>${U.esc(l)}</span>${C.ic(ic)}</button>`}).join('')}</div>`).join('');
+    document.body.append(bd,m);
+    /* yerleşim: altına sığarsa altına, yoksa üstüne, o da olmazsa ekranın altına */
+    const mw=m.offsetWidth,mh=m.offsetHeight,lo=sat()+12,hi=innerHeight-sab()-12;let top,oy;
+    if(R.top+R.height+10+mh<=hi){top=R.top+R.height+10;oy='0px'}else if(R.top-10-mh>=lo){top=R.top-10-mh;oy=mh+'px'}else{top=Math.max(lo,hi-mh);oy=mh+'px'}
+    const px=at&&isFinite(at.x)?at.x:R.left,right=at&&isFinite(at.x)&&at.x>cx+R.width*.12;
+    let left=wide()&&at&&isFinite(at.x)?px:right?R.left+R.width-mw:R.left;left=Math.max(12,Math.min(innerWidth-mw-12,left));
+    m.style.left=left+'px';m.style.top=top+'px';m.style.setProperty('--czp-ox',Math.max(0,Math.min(mw,(right?R.left+R.width-24:R.left+24)-left))+'px');m.style.setProperty('--czp-oy',oy);
+    void lift.offsetWidth;lift.style.removeProperty('transition');if(saved.tn)lift.style.setProperty('transition',saved.tn);
+    lift.classList.add('czp-lift');if(plate)lift.classList.add('czp-plate');
+    requestAnimationFrame(()=>bd.classList.add('on'));
+    this.st={key,el,lift,bd,m,acts,saved,rad,t0:performance.now()};this.track(700);
+    /* etkileşimler */
+    m.addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(!b)return;e.stopPropagation();const fn=acts[+b.dataset.i];this.close();try{fn&&fn()}catch(x){console.warn(x)}});
+    bd.addEventListener('click',()=>this.close());
+    let ty=null;const ts=e=>{ty=e.touches[0].clientY},tm=e=>{if(e.cancelable)e.preventDefault();if(ty!=null&&e.touches[0].clientY-ty>28){ty=null;this.close()}};
+    bd.addEventListener('touchstart',ts,{passive:true});bd.addEventListener('touchmove',tm,{passive:false});
+    m.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault()},{passive:false});
+    bd.addEventListener('wheel',e=>{e.preventDefault();this.close()},{passive:false});
+    if(!at||!at.touch){const f=m.querySelector('button');f&&f.focus({preventScroll:true})}},
+  /* delik, öğenin canlı (yaylanan) boyutunu kare kare izler: kenarda boşluk / taşma kalmaz */
+  track(ms){const st=this.st;if(!st)return;st.until=Math.max(st.until||0,performance.now()+ms);if(st.raf)return;
+    const f=()=>{const s=this.st;if(s!==st){return}const r=st.lift.getBoundingClientRect(),k=cssPx(getComputedStyle(st.lift).scale,1)||1;
+      st.bd.style.clipPath=st.bd.style.webkitClipPath=this.hole({left:r.left-1,top:r.top-1,width:r.width+2,height:r.height+2},st.rad*k+1);
+      if(performance.now()<st.until)st.raf=requestAnimationFrame(f);else st.raf=0};st.raf=requestAnimationFrame(f)},
+  close(instant){const st=this.st;this.st=null;if(!st)return;const {lift,bd,m,saved}=st;
+    const fin=()=>{bd.remove();m.remove();lift.classList.remove('czp-lift','czp-plate','czp-down');lift.style.removeProperty('--czp-r');lift.style.removeProperty('--czp-s');
+      if(lift.classList.contains('wslot')){lift.style.removeProperty('transform');if(saved.tr)lift.style.setProperty('transform',saved.tr,saved.trp)}
+      saved.anc.forEach(([a,v])=>a.style.overflow=v)};
+    if(instant||reduced()){fin();return}
+    bd.classList.remove('on');m.classList.add('out');lift.classList.add('czp-down');setTimeout(fin,260)},
+  isOpen(){return !!this.st}
+};
+window.CzPress=CzPress;
+/* eski Ctx yerine: aynı ad, aynı #ctx kimliği (masaüstü "…" düğmesi konumunu yine ayarlayabilsin) */
+Ctx.open=function(key,el,at){CzPress.open(key,el,at)};
+Ctx.close=function(){CzPress.close()};
+Object.defineProperty(Ctx,'el',{get(){return CzPress.st?CzPress.st.el:null},set(){},configurable:true});
+
+/* İşlem satırı: Gesture'ın uzun basma zamanlayıcısı 450 ms'ye çekilir, dokunuş konumu da aktarılır */
+{const _d=Gesture.down;Gesture.down=function(e){_d.call(this,e);const st=this.st;
+  if(st&&st.fg&&st.fg.dataset.lp&&!st.mode){clearTimeout(this.lpT);const x=e.clientX,y=e.clientY,touch=e.pointerType!=='mouse';
+    this.lpT=setTimeout(()=>{const s=this.st;if(s===st&&!s.mode){s.mode='lp';hap('success');Ctx.open(st.fg.dataset.lp,st.fg,{x,y,touch})}},450)}}}
+
+/* Kart ve hesaplar: kendi uzun basma algılayıcısı (8 px kayma, kaydırma ya da iptal → vazgeç) */
+let L=null,lastTouch=0;
+const cancelL=()=>{if(L){clearTimeout(L.t);L=null}};
+document.addEventListener('pointerdown',e=>{cancelL();if(e.pointerType!=='mouse')lastTouch=performance.now();
+  if(e.button>0||e.pointerType==='mouse'||CzPress.isOpen()||e.isPrimary===false)return;
+  const r=CzPress.resolve(e.target);if(!r||r.key.startsWith('tx:'))return;
+  const x=e.clientX,y=e.clientY;L={x,y,id:e.pointerId,fired:false,t:setTimeout(()=>{if(!L)return;L.fired=true;const R=CzPress.resolve(document.elementFromPoint(x,y)||r.el)||r;
+    hap('success');try{Gesture.blockClick()}catch(x){}
+    /* Ana Sayfa widget düzenleme (600 ms basılı tut) aynı dokunuşta başlamasın: onun iptal yolunu tetikle */
+    try{document.dispatchEvent(new PointerEvent('pointermove',{clientX:-9999,clientY:-9999,pointerId:-7,bubbles:true}))}catch(x){}
+    CzPress.open(R.key,R.el,{x,y,touch:true})},450)}},{passive:true});
+document.addEventListener('pointermove',e=>{if(!L||L.fired||e.pointerId!==L.id)return;if(Math.hypot(e.clientX-L.x,e.clientY-L.y)>8)cancelL()},{passive:true});
+document.addEventListener('pointerup',()=>{if(CzPress.isOpen())CzPress.track(450)},true);
+const upL=e=>{if(!L||(e&&e.pointerId!==L.id))return;const f=L.fired;cancelL();if(f){try{Gesture.blockClick()}catch(x){}}};
+document.addEventListener('pointerup',upL,true);document.addEventListener('pointercancel',upL,true);
+window.addEventListener('scroll',()=>{if(L&&!L.fired)cancelL()},{passive:true,capture:true});
+/* iOS: uzun basmanın ardından gelen tıklama asla kartı açmasın */
+document.addEventListener('touchend',()=>{if(L&&L.fired){try{Gesture.blockClick()}catch(x){}}},true);
+
+/* masaüstü: sağ tık aynı menüyü açar; dokunmatikte uzun basmanın tarayıcı menüsü bastırılır */
+document.addEventListener('contextmenu',e=>{const r=CzPress.resolve(e.target);if(!r)return;e.preventDefault();
+  if(CzPress.isOpen()||performance.now()-lastTouch<1500)return;CzPress.open(r.key,r.el,{x:e.clientX,y:e.clientY})});
+document.addEventListener('keydown',e=>{if(!CzPress.isOpen())return;
+  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();CzPress.close();return}
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){const bs=[...CzPress.st.m.querySelectorAll('button')],i=bs.indexOf(document.activeElement);
+    e.preventDefault();(bs[(i+(e.key==='ArrowDown'?1:-1)+bs.length)%bs.length]||bs[0]).focus()}},true);
+/* ekran değişince açık menü kalmasın */
+window.addEventListener('popstate',()=>CzPress.close(true));
+window.addEventListener('resize',()=>{if(CzPress.isOpen()&&!('ontouchstart' in window))CzPress.close(true)});
+
+/* =================================================================== 2) KADEMELİ SAYFALAR */
+if(typeof SheetDrag!=='undefined'){
+  const _attach=SheetDrag.attach.bind(SheetDrag);
+  const rub=(x,k)=>k*(1-1/(x/k+1));   // iOS benzeri lastik: sınırsız çekişte k'ya yaklaşır
+  SheetDrag.attach=function(bd,sh){
+    if(wide())return _attach(bd,sh);   // masaüstü ortada pencere davranışı aynen kalır
+    const self=this,st={on:false};this.st=st;
+    const maxH=()=>self.maxH(bd),medH=()=>Math.round(maxH()*.6);
+    const baseBg=()=>{const m=getComputedStyle(bd).backgroundColor.match(/rgba?\(([^)]+)\)/);if(!m)return[0,0,0,.28];const p=m[1].split(',').map(Number);return[p[0],p[1],p[2],p.length>3?p[3]:1]};
+    const begin=y=>{st.on=true;st.y0=y;st.dy=0;st.trail=[[performance.now(),y]];st.h0=sh.getBoundingClientRect().height;st.det=bd.dataset.detent;st.bg=baseBg();
+      st.handoff=false;st.sy0=0;sh.classList.add('czp-drag','dragging');bd.style.transition='none';
+      const a=document.activeElement;if(a&&sh.contains(a)&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))st.focus=a};
+    const paint=y=>{let dy=y-st.y0;st.dy=dy;st.trail.push([performance.now(),y]);if(st.trail.length>6)st.trail.shift();
+      const M=maxH();
+      if(dy<0){
+        if(st.det==='medium'){const want=st.h0-dy;
+          if(want<=M){sh.style.height=want+'px';sh.style.transform=''}
+          else{ /* büyük kademeye ulaştı: kalan hareket içeriği kaydırır (iOS gibi) */
+            sh.style.height=M+'px';if(sh.scrollHeight>M+4&&st.content){if(!st.handoff){st.handoff=true;st.hy=y;st.sy0=sh.scrollTop;bd.dataset.detent='large';hap('tap')}
+              sh.style.transform='';sh.scrollTop=st.sy0+(st.hy-y)}
+            else sh.style.transform=`translateY(${-rub(want-M,40)}px)`}}
+        else sh.style.transform=`translateY(${-rub(-dy,40)}px)`}
+      else{if(st.focus&&dy>12){try{st.focus.blur()}catch(e){}st.focus=null}
+        sh.style.transform=`translateY(${dy}px)`;if(st.det==='medium')sh.style.height=st.h0+'px'}
+      const [r,g,b,a]=st.bg;bd.style.background=`rgba(${r},${g},${b},${(a*Math.max(0,1-Math.max(0,dy)/Math.max(1,st.h0))).toFixed(3)})`};
+    const end=()=>{if(!st.on)return;st.on=false;sh.classList.remove('czp-drag','dragging');
+      const t=st.trail,a=t[0],b=t[t.length-1],v=(b[1]-a[1])/Math.max(1,b[0]-a[0]),dy=st.dy,proj=dy+v*180,H=st.h0,M=maxH(),md=medH(),rm=reduced();
+      const ease=rm?'.2s ease':'.42s cubic-bezier(.32,.72,0,1)';
+      sh.style.transition=`transform ${ease},height ${ease}`;bd.style.transition='background .3s';bd.style.background='';
+      if(st.handoff){ /* içerik kaydırması: küçük bir atalet */
+        sh.style.height='';bd.dataset.detent='large';let vel=-v*16,last=performance.now();
+        if(!rm&&Math.abs(vel)>2){const step=now=>{const dt=Math.min(32,now-last)/16;last=now;sh.scrollTop+=vel*dt;vel*=Math.pow(.95,dt);if(Math.abs(vel)>.4&&!st.on)requestAnimationFrame(step)};requestAnimationFrame(step)}
+        return}
+      if(st.det==='medium'&&dy<0){if(-proj>Math.min(80,(M-H)*.35)||v<-.35)self.toLarge(bd,sh);else{sh.style.transform='';sh.style.height=md+'px'}return}
+      if(dy>0){const tall=bd.dataset.tall==='1',fromLarge=st.det==='large'&&tall&&H>md+40,toMed=H-md;
+        if(fromLarge){
+          if((proj>toMed+md*.3&&v>.35)||(v>1.6&&dy>40)){Sheet.close();return}
+          if(proj>toMed*.45||v>.5){self.toMedium(bd,sh);return}}
+        else if(proj>H*.3||v>.6&&dy>16){Sheet.close();return}}
+      sh.style.transform='';if(st.det==='medium')sh.style.height=md+'px'};
+    /* 1) tutamak + başlık: dokunma ve fare */
+    const pm=e=>{const p=st.pz;if(!p||p.id!==e.pointerId)return;
+      if(!st.on){if(Math.abs(e.clientY-p.y)<6||Math.abs(e.clientX-p.x)>Math.abs(e.clientY-p.y))return;st.content=false;begin(p.y)}
+      paint(e.clientY)};
+    const pu=e=>{const p=st.pz;if(!p||(e&&p.id!==e.pointerId))return;st.pz=null;document.removeEventListener('pointermove',pm);document.removeEventListener('pointerup',pu);document.removeEventListener('pointercancel',pu);
+      if(st.on){try{Gesture.blockClick()}catch(x){}end()}};
+    sh.querySelectorAll('.grab-zone,.sheet-head').forEach(z=>z.addEventListener('pointerdown',e=>{if(e.button>0||st.on||e.target.closest('.sheet-head button'))return;
+      st.pz={x:e.clientX,y:e.clientY,id:e.pointerId};document.addEventListener('pointermove',pm);document.addEventListener('pointerup',pu);document.addEventListener('pointercancel',pu)},{passive:true}));
+    /* 2) içerik: en üstteyken aşağı, orta kademedeyken yukarı → pencere hareket eder; yoksa normal kaydırma */
+    const skip='.grab-zone,.sheet-head,.seg,textarea,.chips,.matrix-wrap,.carousel,.swipe-fg,.icon-pick,input[type=range],.strip,.lc-wrap,[data-noswipe]';
+    sh.addEventListener('touchstart',e=>{if(st.on||e.touches.length>1||e.target.closest(skip))return st.ct=null;const t=e.touches[0];st.ct={x:t.clientX,y:t.clientY,taken:false}},{passive:true});
+    sh.addEventListener('touchmove',e=>{const c=st.ct;if(!c)return;if(e.touches.length>1){if(c.taken)end();st.ct=null;return}
+      const t=e.touches[0],dy=t.clientY-c.y,dx=t.clientX-c.x;
+      if(!c.taken){if(Math.abs(dy)<7&&Math.abs(dx)<7)return;if(Math.abs(dx)>Math.abs(dy)){st.ct=null;return}
+        const top=sh.scrollTop<=0,down=dy>0,med=bd.dataset.detent==='medium';
+        if(!((top&&down)||(med&&!down))){st.ct=null;return}
+        c.taken=true;st.content=true;begin(t.clientY)}
+      if(e.cancelable)e.preventDefault();paint(t.clientY)},{passive:false});
+    const tend=()=>{if(st.ct&&st.ct.taken)end();st.ct=null};
+    sh.addEventListener('touchend',tend);sh.addEventListener('touchcancel',tend);
+    /* bir alana dokununca tam kademe (klavye için yer) */
+    sh.addEventListener('pointerdown',e=>{if(bd.dataset.detent==='medium'&&e.target.closest('input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select'))self.toLarge(bd,sh)},{passive:true})};
+}
+
+/* =================================================================== 3) AŞAĞI ÇEKİP YENİLE */
+if(typeof PTR!=='undefined'){try{Object.defineProperty(PTR,'busy',{get(){return true},set(){},configurable:true})}catch(e){}}   // eski damla kapatılır
+const Pull={st:null,busy:false,el:null,TH:62,TABS:['home','txs','plan','reports'],
+  mk(){if(this.el&&this.el.isConnected)return this.el;const el=document.createElement('div');el.id='czp-ptr';el.setAttribute('aria-hidden','true');
+    let s='';for(let i=0;i<8;i++){const a=-i*45*Math.PI/180,x1=14+Math.sin(a)*5.2,y1=14-Math.cos(a)*5.2,x2=14+Math.sin(a)*10,y2=14-Math.cos(a)*10;
+      s+=`<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`}
+    el.innerHTML=`<svg viewBox="0 0 28 28">${s}</svg>`;document.body.appendChild(el);return this.el=el},
+  ok(t){if(wide()||this.busy||scrollY>1||UI.stack.length||!this.TABS.includes(UI.tab))return false;
+    if(document.querySelector('#sheet,#ctx,#czp-bd,#story,.wgrid.editing')||document.body.classList.contains('onboarding')||UI.homeEdit)return false;
+    if(t.closest&&t.closest('.dock,.tabbar,#navbar,.carousel,.strip,.matrix-wrap,.chips,.seg,.lc-wrap,.wallet.wx-open,input,textarea,select,.cz-isl,#czwt-isl'))return false;
+    return true},
+  off(dy){return dy<=0?0:dy<150?dy*.55:82.5+rubP(dy-150)},
+  scr(){return document.getElementById('screen')},
+  paint(off){const el=this.mk(),s=this.scr(),p=Math.min(1,off/this.TH);
+    if(s)s.style.transform=off?`translateY(${off}px)`:'';
+    const top=this.top0+off/2-14;el.style.transform=`translateY(${Math.max(this.top0-28,top)}px)`;el.style.opacity=String(Math.min(1,Math.max(0,(off-14)/26)));
+    el.style.setProperty('--czp-rot',(p*90-90)+'deg');const n=Math.round(p*8);el.querySelectorAll('line').forEach((l,i)=>l.classList.toggle('on',i<n))},
+  init(){
+    document.addEventListener('touchstart',e=>{this.st=null;if(e.touches.length>1||!this.ok(e.target))return;const t=e.touches[0];this.st={x0:t.clientX,y0:t.clientY,on:false,ready:false,off:0}},{passive:true});
+    document.addEventListener('touchmove',e=>{const st=this.st;if(!st)return;const t=e.touches[0],dy=t.clientY-st.y0,dx=t.clientX-st.x0;
+      if(!st.on){if(Math.abs(dy)<8&&Math.abs(dx)<8)return;if(dy<=0||Math.abs(dx)>dy*.8||scrollY>1||CzPress.isOpen()||(Gesture.st&&Gesture.st.mode==='h')){this.st=null;return}
+        st.on=true;st.y0=t.clientY-8;const s=this.scr();this.top0=(s?s.getBoundingClientRect().top:sat()+44);if(s)s.style.transition='none';
+        const el=this.mk();el.style.transition='none';el.classList.remove('spin');
+        try{clearTimeout(Gesture.lpT)}catch(x){}cancelL()}
+      if(e.cancelable)e.preventDefault();const off=this.off(t.clientY-st.y0);st.off=off;this.paint(off);
+      const r=off>=this.TH;if(r!==st.ready){st.ready=r;if(r)hap('tick')}},{passive:false});
+    const end=async()=>{const st=this.st;this.st=null;if(!st||!st.on)return;const s=this.scr(),el=this.mk(),rm=reduced(),ease=rm?'.2s ease':'.4s cubic-bezier(.32,.72,0,1)';
+      if(s)s.style.transition=`transform ${ease}`;el.style.transition=`transform ${ease},opacity .2s`;
+      if(st.ready){this.busy=true;this.paint(52);el.querySelectorAll('line').forEach(l=>l.classList.add('on'));el.style.opacity='1';el.classList.add('spin');
+        try{Gesture.blockClick()}catch(x){}
+        try{await Promise.all([this.refresh(),new Promise(r=>setTimeout(r,rm?400:900))])}catch(x){}
+        hap('success');el.style.transition='opacity .18s ease,transform .18s ease';el.style.opacity='0';
+        await new Promise(r=>setTimeout(r,160));}
+      if(s)s.style.transition=`transform ${ease}`;if(s)s.style.transform='';el.style.opacity='0';
+      el.style.transform=`translateY(${this.top0-28}px)`;
+      setTimeout(()=>{el.classList.remove('spin');el.querySelectorAll('line').forEach(l=>l.classList.remove('on'));if(s&&!this.st)s.style.transition='';this.busy=false},420)};
+    document.addEventListener('touchend',end);document.addEventListener('touchcancel',end)},
+  /* yenile: oturum açıksa buluttan çek/gönder, değilse yeniden çiz */
+  async refresh(){const before=Store.get();let cloud=false;
+    try{if(typeof Rates!=='undefined'&&Rates.fetch)Rates.fetch(false).catch(()=>{})}catch(e){}
+    try{if(typeof Cloud!=='undefined'&&Cloud.user&&!(typeof isDemo==='function'&&isDemo())){cloud=true;await Cloud.check();
+      const t0=Date.now();while(Cloud.status==='syncing'&&Date.now()-t0<6000)await new Promise(r=>setTimeout(r,200))}}catch(e){}
+    if(!cloud)try{App.render()}catch(e){}
+    if(Store.get()===before&&!(cloud&&/error|offline|conflict|locked/.test(Cloud.status)))Toast.show('Güncel',1600)}
+};
+const rubP=x=>48*(1-1/(x/90+1));
+window.CzPull=Pull;Pull.init();
+})();
+
 </script>
 </body>
 </html>
